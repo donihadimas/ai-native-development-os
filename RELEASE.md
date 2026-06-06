@@ -4,6 +4,49 @@ This guide explains how to release a new AI-Native Development OS version to Git
 
 The repository and the npm package should use the same version number. The npm package is published from `cli/` as `@donihadimas/aios`.
 
+## Semantic Versioning
+
+This project follows Semantic Versioning using `MAJOR.MINOR.PATCH`.
+
+```text
+MAJOR.MINOR.PATCH
+```
+
+Use the version number consistently in:
+
+- `cli/package.json`
+- `cli/package-lock.json`
+- `CHANGELOG.md`
+- Git tag `vX.Y.Z`
+- GitHub Release title
+- npm package version
+
+### Version Rules
+
+- `MAJOR`: breaking changes that require users to migrate.
+- `MINOR`: backward-compatible new features.
+- `PATCH`: backward-compatible fixes and documentation improvements.
+
+Examples:
+
+- `0.2.1`: fix README, validation report, package metadata, or a CLI bug without changing behavior.
+- `0.3.0`: add a new command, skill, template, workflow, or non-breaking skeleton capability.
+- `1.0.0`: stable public API and workflow contract after real-project usage proves the system is ready for stronger compatibility expectations.
+
+### Current Release Version
+
+The current initial public CLI release should use:
+
+```text
+0.2.0
+```
+
+Reason:
+
+- V1 manual workflow already exists.
+- V2 assisted CLI workflow is implemented.
+- The project is usable, but still early and not yet a mature `1.0.0` ecosystem.
+
 ## Release Types
 
 - Patch: documentation fixes, validation updates, and bug fixes.
@@ -116,6 +159,75 @@ installed-package smoke test: passed
 ```
 
 9. Publish the GitHub release.
+
+### Initial `v0.2.0` GitHub Release
+
+Recommended release title:
+
+```text
+v0.2.0 - Initial AIOS CLI Release
+```
+
+Recommended release notes:
+
+````md
+## v0.2.0 - Initial AIOS CLI Release
+
+Initial public release of AI-Native Development OS with the `@donihadimas/aios` CLI.
+
+### Added
+- Added `aios init` for creating AI-ready project skeletons.
+- Added `aios adopt` for adding AI Dev OS structure to existing projects.
+- Added `aios validate` for checking required AI-ready project paths.
+- Added document generators: `aios feature`, `aios adr`, `aios task`, and `aios review`.
+- Added bundled project skeleton and templates for npm package runtime.
+- Added OpenAPI contract workflow and generic backend API guidance.
+- Added root MIT license and release documentation.
+
+### Validation
+- `npm test`: 17 passed, 0 failed.
+- `npm pack --dry-run`: passed.
+- Package name: `@donihadimas/aios`.
+
+### Install
+
+```bash
+npm install -g @donihadimas/aios
+```
+````
+
+### Future GitHub Release Template
+
+Use this format for later releases:
+
+````md
+## vX.Y.Z - <Release Name>
+
+Short summary of what this release changes and who should care.
+
+### Added
+- New backward-compatible features.
+
+### Changed
+- Behavior, workflow, template, or documentation changes.
+
+### Fixed
+- Bug fixes and correctness improvements.
+
+### Breaking Changes
+- List migration-required changes, or write `None`.
+
+### Validation
+- `npm test`: passed.
+- `npm pack --dry-run`: passed.
+- Installed-package smoke test: passed.
+
+### Install
+
+```bash
+npm install -g @donihadimas/aios
+```
+````
 
 ## Post-Release Checks
 
