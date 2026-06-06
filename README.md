@@ -33,6 +33,7 @@ Use this project when you want to:
 - `cli/` - the `aios` helper CLI for skeleton creation, adoption, document generation, numbering, and validation.
 - `.github/` - manual issue and pull request templates.
 - `validation/` - validation reports and smoke-test evidence.
+- `RELEASE.md` - GitHub release and npm publish procedure.
 
 ## Quickstart: Manual Use
 
@@ -116,6 +117,8 @@ npm pack --dry-run
 ```
 
 The package build copies `project-skeleton/` and `templates/` into bundled runtime assets through `cli/scripts/sync-assets.mjs`, then compiles TypeScript. See `validation/npm-publish-readiness-report.md` for the latest publish-readiness evidence.
+
+For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`.
 
 ## Operating Principles
 

@@ -47,7 +47,9 @@ Before opening a pull request:
 
 ## Release Checklist
 
-Before publishing a CLI release:
+Before publishing a CLI release, follow the full process in `RELEASE.md`.
+
+Minimum validation:
 
 ```bash
 cd cli
