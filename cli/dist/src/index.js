@@ -2,12 +2,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { copyDirectory, ensureEmptyOrMissingDirectory, getRuntimePaths, nextNumber, slugify, titleize, validateProject, writeRenderedTemplate } from "./core.js";
+import { adoptSkeleton, copyDirectory, ensureEmptyOrMissingDirectory, getRuntimePaths, nextNumber, slugify, titleize, validateProject, writeRenderedTemplate } from "./core.js";
 function usage() {
     return `AI-Native Development OS CLI
 
 Usage:
   aios init <project-name>
+  aios adopt [project-path]
   aios feature <feature-name>
   aios adr <decision-name>
   aios task <task-name>
@@ -27,6 +28,16 @@ function commandInit(ctx, name) {
     ensureEmptyOrMissingDirectory(target);
     copyDirectory(ctx.runtimePaths.projectSkeleton, target);
     return `Created AI-ready project at ${target}`;
+}
+function commandAdopt(ctx, projectPathArg) {
+    const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+    const result = adoptSkeleton(ctx.runtimePaths.projectSkeleton, projectPath);
+    return [
+        `Adopted AI Dev OS structure in ${projectPath}`,
+        `Created: ${result.created.length}`,
+        `Skipped existing: ${result.skipped.length}`,
+        "Next step: run `aios validate` from the project root."
+    ].join("\n");
 }
 function commandFeature(ctx, name) {
     const featureName = requireName(name, "feature");
@@ -107,6 +118,8 @@ export function run(argv, ctx = { runtimePaths: getRuntimePaths(), cwd: process.
             return usage();
         case "init":
             return commandInit(ctx, name);
+        case "adopt":
+            return commandAdopt(ctx, name);
         case "feature":
             return commandFeature(ctx, name);
         case "adr":

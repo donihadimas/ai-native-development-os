@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  adoptSkeleton,
   copyDirectory,
   ensureEmptyOrMissingDirectory,
   getRuntimePaths,
@@ -24,6 +25,7 @@ function usage(): string {
 
 Usage:
   aios init <project-name>
+  aios adopt [project-path]
   aios feature <feature-name>
   aios adr <decision-name>
   aios task <task-name>
@@ -46,6 +48,18 @@ function commandInit(ctx: CommandContext, name: string | undefined): string {
   ensureEmptyOrMissingDirectory(target);
   copyDirectory(ctx.runtimePaths.projectSkeleton, target);
   return `Created AI-ready project at ${target}`;
+}
+
+function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const result = adoptSkeleton(ctx.runtimePaths.projectSkeleton, projectPath);
+
+  return [
+    `Adopted AI Dev OS structure in ${projectPath}`,
+    `Created: ${result.created.length}`,
+    `Skipped existing: ${result.skipped.length}`,
+    "Next step: run `aios validate` from the project root."
+  ].join("\n");
 }
 
 function commandFeature(ctx: CommandContext, name: string | undefined): string {
@@ -143,6 +157,8 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return usage();
     case "init":
       return commandInit(ctx, name);
+    case "adopt":
+      return commandAdopt(ctx, name);
     case "feature":
       return commandFeature(ctx, name);
     case "adr":

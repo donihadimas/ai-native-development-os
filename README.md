@@ -23,6 +23,7 @@ Use V1 when you want full control and prefer to copy templates manually.
 V2 adds light automation without turning the OS into an orchestration engine:
 
 - `cli/` provides the `aios` CLI for skeleton copying, doc creation, numbering, and validation.
+- `aios adopt` adds the AI Dev OS structure to existing projects without overwriting files.
 - `templates/openapi.template.yaml` provides a starting API contract.
 - `skills/api-contract-design` and `workflows/api-contract.workflow.md` help synchronize frontend and backend before implementation.
 - `skills/backend-api-development` and `references/backend-api-standards.md` provide a generic backend API adapter without choosing a framework.
@@ -55,6 +56,14 @@ npm install -g ai-native-development-os-cli
 aios init demo-project
 aios validate demo-project
 cd demo-project
+```
+
+For an existing project:
+
+```bash
+cd existing-project
+aios adopt
+aios validate
 ```
 
 3. Create docs from templates:

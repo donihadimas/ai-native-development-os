@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {
+  adoptSkeleton,
   copyDirectory,
   ensureEmptyOrMissingDirectory,
   getOsRoot,
@@ -69,6 +70,23 @@ test("copyDirectory copies nested files", () => {
   copyDirectory(source, target);
 
   assert.equal(fs.readFileSync(path.join(target, "nested", "file.md"), "utf8"), "hello");
+});
+
+test("adoptSkeleton copies missing files and skips existing files", () => {
+  const source = fs.mkdtempSync(path.join(os.tmpdir(), "aios-adopt-source-"));
+  const target = fs.mkdtempSync(path.join(os.tmpdir(), "aios-adopt-target-"));
+  fs.mkdirSync(path.join(source, "docs", "context"), { recursive: true });
+  fs.writeFileSync(path.join(source, "README.md"), "# Skeleton\n");
+  fs.writeFileSync(path.join(source, "docs", "context", "context-map.md"), "# Context\n");
+  fs.writeFileSync(path.join(target, "README.md"), "# Existing\n");
+
+  const result = adoptSkeleton(source, target);
+
+  assert.equal(fs.readFileSync(path.join(target, "README.md"), "utf8"), "# Existing\n");
+  assert.equal(fs.readFileSync(path.join(target, "docs", "context", "context-map.md"), "utf8"), "# Context\n");
+  assert.ok(result.created.includes("docs/"));
+  assert.ok(result.created.includes(path.join("docs", "context", "context-map.md")));
+  assert.ok(result.skipped.includes("README.md"));
 });
 
 test("writeRenderedTemplate writes rendered content and refuses overwrite", () => {

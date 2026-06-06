@@ -14,6 +14,7 @@ The V2 CLI is now technically ready to publish to npm as `ai-native-development-
 - `prepack` syncs assets and builds TypeScript.
 - `prepublishOnly` runs the test suite before publish.
 - Package metadata includes license, keywords, engines, bin, and public publish config.
+- Existing projects can be adopted non-destructively with `aios adopt`.
 
 ## Validation Commands
 
@@ -32,6 +33,7 @@ npm init -y
 npm install <tmp>/ai-native-development-os-cli-0.2.0.tgz
 ./node_modules/.bin/aios init demo-project
 ./node_modules/.bin/aios validate demo-project
+./node_modules/.bin/aios adopt existing-project
 cd demo-project
 ../node_modules/.bin/aios adr "Use Server Date"
 ../node_modules/.bin/aios task "Implement Habit API"
@@ -41,10 +43,11 @@ cd demo-project
 
 ## Results
 
-- `npm test`: 14 passed, 0 failed.
+- `npm test`: 17 passed, 0 failed.
 - `npm pack --dry-run`: tarball includes only runtime files and assets.
 - Installed tarball smoke test: passed.
 - Generated project can be initialized and validated from installed package binary.
+- Existing project can be adopted and validated without overwriting its README.
 - ADR, task, review, and feature stubs are generated from bundled templates.
 
 ## Publish Notes

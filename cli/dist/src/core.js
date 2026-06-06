@@ -97,6 +97,39 @@ export function copyDirectory(source, target) {
         }
     }
 }
+export function adoptSkeleton(source, target) {
+    const result = {
+        created: [],
+        skipped: []
+    };
+    copyMissingEntries(source, target, target, result);
+    return result;
+}
+function copyMissingEntries(source, target, root, result) {
+    fs.mkdirSync(target, { recursive: true });
+    for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
+        const sourcePath = path.join(source, entry.name);
+        const targetPath = path.join(target, entry.name);
+        const relativePath = path.relative(root, targetPath) || ".";
+        if (fs.existsSync(targetPath)) {
+            result.skipped.push(relativePath);
+            if (entry.isDirectory()) {
+                copyMissingEntries(sourcePath, targetPath, root, result);
+            }
+            continue;
+        }
+        if (entry.isDirectory()) {
+            fs.mkdirSync(targetPath, { recursive: true });
+            result.created.push(`${relativePath}/`);
+            copyMissingEntries(sourcePath, targetPath, root, result);
+        }
+        else if (entry.isFile()) {
+            fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+            fs.copyFileSync(sourcePath, targetPath);
+            result.created.push(relativePath);
+        }
+    }
+}
 export function writeRenderedTemplate(options) {
     const template = fs.readFileSync(options.templatePath, "utf8");
     const rendered = renderTemplate(template, options.values);

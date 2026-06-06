@@ -21,6 +21,28 @@ test("init copies the project skeleton", () => {
     assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
     assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
 });
+test("adopt adds missing AI Dev OS files without overwriting existing files", () => {
+    const cwd = tempCwd();
+    const project = path.join(cwd, "existing-project");
+    fs.mkdirSync(project, { recursive: true });
+    fs.writeFileSync(path.join(project, "README.md"), "# Existing Project\n");
+    const output = run(["adopt", "existing-project"], { runtimePaths, cwd });
+    assert.match(output, /Adopted AI Dev OS structure/);
+    assert.equal(fs.readFileSync(path.join(project, "README.md"), "utf8"), "# Existing Project\n");
+    assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
+    assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
+    assert.ok(fs.existsSync(path.join(project, "frontend")));
+    assert.ok(fs.existsSync(path.join(project, "backend")));
+    const validateOutput = run(["validate"], { runtimePaths, cwd: project });
+    assert.match(validateOutput, /AI-ready structure validated/);
+});
+test("adopt defaults to the current working directory", () => {
+    const project = tempCwd();
+    fs.writeFileSync(path.join(project, "README.md"), "# Existing Project\n");
+    run(["adopt"], { runtimePaths, cwd: project });
+    assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
+    assert.ok(fs.existsSync(path.join(project, "docs", "product", "vision.md")));
+});
 test("adr, task, and review create files in a generated project", () => {
     const cwd = tempCwd();
     run(["init", "demo-project"], { runtimePaths, cwd });

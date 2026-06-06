@@ -8,7 +8,7 @@ V2 has been implemented as a focused assisted workflow upgrade: a small Node.js 
 
 | Area | Status | Evidence |
 | --- | --- | --- |
-| CLI | Pass | `cli/src/` implements `aios init`, `feature`, `adr`, `task`, `review`, and `validate`. |
+| CLI | Pass | `cli/src/` implements `aios init`, `adopt`, `feature`, `adr`, `task`, `review`, and `validate`. |
 | CLI tests | Pass | `npm test` passes 13 Node test-runner tests. |
 | OpenAPI support | Pass | `templates/openapi.template.yaml`, `skills/api-contract-design`, `workflows/api-contract.workflow.md`, and `prompts/09-design-api-contract.md` exist. |
 | Backend API adapter | Pass | `skills/backend-api-development/SKILL.md` and `references/backend-api-standards.md` exist. |
@@ -36,7 +36,7 @@ Covered behavior:
 - non-empty directory overwrite refusal,
 - recursive skeleton copying,
 - project validation,
-- `init`, `feature`, `adr`, `task`, `review`, and `validate` command behavior,
+- `init`, `adopt`, `feature`, `adr`, `task`, `review`, and `validate` command behavior,
 - runtime OS root resolution from compiled CLI files.
 
 ## Manual Smoke Test Evidence
@@ -46,6 +46,7 @@ Commands were run against a temporary project using the compiled CLI:
 ```bash
 node cli/dist/src/index.js init <tmp>/demo-project
 node cli/dist/src/index.js validate <tmp>/demo-project
+node cli/dist/src/index.js adopt <tmp>/existing-project
 node cli/dist/src/index.js adr "Use Server Date"
 node cli/dist/src/index.js task "Implement Habit API"
 node cli/dist/src/index.js review "Habit API"
@@ -56,6 +57,7 @@ Result:
 
 - Project skeleton copied successfully.
 - AI-ready structure validated successfully.
+- Existing project adopted without overwriting existing files.
 - ADR file generated as `docs/adr/ADR-001-use-server-date.md`.
 - Task file generated as `docs/tasks/TASK-001-implement-habit-api.md`.
 - Review report generated as `docs/reviews/habit-api-review.md`.

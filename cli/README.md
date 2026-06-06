@@ -37,6 +37,14 @@ aios review "Habit API"
 aios feature "Habit reminders"
 ```
 
+Or adopt an existing project:
+
+```bash
+cd existing-project
+aios adopt
+aios validate
+```
+
 Open the project in your IDE and ask Codex to start from the generated docs:
 
 ```text
@@ -61,6 +69,16 @@ Codex plans and implements one task
 aios review <name>
 ↓
 Codex reviews the diff against acceptance criteria
+↓
+aios validate
+```
+
+For an existing project, replace the first step with:
+
+```text
+cd <existing-project>
+↓
+aios adopt
 ↓
 aios validate
 ```
@@ -102,6 +120,32 @@ It checks for:
 - `docs/api/`
 - `frontend/`
 - `backend/`
+
+### `aios adopt [project-path]`
+
+Adds the AI Dev OS structure to an existing project without overwriting existing files.
+
+```bash
+cd existing-project
+aios adopt
+aios validate
+```
+
+You can also pass a path:
+
+```bash
+aios adopt path/to/existing-project
+aios validate path/to/existing-project
+```
+
+Behavior:
+
+- Creates missing AI Dev OS docs and folders.
+- Skips files that already exist.
+- Does not overwrite your existing `README.md`, source code, docs, frontend, or backend folders.
+- Adds `frontend/` and `backend/` placeholders if they are missing so the project validates against the generic AI-ready structure.
+
+Use `adopt` when a project already exists and `init` would be too destructive.
 
 ### `aios feature <feature-name>`
 
@@ -220,7 +264,8 @@ Review the diff against the active task acceptance criteria. Findings first, the
 - manage database migrations,
 - create GitHub workflows,
 - publish releases,
-- bypass human review.
+- bypass human review,
+- infer your existing architecture automatically.
 
 That restraint is intentional. The CLI keeps setup fast while preserving the core AI Dev OS principle: human-owned decisions, small tasks, and verifiable work.
 
@@ -283,3 +328,14 @@ aios validate path/to/project
 ```
 
 Then create or restore the missing files listed in the output.
+
+### I already have a project. Should I use `init` or `adopt`?
+
+Use `adopt`:
+
+```bash
+cd existing-project
+aios adopt
+```
+
+Use `init` only for new project directories.
