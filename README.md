@@ -43,28 +43,27 @@ V2 still does not include stack-specific starter apps, GitHub automation, databa
 
 ### V2 Assisted
 
-1. Install and build the CLI:
+1. Install the CLI after it is published:
 
 ```bash
-cd cli
-npm install
-npm run build
+npm install -g ai-native-development-os-cli
 ```
 
 2. Create and validate a project:
 
 ```bash
-node cli/dist/src/index.js init demo-project
-node cli/dist/src/index.js validate demo-project
+aios init demo-project
+aios validate demo-project
+cd demo-project
 ```
 
 3. Create docs from templates:
 
 ```bash
-cd demo-project
-node ../cli/dist/src/index.js adr "Use server date for completion"
-node ../cli/dist/src/index.js task "Implement habit API"
-node ../cli/dist/src/index.js review "Habit API"
+aios adr "Use server date for completion"
+aios task "Implement habit API"
+aios review "Habit API"
+aios feature "Habit reminders"
 ```
 
 ## Repository Map

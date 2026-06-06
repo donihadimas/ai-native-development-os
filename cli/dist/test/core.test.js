@@ -3,11 +3,16 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { copyDirectory, ensureEmptyOrMissingDirectory, getOsRoot, nextNumber, renderTemplate, slugify, titleize, validateProject, writeRenderedTemplate } from "../src/core.js";
+import { copyDirectory, ensureEmptyOrMissingDirectory, getOsRoot, getRuntimePaths, nextNumber, renderTemplate, slugify, titleize, validateProject, writeRenderedTemplate } from "../src/core.js";
 test("getOsRoot resolves the repository root from compiled CLI files", () => {
     const root = getOsRoot();
     assert.ok(fs.existsSync(path.join(root, "project-skeleton")));
     assert.ok(fs.existsSync(path.join(root, "templates")));
+});
+test("getRuntimePaths resolves bundled package assets when available", () => {
+    const runtimePaths = getRuntimePaths();
+    assert.ok(fs.existsSync(runtimePaths.projectSkeleton));
+    assert.ok(fs.existsSync(runtimePaths.templates));
 });
 test("slugify creates filesystem-safe slugs", () => {
     assert.equal(slugify("Create User Profile!"), "create-user-profile");

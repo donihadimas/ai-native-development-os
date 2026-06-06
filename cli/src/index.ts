@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   copyDirectory,
   ensureEmptyOrMissingDirectory,
-  getOsRoot,
+  getRuntimePaths,
   nextNumber,
   slugify,
   titleize,
   validateProject,
-  writeRenderedTemplate
+  writeRenderedTemplate,
+  type RuntimePaths
 } from "./core.js";
 
 interface CommandContext {
-  osRoot: string;
+  runtimePaths: RuntimePaths;
   cwd: string;
 }
 
@@ -40,10 +42,9 @@ function requireName(value: string | undefined, command: string): string {
 function commandInit(ctx: CommandContext, name: string | undefined): string {
   const projectName = requireName(name, "init");
   const target = path.resolve(ctx.cwd, projectName);
-  const skeleton = path.join(ctx.osRoot, "project-skeleton");
 
   ensureEmptyOrMissingDirectory(target);
-  copyDirectory(skeleton, target);
+  copyDirectory(ctx.runtimePaths.projectSkeleton, target);
   return `Created AI-ready project at ${target}`;
 }
 
@@ -54,7 +55,7 @@ function commandFeature(ctx: CommandContext, name: string | undefined): string {
   const target = path.join(ctx.cwd, "docs", "product", "features", `${slug}.prd.md`);
 
   writeRenderedTemplate({
-    templatePath: path.join(ctx.osRoot, "templates", "prd.template.md"),
+    templatePath: path.join(ctx.runtimePaths.templates, "prd.template.md"),
     targetPath: target,
     values: {
       product_or_feature_name: title,
@@ -75,7 +76,7 @@ function commandAdr(ctx: CommandContext, name: string | undefined): string {
   const target = path.join(directory, `ADR-${number}-${slug}.md`);
 
   writeRenderedTemplate({
-    templatePath: path.join(ctx.osRoot, "templates", "adr.template.md"),
+    templatePath: path.join(ctx.runtimePaths.templates, "adr.template.md"),
     targetPath: target,
     values: { number, title, slug }
   });
@@ -92,7 +93,7 @@ function commandTask(ctx: CommandContext, name: string | undefined): string {
   const target = path.join(directory, `TASK-${number}-${slug}.md`);
 
   writeRenderedTemplate({
-    templatePath: path.join(ctx.osRoot, "templates", "task.template.md"),
+    templatePath: path.join(ctx.runtimePaths.templates, "task.template.md"),
     targetPath: target,
     values: { number, title, slug }
   });
@@ -107,7 +108,7 @@ function commandReview(ctx: CommandContext, name: string | undefined): string {
   const target = path.join(ctx.cwd, "docs", "reviews", `${slug}-review.md`);
 
   writeRenderedTemplate({
-    templatePath: path.join(ctx.osRoot, "templates", "review-report.template.md"),
+    templatePath: path.join(ctx.runtimePaths.templates, "review-report.template.md"),
     targetPath: target,
     values: {
       change_or_task: title,
@@ -131,7 +132,7 @@ function commandValidate(ctx: CommandContext, projectPathArg: string | undefined
   return [`AI-ready structure is incomplete: ${projectPath}`, "Missing:", ...result.missing.map((item) => `- ${item}`)].join("\n");
 }
 
-export function run(argv: string[], ctx: CommandContext = { osRoot: getOsRoot(), cwd: process.cwd() }): string {
+export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }): string {
   const [command, name] = argv;
 
   switch (command) {
@@ -157,7 +158,15 @@ export function run(argv: string[], ctx: CommandContext = { osRoot: getOsRoot(),
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+function isDirectRun(): boolean {
+  if (!process.argv[1]) {
+    return false;
+  }
+
+  return fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url));
+}
+
+if (isDirectRun()) {
   try {
     const output = run(process.argv.slice(2));
     if (output) {

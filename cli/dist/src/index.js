@@ -1,6 +1,8 @@
 #!/usr/bin/env node
+import fs from "node:fs";
 import path from "node:path";
-import { copyDirectory, ensureEmptyOrMissingDirectory, getOsRoot, nextNumber, slugify, titleize, validateProject, writeRenderedTemplate } from "./core.js";
+import { fileURLToPath } from "node:url";
+import { copyDirectory, ensureEmptyOrMissingDirectory, getRuntimePaths, nextNumber, slugify, titleize, validateProject, writeRenderedTemplate } from "./core.js";
 function usage() {
     return `AI-Native Development OS CLI
 
@@ -22,9 +24,8 @@ function requireName(value, command) {
 function commandInit(ctx, name) {
     const projectName = requireName(name, "init");
     const target = path.resolve(ctx.cwd, projectName);
-    const skeleton = path.join(ctx.osRoot, "project-skeleton");
     ensureEmptyOrMissingDirectory(target);
-    copyDirectory(skeleton, target);
+    copyDirectory(ctx.runtimePaths.projectSkeleton, target);
     return `Created AI-ready project at ${target}`;
 }
 function commandFeature(ctx, name) {
@@ -33,7 +34,7 @@ function commandFeature(ctx, name) {
     const title = titleize(featureName);
     const target = path.join(ctx.cwd, "docs", "product", "features", `${slug}.prd.md`);
     writeRenderedTemplate({
-        templatePath: path.join(ctx.osRoot, "templates", "prd.template.md"),
+        templatePath: path.join(ctx.runtimePaths.templates, "prd.template.md"),
         targetPath: target,
         values: {
             product_or_feature_name: title,
@@ -51,7 +52,7 @@ function commandAdr(ctx, name) {
     const number = nextNumber(directory, "ADR");
     const target = path.join(directory, `ADR-${number}-${slug}.md`);
     writeRenderedTemplate({
-        templatePath: path.join(ctx.osRoot, "templates", "adr.template.md"),
+        templatePath: path.join(ctx.runtimePaths.templates, "adr.template.md"),
         targetPath: target,
         values: { number, title, slug }
     });
@@ -65,7 +66,7 @@ function commandTask(ctx, name) {
     const number = nextNumber(directory, "TASK");
     const target = path.join(directory, `TASK-${number}-${slug}.md`);
     writeRenderedTemplate({
-        templatePath: path.join(ctx.osRoot, "templates", "task.template.md"),
+        templatePath: path.join(ctx.runtimePaths.templates, "task.template.md"),
         targetPath: target,
         values: { number, title, slug }
     });
@@ -77,7 +78,7 @@ function commandReview(ctx, name) {
     const title = titleize(reviewName);
     const target = path.join(ctx.cwd, "docs", "reviews", `${slug}-review.md`);
     writeRenderedTemplate({
-        templatePath: path.join(ctx.osRoot, "templates", "review-report.template.md"),
+        templatePath: path.join(ctx.runtimePaths.templates, "review-report.template.md"),
         targetPath: target,
         values: {
             change_or_task: title,
@@ -96,7 +97,7 @@ function commandValidate(ctx, projectPathArg) {
     process.exitCode = 1;
     return [`AI-ready structure is incomplete: ${projectPath}`, "Missing:", ...result.missing.map((item) => `- ${item}`)].join("\n");
 }
-export function run(argv, ctx = { osRoot: getOsRoot(), cwd: process.cwd() }) {
+export function run(argv, ctx = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }) {
     const [command, name] = argv;
     switch (command) {
         case undefined:
@@ -120,7 +121,13 @@ export function run(argv, ctx = { osRoot: getOsRoot(), cwd: process.cwd() }) {
             throw new Error(`Unknown command: ${command}\n\n${usage()}`);
     }
 }
-if (import.meta.url === `file://${process.argv[1]}`) {
+function isDirectRun() {
+    if (!process.argv[1]) {
+        return false;
+    }
+    return fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url));
+}
+if (isDirectRun()) {
     try {
         const output = run(process.argv.slice(2));
         if (output) {

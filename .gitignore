@@ -1,3 +1,5 @@
 node_modules/
 cli/node_modules/
+cli/assets/
+cli/dist/
 .DS_Store

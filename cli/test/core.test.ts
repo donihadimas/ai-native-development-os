@@ -7,6 +7,7 @@ import {
   copyDirectory,
   ensureEmptyOrMissingDirectory,
   getOsRoot,
+  getRuntimePaths,
   nextNumber,
   renderTemplate,
   slugify,
@@ -20,6 +21,13 @@ test("getOsRoot resolves the repository root from compiled CLI files", () => {
 
   assert.ok(fs.existsSync(path.join(root, "project-skeleton")));
   assert.ok(fs.existsSync(path.join(root, "templates")));
+});
+
+test("getRuntimePaths resolves bundled package assets when available", () => {
+  const runtimePaths = getRuntimePaths();
+
+  assert.ok(fs.existsSync(runtimePaths.projectSkeleton));
+  assert.ok(fs.existsSync(runtimePaths.templates));
 });
 
 test("slugify creates filesystem-safe slugs", () => {

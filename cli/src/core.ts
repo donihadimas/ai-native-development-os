@@ -8,6 +8,12 @@ export interface ValidationResult {
   missing: string[];
 }
 
+export interface RuntimePaths {
+  root: string;
+  projectSkeleton: string;
+  templates: string;
+}
+
 export const REQUIRED_PROJECT_PATHS = [
   "AGENTS.md",
   "docs",
@@ -23,7 +29,31 @@ export const REQUIRED_PROJECT_PATHS = [
 ];
 
 export function getOsRoot(): string {
-  return path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../..");
+  return getRuntimePaths().root;
+}
+
+export function getRuntimePaths(): RuntimePaths {
+  const compiledSourceDir = path.dirname(new URL(import.meta.url).pathname);
+  const packageRoot = path.resolve(compiledSourceDir, "../..");
+  const packageAssetsRoot = path.join(packageRoot, "assets");
+
+  if (
+    fs.existsSync(path.join(packageAssetsRoot, "project-skeleton")) &&
+    fs.existsSync(path.join(packageAssetsRoot, "templates"))
+  ) {
+    return {
+      root: packageAssetsRoot,
+      projectSkeleton: path.join(packageAssetsRoot, "project-skeleton"),
+      templates: path.join(packageAssetsRoot, "templates")
+    };
+  }
+
+  const repoRoot = path.resolve(packageRoot, "..");
+  return {
+    root: repoRoot,
+    projectSkeleton: path.join(repoRoot, "project-skeleton"),
+    templates: path.join(repoRoot, "templates")
+  };
 }
 
 export function slugify(input: string): string {
