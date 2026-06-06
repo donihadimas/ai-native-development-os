@@ -1,0 +1,21 @@
+{
+  "name": "ai-native-development-os-cli",
+  "version": "0.2.0",
+  "description": "Small CLI for AI-Native Development OS V2.",
+  "type": "module",
+  "bin": {
+    "aios": "dist/src/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "aios": "npm run build --silent && node dist/src/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
