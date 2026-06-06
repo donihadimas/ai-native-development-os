@@ -17,6 +17,16 @@ function tempCwd(): string {
   return fs.mkdtempSync(path.join(os.tmpdir(), "aios-cmd-"));
 }
 
+test("help explains the CLI purpose and available commands", () => {
+  const output = run(["help"], { runtimePaths, cwd: tempCwd() });
+
+  assert.match(output, /AIOS helps you create and maintain an AI-ready project structure/);
+  assert.match(output, /aios init <project-name>/);
+  assert.match(output, /aios adopt \[project-path\]/);
+  assert.match(output, /aios validate \[project-path\]/);
+  assert.match(output, /Typical workflow:/);
+});
+
 test("init copies the project skeleton", () => {
   const cwd = tempCwd();
   const output = run(["init", "demo-project"], { runtimePaths, cwd });

@@ -8,6 +8,19 @@ This project loosely follows Semantic Versioning:
 - Minor: new CLI commands, skills, templates, workflows, or non-breaking behavior.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.2.1
+
+Patch release focused on CLI help text clarity.
+
+### Changed
+
+- Expanded `aios --help` with a clearer explanation of AI-Native Development OS CLI.
+- Added beginner-friendly command descriptions and example workflows for new and existing projects.
+
+### Validation
+
+- CLI automated tests pass with 18 tests.
+
 ## 0.2.0
 
 Initial npm-ready AIOS CLI release.

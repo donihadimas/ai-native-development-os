@@ -23,14 +23,59 @@ interface CommandContext {
 function usage(): string {
   return `AI-Native Development OS CLI
 
+AIOS helps you create and maintain an AI-ready project structure for
+AI-assisted software development. It does not generate application code.
+Instead, it prepares the docs, folders, and planning files that help Codex
+or another coding agent work with clear context, small tasks, review notes,
+API contracts, and repeatable project workflows.
+
+Use it when you want to:
+  - start a new frontend/backend project with AI-ready docs,
+  - add AI Dev OS structure to an existing project,
+  - create PRDs, ADRs, implementation tasks, and review reports,
+  - validate that a project has the expected AI workflow structure.
+
 Usage:
   aios init <project-name>
+    Create a new AI-ready project from the bundled skeleton.
+
   aios adopt [project-path]
+    Add AI Dev OS folders and docs to an existing project without overwriting
+    existing files. Defaults to the current directory.
+
   aios feature <feature-name>
+    Create a feature PRD stub in docs/product/features/.
+
   aios adr <decision-name>
+    Create the next numbered Architecture Decision Record in docs/adr/.
+
   aios task <task-name>
+    Create the next numbered implementation task in docs/tasks/.
+
   aios review <name>
+    Create a review report stub in docs/reviews/.
+
   aios validate [project-path]
+    Check whether a project has the required AI-ready structure.
+    Defaults to the current directory.
+
+Typical workflow:
+  aios init demo-project
+  aios validate demo-project
+  cd demo-project
+  aios feature "Habit reminders"
+  aios adr "Use server date for completion"
+  aios task "Implement habit API"
+  aios review "Habit API"
+
+Existing project workflow:
+  cd existing-project
+  aios adopt
+  aios validate
+
+Next step after generating docs:
+  Open the project with Codex and ask it to read AGENTS.md,
+  docs/context/context-map.md, and the active task before coding.
 `;
 }
 
