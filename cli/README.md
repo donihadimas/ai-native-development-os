@@ -9,7 +9,7 @@ It does not replace Codex or another coding agent. The CLI only creates, copies,
 After the package is published:
 
 ```bash
-npm install -g ai-native-development-os-cli
+npm install -g @donihadimas/aios
 aios --help
 ```
 
@@ -114,9 +114,11 @@ It checks for:
 - `docs/context/context-map.md`
 - `docs/product/vision.md`
 - `docs/product/prd.md`
+- `docs/product/features/`
 - `docs/architecture/architecture.md`
 - `docs/adr/`
 - `docs/tasks/`
+- `docs/reviews/`
 - `docs/api/`
 - `frontend/`
 - `backend/`
@@ -219,11 +221,13 @@ my-project/
 ├── docs/
 │   ├── product/
 │   │   ├── vision.md
-│   │   └── prd.md
+│   │   ├── prd.md
+│   │   └── features/
 │   ├── architecture/
 │   │   └── architecture.md
 │   ├── adr/
 │   ├── tasks/
+│   ├── reviews/
 │   ├── api/
 │   └── context/
 │       └── context-map.md
@@ -306,7 +310,7 @@ The package should not include source tests or `dist/test/`.
 Make sure the package is installed globally:
 
 ```bash
-npm install -g ai-native-development-os-cli
+npm install -g @donihadimas/aios
 ```
 
 Or run it locally from a package install:

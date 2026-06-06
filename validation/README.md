@@ -30,6 +30,6 @@ Goal: Confirm the project skeleton and V1 artifacts can support an end-to-end AI
 ## Pain Points to Watch
 
 - Repeated manual copying of templates.
-- Need for CLI only after repeated real usage.
-- Whether API notes are enough before adding full OpenAPI workflow in V2.
+- Need for real-project validation before expanding the V2.x roadmap.
+- Whether OpenAPI workflow should remain generic or gain stack-specific adapters later.
 - Whether security checklist coverage is enough before adding a security-review skill in V2.

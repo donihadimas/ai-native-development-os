@@ -9,7 +9,7 @@ V2 has been implemented as a focused assisted workflow upgrade: a small Node.js 
 | Area | Status | Evidence |
 | --- | --- | --- |
 | CLI | Pass | `cli/src/` implements `aios init`, `adopt`, `feature`, `adr`, `task`, `review`, and `validate`. |
-| CLI tests | Pass | `npm test` passes 13 Node test-runner tests. |
+| CLI tests | Pass | `npm test` passes 17 Node test-runner tests. |
 | OpenAPI support | Pass | `templates/openapi.template.yaml`, `skills/api-contract-design`, `workflows/api-contract.workflow.md`, and `prompts/09-design-api-contract.md` exist. |
 | Backend API adapter | Pass | `skills/backend-api-development/SKILL.md` and `references/backend-api-standards.md` exist. |
 | Docs update | Pass | Root README and directory READMEs explain V2 assisted flow. |
@@ -24,7 +24,7 @@ npm test
 
 Result:
 
-- 13 tests passed.
+- 17 tests passed.
 - 0 tests failed.
 
 Covered behavior:
@@ -35,7 +35,9 @@ Covered behavior:
 - next-number detection,
 - non-empty directory overwrite refusal,
 - recursive skeleton copying,
+- non-destructive project adoption,
 - project validation,
+- validation coverage for feature PRD and review report directories,
 - `init`, `adopt`, `feature`, `adr`, `task`, `review`, and `validate` command behavior,
 - runtime OS root resolution from compiled CLI files.
 
@@ -66,8 +68,8 @@ Result:
 ## Deferred V2.x Items
 
 - Stack-specific starter apps.
-- GitHub Actions and issue/PR templates.
+- GitHub Actions automation.
 - Database migration workflow.
 - Dedicated security-review workflow.
 - Release automation.
-- Publishing-ready npm package layout that bundles templates and skeleton as package assets.
+- Real-project validation before expanding the V2.x roadmap.

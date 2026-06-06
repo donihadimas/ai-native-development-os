@@ -1,5 +1,5 @@
 {
-  "name": "ai-native-development-os-cli",
+  "name": "@donihadimas/aios",
   "version": "0.2.0",
   "description": "Small CLI for AI-Native Development OS V2.",
   "type": "module",

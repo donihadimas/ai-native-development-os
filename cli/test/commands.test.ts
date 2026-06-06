@@ -25,6 +25,8 @@ test("init copies the project skeleton", () => {
   assert.match(output, /Created AI-ready project/);
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
+  assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
+  assert.ok(fs.existsSync(path.join(project, "docs", "reviews")));
 });
 
 test("adopt adds missing AI Dev OS files without overwriting existing files", () => {
@@ -39,6 +41,8 @@ test("adopt adds missing AI Dev OS files without overwriting existing files", ()
   assert.equal(fs.readFileSync(path.join(project, "README.md"), "utf8"), "# Existing Project\n");
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
+  assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
+  assert.ok(fs.existsSync(path.join(project, "docs", "reviews")));
   assert.ok(fs.existsSync(path.join(project, "frontend")));
   assert.ok(fs.existsSync(path.join(project, "backend")));
 

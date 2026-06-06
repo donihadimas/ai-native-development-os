@@ -2,7 +2,7 @@
 
 ## Summary
 
-The V2 CLI is now technically ready to publish to npm as `ai-native-development-os-cli` after package asset bundling, lifecycle scripts, tarball validation, and installed-package smoke testing.
+The V2 CLI is now technically ready to publish to npm as `@donihadimas/aios` after package asset bundling, lifecycle scripts, tarball validation, and installed-package smoke testing.
 
 ## Package Improvements
 
@@ -15,6 +15,7 @@ The V2 CLI is now technically ready to publish to npm as `ai-native-development-
 - `prepublishOnly` runs the test suite before publish.
 - Package metadata includes license, keywords, engines, bin, and public publish config.
 - Existing projects can be adopted non-destructively with `aios adopt`.
+- The bundled skeleton includes `docs/product/features/` and `docs/reviews/`, matching the `feature`, `review`, and `validate` commands.
 
 ## Validation Commands
 
@@ -30,7 +31,7 @@ Installed package smoke test:
 ```bash
 npm pack --pack-destination <tmp>
 npm init -y
-npm install <tmp>/ai-native-development-os-cli-0.2.0.tgz
+npm install <tmp>/donihadimas-aios-0.2.0.tgz
 ./node_modules/.bin/aios init demo-project
 ./node_modules/.bin/aios validate demo-project
 ./node_modules/.bin/aios adopt existing-project
@@ -44,7 +45,7 @@ cd demo-project
 ## Results
 
 - `npm test`: 17 passed, 0 failed.
-- `npm pack --dry-run`: tarball includes only runtime files and assets.
+- `npm pack --dry-run`: tarball includes only runtime files and assets, including feature PRD and review report directories.
 - Installed tarball smoke test: passed.
 - Generated project can be initialized and validated from installed package binary.
 - Existing project can be adopted and validated without overwriting its README.
@@ -54,7 +55,7 @@ cd demo-project
 
 Before actual publish, confirm:
 
-- Package name `ai-native-development-os-cli` is available or choose a scoped package name.
+- Package name `@donihadimas/aios` is the intended scoped npm package.
 - MIT license is acceptable for this project.
 - npm account is logged in with publish permission.
 - Version `0.2.0` is the intended first published version.

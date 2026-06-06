@@ -1,38 +1,42 @@
 # AI-Native Development OS
 
-AI-Native Development OS is a reusable manual workflow foundation for building software with AI coding agents. It gives a solo fullstack developer a consistent way to turn ideas into product docs, architecture, ADRs, small implementation tasks, reviews, tests, and releases.
+AI-Native Development OS is a reusable workflow foundation for building software with AI coding agents. It gives a solo fullstack developer a consistent way to move from idea to product docs, architecture, ADRs, small tasks, implementation, review, testing, and release.
 
-This repository is not an application framework, CLI, SaaS product, or prompt dump. It is a portable operating system for AI-assisted development.
+This repository is not an application framework, SaaS starter, dashboard, or AI agent. It is a portable operating system for AI-assisted development: reusable skills, templates, references, workflows, project skeletons, and a small helper CLI.
 
-## V1 Manual Flow
+## What It Is For
 
-V1 is a complete manual foundation that works with Codex in an IDE and remains mostly tool-agnostic:
+Use this project when you want to:
 
-- reusable skills for common AI development work,
-- document templates for product and engineering artifacts,
-- stable engineering references,
-- step-by-step workflows,
-- thin prompt wrappers,
-- a copy-ready frontend/backend project skeleton,
-- extension points for future automation in V2.
+- start new frontend/backend projects with an AI-ready documentation structure,
+- keep Codex or another coding agent grounded in explicit product and engineering context,
+- avoid repeating the same prompts and project setup across projects,
+- split implementation into small verifiable tasks,
+- keep review, testing, and acceptance criteria visible before marking work done,
+- publish or reuse the workflow as a small CLI-assisted toolkit.
 
-Use V1 when you want full control and prefer to copy templates manually.
+## Current Status
 
-## V2 Assisted Flow
+- V1 manual workflow is complete and usable by copying `project-skeleton/` and using the prompts, skills, templates, references, and workflows directly.
+- V2 assisted workflow is implemented as a focused Node.js CLI in `cli/`.
+- The CLI is designed for publishing as `@donihadimas/aios`.
+- V2.x remains intentionally deferred for stack-specific starters, database migration workflow, dedicated security-review workflow, GitHub Actions automation, and release automation.
 
-V2 adds light automation without turning the OS into an orchestration engine:
+## What Is Included
 
-- `cli/` provides the `aios` CLI for skeleton copying, doc creation, numbering, and validation.
-- `aios adopt` adds the AI Dev OS structure to existing projects without overwriting files.
-- `templates/openapi.template.yaml` provides a starting API contract.
-- `skills/api-contract-design` and `workflows/api-contract.workflow.md` help synchronize frontend and backend before implementation.
-- `skills/backend-api-development` and `references/backend-api-standards.md` provide a generic backend API adapter without choosing a framework.
+- `skills/` - reusable operating procedures for AI agents.
+- `templates/` - document templates for PRD, architecture, ADR, task, review, testing, implementation plans, and OpenAPI contracts.
+- `references/` - stable engineering principles and standards.
+- `workflows/` - end-to-end development flows.
+- `prompts/` - thin prompt wrappers that route agents to the right artifacts.
+- `project-skeleton/` - a copy-ready AI-ready project structure.
+- `cli/` - the `aios` helper CLI for skeleton creation, adoption, document generation, numbering, and validation.
+- `.github/` - manual issue and pull request templates.
+- `validation/` - validation reports and smoke-test evidence.
 
-V2 still does not include stack-specific starter apps, GitHub automation, database migration workflow, release automation, or a dedicated security-review workflow.
+## Quickstart: Manual Use
 
-## Quickstart
-
-### V1 Manual
+Use the manual flow when you want full control and do not need the CLI.
 
 1. Copy `project-skeleton/` into a new project directory.
 2. Open the new project with Codex or another coding agent.
@@ -40,17 +44,17 @@ V2 still does not include stack-specific starter apps, GitHub automation, databa
 4. Use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md` to create `docs/product/prd.md`.
 5. Generate architecture, ADRs, and task breakdowns before coding.
 6. Implement one small task at a time.
-7. Review, test, and summarize every change before marking it done.
+7. Save review evidence in `docs/reviews/`, run tests, and summarize before marking work done.
 
-### V2 Assisted
+## Quickstart: CLI Assisted Use
 
-1. Install the CLI after it is published:
+After publishing, install the CLI globally:
 
 ```bash
-npm install -g ai-native-development-os-cli
+npm install -g @donihadimas/aios
 ```
 
-2. Create and validate a project:
+Create and validate a new project:
 
 ```bash
 aios init demo-project
@@ -58,7 +62,7 @@ aios validate demo-project
 cd demo-project
 ```
 
-For an existing project:
+Adopt an existing project without overwriting existing files:
 
 ```bash
 cd existing-project
@@ -66,27 +70,52 @@ aios adopt
 aios validate
 ```
 
-3. Create docs from templates:
+Create planning and review documents:
 
 ```bash
+aios feature "Habit reminders"
 aios adr "Use server date for completion"
 aios task "Implement habit API"
 aios review "Habit API"
-aios feature "Habit reminders"
 ```
 
-## Repository Map
+## Generated Project Shape
 
-- `AGENTS.md` - root instructions for AI agents working in this OS repo.
-- `skills/` - reusable agent operating procedures.
-- `templates/` - reusable document formats.
-- `references/` - stable engineering principles and standards.
-- `workflows/` - end-to-end development flows.
-- `prompts/` - thin command-style prompts that route agents to the right skills and templates.
-- `project-skeleton/` - copy-ready generic fullstack project shell.
-- `cli/` - V2 helper CLI for copying, rendering, numbering, and validation.
-- `starters/`, `.github/` - future V2.x placeholders.
-- `validation/` - manual V1 validation scenario and checklist.
+```text
+project/
+├── AGENTS.md
+├── CLAUDE.md
+├── README.md
+├── docs/
+│   ├── product/
+│   │   ├── vision.md
+│   │   ├── prd.md
+│   │   └── features/
+│   ├── architecture/
+│   │   └── architecture.md
+│   ├── adr/
+│   ├── tasks/
+│   ├── reviews/
+│   ├── api/
+│   └── context/
+│       └── context-map.md
+├── frontend/
+└── backend/
+```
+
+## Publishing The CLI
+
+The CLI lives in `cli/` and is packaged separately from the repository root.
+
+Before publishing:
+
+```bash
+cd cli
+npm test
+npm pack --dry-run
+```
+
+The package build copies `project-skeleton/` and `templates/` into bundled runtime assets through `cli/scripts/sync-assets.mjs`, then compiles TypeScript. See `validation/npm-publish-readiness-report.md` for the latest publish-readiness evidence.
 
 ## Operating Principles
 
@@ -95,9 +124,11 @@ aios feature "Habit reminders"
 - Route context instead of dumping context.
 - Keep tasks small enough to verify.
 - Humans own architecture, security, dependency, and product decisions.
-- Frontend and backend share the same product, architecture, ADR, task, and API context.
+- Frontend and backend share the same product, architecture, ADR, task, review, and API context.
 - Work is not done until acceptance criteria, tests, review, and summary are complete.
 
-## V2.x Boundary
+## Boundaries
 
-Future V2.x work may add stack-specific starters, database migration workflow, security-review workflow, release automation, and GitHub integration after the CLI and API-contract workflow are validated in real use.
+The CLI only creates, copies, numbers, renders, and validates files. It does not generate application code, choose a framework, run Codex, install app dependencies, manage database migrations, create GitHub Actions, or publish releases.
+
+Future V2.x work may add stack-specific starters, database migration workflow, dedicated security-review workflow, release automation, and GitHub Actions after the current CLI-assisted workflow is validated in real projects.

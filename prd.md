@@ -960,7 +960,7 @@ The system must provide a reusable repository structure for AI-native developmen
 Acceptance Criteria:
 
 - Repo contains `skills/`, `templates/`, `references/`, `workflows/`, `prompts/`, and `project-skeleton/`.
-- Repo also includes placeholder directories for V2: `cli/`, `starters/`, and `.github/`.
+- Repo includes V2 extension areas: `cli/` for the implemented helper CLI, `.github/` for manual contributor templates, and `starters/` as a deferred V2.x placeholder.
 - Each major directory has README or clear documentation.
 
 ---
@@ -1284,26 +1284,28 @@ Mitigation:
 
 ---
 
-## 22. V2 Scope — Automation and Stack Adapters
+## 22. V2 Scope — Assisted Workflow and Automation
 
-V2 begins only after V1 is used in at least one real project.
+V2 is active in version `0.2.0` as a focused assisted workflow upgrade after V1 manual validation. Real-project usage remains the next validation milestone before expanding into V2.x automation.
 
 V2 goal:
 
 ```text
-Reduce repetitive manual setup and add stack-specific workflow support.
+Reduce repetitive manual setup while preserving human-owned decisions and small verifiable tasks.
 ```
 
 ### 22.1 CLI Generator
 
-Add minimal CLI:
+Implemented minimal CLI:
 
 ```bash
 aios init <project-name>
+aios adopt [project-path]
 aios feature <feature-name>
 aios adr <decision-name>
 aios task <task-name>
-aios review
+aios review <name>
+aios validate [project-path]
 ```
 
 CLI responsibilities:
@@ -1313,31 +1315,46 @@ CLI responsibilities:
 - create ADR from template,
 - create task from template,
 - create review report,
-- optionally validate folder structure.
+- validate folder structure.
 
 CLI must not become a complex orchestration engine in V2.
 
 ---
 
-### 22.2 Stack Adapters
+### 22.2 Generic Backend API Adapter
 
-Add stack-specific skills and references.
+Implemented:
 
-Priority:
+```text
+skills/backend-api-development/
+references/backend-api-standards.md
+```
+
+Purpose:
+
+- provide generic backend API implementation guidance,
+- keep API work framework-agnostic,
+- support OpenAPI-first frontend/backend coordination.
+
+---
+
+### 22.3 Future Stack Adapters
+
+Future V2.x may add stack-specific skills and references after repeated real-project usage proves the need.
+
+Candidate priority:
 
 1. `flutter-development`
-2. `backend-api-development`
-3. `database-design`
-4. `auth-billing-workflow`
-5. `nextjs-development`
-6. `supabase-development`
+2. `database-design`
+3. `auth-billing-workflow`
+4. `nextjs-development`
+5. `supabase-development`
 
-Example V2 structure:
+Candidate future structure:
 
 ```text
 skills/
 ├── flutter-development/
-├── backend-api-development/
 ├── database-design/
 ├── auth-billing-workflow/
 ├── nextjs-development/
@@ -1346,9 +1363,9 @@ skills/
 
 ---
 
-### 22.3 Starter Templates
+### 22.4 Starter Templates
 
-Add starter skeletons:
+Future V2.x may add starter skeletons:
 
 ```text
 starters/
@@ -1365,9 +1382,9 @@ Starter templates should include only minimal app scaffolding and AI docs integr
 
 ---
 
-### 22.4 OpenAPI Workflow
+### 22.5 OpenAPI Workflow
 
-Add:
+Implemented:
 
 ```text
 skills/api-contract-design/
@@ -1397,9 +1414,9 @@ Contract test
 
 ---
 
-### 22.5 Database Migration Workflow
+### 22.6 Database Migration Workflow
 
-Add:
+Future V2.x may add:
 
 ```text
 skills/database-migration/
@@ -1419,9 +1436,9 @@ Checklist:
 
 ---
 
-### 22.6 Security Review Workflow
+### 22.7 Security Review Workflow
 
-Add:
+Future V2.x may add:
 
 ```text
 skills/security-review/
@@ -1444,9 +1461,9 @@ Scope:
 
 ---
 
-### 22.7 Release Automation
+### 22.8 Release Automation
 
-Add:
+Future V2.x may add:
 
 ```text
 skills/release-management/
@@ -1464,9 +1481,9 @@ Outputs:
 
 ---
 
-### 22.8 GitHub Integration
+### 22.9 GitHub Integration
 
-Add:
+Manual issue and pull request templates exist in `.github/`. Future V2.x may add GitHub Actions automation:
 
 ```text
 .github/
@@ -1474,18 +1491,11 @@ Add:
 │   ├── ci.yml
 │   ├── test.yml
 │   └── release.yml
-├── PULL_REQUEST_TEMPLATE.md
-└── ISSUE_TEMPLATE/
-    ├── feature_request.md
-    ├── bug_report.md
-    └── task.md
 ```
 
 Purpose:
 
 - connect AI workflow to Git lifecycle,
-- standardize PR review,
-- standardize issue/task creation,
 - automate basic checks.
 
 ---
@@ -1521,7 +1531,7 @@ Deliverables:
 - README,
 - AGENTS.md,
 - project skeleton,
-- V2 placeholder directories.
+- V2 extension directories.
 
 Done Criteria:
 
@@ -1642,7 +1652,7 @@ Done Criteria:
 9. Create skills.
 10. Create workflows.
 11. Create prompts.
-12. Add V2 placeholder folders.
+12. Add V2 extension folders.
 13. Validate with one small project/feature.
 
 ---
@@ -1655,7 +1665,7 @@ Done Criteria:
 4. Should API contract use OpenAPI from V1 or start as optional?
 5. Should the first stack adapter be Flutter or generic frontend?
 6. Should backend adapter target NestJS, Laravel, Go, or generic REST API first?
-7. Should CLI be built with Node.js, Go, or Python in V2?
+7. How much real-project usage is enough before expanding the V2.x roadmap?
 8. Should the AI Dev OS be used as a copied skeleton or installed as submodule/package?
 9. Should V2 support multi-repo FE/BE or only monorepo first?
 10. Should security-review become V1 or remain V2?

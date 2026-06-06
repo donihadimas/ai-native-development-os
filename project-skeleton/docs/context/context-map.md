@@ -5,9 +5,11 @@ Use this file to choose the smallest useful context set for each task.
 ## Source of Truth
 
 - Product intent: `docs/product/vision.md` and `docs/product/prd.md`.
+- Feature PRDs: `docs/product/features/`.
 - System design: `docs/architecture/architecture.md`.
 - Technical decisions: `docs/adr/`.
 - Active work: `docs/tasks/`.
+- Review evidence: `docs/reviews/`.
 - API contracts and integration notes: `docs/api/`.
 - Code context: affected files and nearby tests in `frontend/` or `backend/`.
 

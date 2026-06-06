@@ -114,4 +114,6 @@ test("validateProject reports missing AI-ready paths", () => {
 
   assert.equal(result.ok, false);
   assert.ok(result.missing.includes("docs/product/vision.md"));
+  assert.ok(result.missing.includes("docs/product/features"));
+  assert.ok(result.missing.includes("docs/reviews"));
 });

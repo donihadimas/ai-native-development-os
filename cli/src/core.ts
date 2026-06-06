@@ -25,9 +25,11 @@ export const REQUIRED_PROJECT_PATHS = [
   "docs/context/context-map.md",
   "docs/product/vision.md",
   "docs/product/prd.md",
+  "docs/product/features",
   "docs/architecture/architecture.md",
   "docs/adr",
   "docs/tasks",
+  "docs/reviews",
   "docs/api",
   "frontend",
   "backend"

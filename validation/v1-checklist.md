@@ -8,7 +8,7 @@
 - [ ] `workflows/` exists.
 - [ ] `prompts/` exists.
 - [ ] `project-skeleton/` exists.
-- [ ] V2 placeholders exist: `cli/`, `starters/`, `.github/`.
+- [ ] V2 extension areas exist: `cli/`, `starters/`, `.github/`.
 - [ ] Major directories have README or clear documentation.
 
 ## FR-002 Skill System

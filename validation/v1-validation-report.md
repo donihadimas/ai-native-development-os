@@ -8,7 +8,7 @@ V1 has been implemented as a manual AI-Native Development OS repository. The val
 
 | Requirement | Status | Evidence |
 | --- | --- | --- |
-| FR-001 Repository Structure | Pass | Core directories, project skeleton, and V2 placeholders exist. |
+| FR-001 Repository Structure | Pass | Core directories, project skeleton, and V2 extension areas exist. |
 | FR-002 Skill System | Pass | All nine V1 skills have `SKILL.md` with standard metadata and required sections. |
 | FR-003 Template System | Pass | All eight required templates exist. |
 | FR-004 Reference System | Pass | Stack-agnostic references are separated under `references/`. |
@@ -35,7 +35,7 @@ A simulated Personal Habit Tracker project was generated in `validation/simulate
 
 ## Pain Points Observed
 
-- Template copying is repetitive and is a good V2 CLI candidate.
+- Template copying is repetitive and became the main V2 CLI use case.
 - API notes are enough for V1, but OpenAPI may become valuable once real FE/BE integration repeats.
 - Security is covered as principles and review checklist, but a dedicated security-review workflow can wait until real usage proves the need.
 

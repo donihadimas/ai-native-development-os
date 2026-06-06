@@ -1,3 +1,12 @@
-# GitHub Automation Placeholder
+# GitHub Templates
 
-V1 does not include GitHub workflows, issue templates, or pull request templates. This directory exists as a V2 extension point after the manual OS is validated in a real project.
+This directory contains manual issue and pull request templates for contributors.
+
+Included:
+
+- `PULL_REQUEST_TEMPLATE.md` - change summary, validation evidence, and safety checklist.
+- `ISSUE_TEMPLATE/feature_request.md` - feature requests with scope and validation notes.
+- `ISSUE_TEMPLATE/bug_report.md` - bug reports with reproduction and environment details.
+- `ISSUE_TEMPLATE/task.md` - small implementation tasks with acceptance criteria.
+
+GitHub Actions automation is intentionally not included yet. CI, test, and release workflows remain deferred to V2.x after the current CLI-assisted workflow is validated in real projects.

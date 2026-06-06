@@ -7,9 +7,11 @@ This skeleton is a generic fullstack project shell for AI-native development. Co
 - `AGENTS.md` - primary coding-agent instructions.
 - `CLAUDE.md` - optional compatibility instructions for Claude-style agents.
 - `docs/product/` - vision and PRD.
+- `docs/product/features/` - feature-level PRD stubs created by `aios feature`.
 - `docs/architecture/` - system architecture.
 - `docs/adr/` - architecture decision records.
 - `docs/tasks/` - small implementation-ready tasks.
+- `docs/reviews/` - review reports for implemented tasks or changes.
 - `docs/api/` - API contracts or integration notes.
 - `docs/context/context-map.md` - context routing guide.
 - `frontend/` - frontend application placeholder.
@@ -23,3 +25,4 @@ This skeleton is a generic fullstack project shell for AI-native development. Co
 4. Record important technical decisions in `docs/adr/`.
 5. Create small tasks in `docs/tasks/`.
 6. Ask the agent to implement one task at a time.
+7. Save review evidence in `docs/reviews/` before marking work done.
