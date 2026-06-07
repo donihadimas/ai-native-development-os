@@ -14,15 +14,20 @@ This skeleton is a generic fullstack project shell for AI-native development. Co
 - `docs/reviews/` - review reports for implemented tasks or changes.
 - `docs/api/` - API contracts or integration notes.
 - `docs/context/context-map.md` - context routing guide.
+- `docs/context/development-start.md` - first-run guide for AI-native development.
+- `.aios/` - local AIOS workflow kit with skills, prompts, references, templates, and workflows.
 - `frontend/` - frontend application placeholder.
 - `backend/` - backend application placeholder.
 
 ## First Use
 
 1. Fill `docs/product/vision.md`.
-2. Generate or write `docs/product/prd.md`.
-3. Generate or write `docs/architecture/architecture.md`.
-4. Record important technical decisions in `docs/adr/`.
-5. Create small tasks in `docs/tasks/`.
-6. Ask the agent to implement one task at a time.
-7. Save review evidence in `docs/reviews/` before marking work done.
+2. Ask Codex to read `AGENTS.md` and `.aios/prompts/01-generate-prd.md`.
+3. Generate or write `docs/product/prd.md`.
+4. Generate or write `docs/architecture/architecture.md`.
+5. Record important technical decisions in `docs/adr/`.
+6. Create small tasks in `docs/tasks/`.
+7. Ask the agent to implement one task at a time.
+8. Save review evidence in `docs/reviews/` before marking work done.
+
+Run `aios next` from the project root to see the next recommended step.

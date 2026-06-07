@@ -19,19 +19,23 @@ Use this project when you want to:
 
 - V1 manual workflow is complete and usable by copying `project-skeleton/` and using the prompts, skills, templates, references, and workflows directly.
 - V2 assisted workflow is implemented as a focused Node.js CLI in `cli/`.
+- V2.x workflow extensions are implemented for AI docs only starters, database migration planning, security review, release preparation, OpenAPI generation, and GitHub Actions dry-run automation.
+- Ready-to-use project generation is implemented: `aios init`, `starter`, and `adopt` install a local `.aios/` workflow kit by default.
 - The CLI is designed for publishing as `@donihadimas/aios`.
-- V2.x remains intentionally deferred for stack-specific starters, database migration workflow, dedicated security-review workflow, GitHub Actions automation, and release automation.
+- V3 remains intentionally deferred for productized platform capabilities such as an interactive CLI, skill installer, health checker, dashboard, and GitHub Issues integration.
 
 ## What Is Included
 
 - `skills/` - reusable operating procedures for AI agents.
-- `templates/` - document templates for PRD, architecture, ADR, task, review, testing, implementation plans, and OpenAPI contracts.
+- `templates/` - document templates for PRD, architecture, ADR, task, review, testing, implementation plans, OpenAPI contracts, migration plans, security reviews, release notes, and changelog drafts.
 - `references/` - stable engineering principles and standards.
 - `workflows/` - end-to-end development flows.
 - `prompts/` - thin prompt wrappers that route agents to the right artifacts.
+- `aios-kit/` - source for the local `.aios/` workflow kit copied into generated projects.
 - `project-skeleton/` - a copy-ready AI-ready project structure.
-- `cli/` - the `aios` helper CLI for skeleton creation, adoption, document generation, numbering, and validation.
-- `.github/` - manual issue and pull request templates.
+- `starters/` - AI docs only starter shells for V2.x stack-oriented project setup.
+- `cli/` - the `aios` helper CLI for skeleton and starter creation, adoption, document generation, numbering, and validation.
+- `.github/` - manual issue and pull request templates plus lightweight CI, smoke test, and release dry-run workflows.
 - `validation/` - validation reports and smoke-test evidence.
 - `RELEASE.md` - GitHub release and npm publish procedure.
 
@@ -60,8 +64,11 @@ Create and validate a new project:
 ```bash
 aios init demo-project
 aios validate demo-project
+aios next demo-project
 cd demo-project
 ```
+
+`aios init` installs a local `.aios/` workflow kit by default, so the generated project is self-contained for Codex. Use `--lite` only when you want the old minimal skeleton behavior.
 
 Adopt an existing project without overwriting existing files:
 
@@ -75,9 +82,20 @@ Create planning and review documents:
 
 ```bash
 aios feature "Habit reminders"
+aios openapi "Habit API"
+aios migration "Create habits table"
+aios security "Habit API"
 aios adr "Use server date for completion"
 aios task "Implement habit API"
 aios review "Habit API"
+aios release "0.3.0"
+```
+
+Start from a lightweight V2.x starter:
+
+```bash
+aios starter fullstack-saas demo-saas
+aios validate demo-saas
 ```
 
 ## Generated Project Shape
@@ -99,7 +117,14 @@ project/
 │   ├── reviews/
 │   ├── api/
 │   └── context/
-│       └── context-map.md
+│       ├── context-map.md
+│       └── development-start.md
+├── .aios/
+│   ├── skills/
+│   ├── prompts/
+│   ├── references/
+│   ├── templates/
+│   └── workflows/
 ├── frontend/
 └── backend/
 ```
@@ -116,7 +141,7 @@ npm test
 npm pack --dry-run
 ```
 
-The package build copies `project-skeleton/` and `templates/` into bundled runtime assets through `cli/scripts/sync-assets.mjs`, then compiles TypeScript. See `validation/npm-publish-readiness-report.md` for the latest publish-readiness evidence.
+The package build copies `aios-kit/`, `project-skeleton/`, `templates/`, and `starters/` into bundled runtime assets through `cli/scripts/sync-assets.mjs`, then compiles TypeScript. See `validation/npm-publish-readiness-report.md` for the latest publish-readiness evidence.
 
 For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`.
 
@@ -132,6 +157,6 @@ For the full release process, including versioning, npm publish, Git tags, GitHu
 
 ## Boundaries
 
-The CLI only creates, copies, numbers, renders, and validates files. It does not generate application code, choose a framework, run Codex, install app dependencies, manage database migrations, create GitHub Actions, or publish releases.
+The CLI only creates, copies, numbers, renders, recommends next steps, and validates files. It does not generate application code, run Codex, install app dependencies, apply database migrations, or publish releases.
 
-Future V2.x work may add stack-specific starters, database migration workflow, dedicated security-review workflow, release automation, and GitHub Actions after the current CLI-assisted workflow is validated in real projects.
+The included starters are AI docs only shells. GitHub Actions are intentionally limited to tests, smoke checks, and npm package dry-runs.

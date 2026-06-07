@@ -7,8 +7,10 @@ const repoRoot = path.resolve(cliRoot, "..");
 const assetsRoot = path.join(cliRoot, "assets");
 
 const copies = [
+  [path.join(repoRoot, "aios-kit"), path.join(assetsRoot, "aios-kit")],
   [path.join(repoRoot, "project-skeleton"), path.join(assetsRoot, "project-skeleton")],
-  [path.join(repoRoot, "templates"), path.join(assetsRoot, "templates")]
+  [path.join(repoRoot, "templates"), path.join(assetsRoot, "templates")],
+  [path.join(repoRoot, "starters"), path.join(assetsRoot, "starters")]
 ];
 
 function copyDirectory(source, target) {

@@ -1,0 +1,89 @@
+---
+name: security-review
+description: Use when reviewing authentication, authorization, secrets, input validation, web risks, or payment-sensitive changes.
+---
+
+# Security Review
+
+## Goal
+
+Review security-sensitive changes with clear findings, mitigations, and release risk before work is marked done.
+
+## When to Use
+
+Use this skill when:
+
+- a change touches authentication or authorization,
+- user input, files, webhooks, or payments are involved,
+- secrets or environment variables are added,
+- API endpoints expose sensitive data,
+- a release needs a focused security pass.
+
+## Inputs
+
+Expected inputs:
+
+- active task or review target,
+- diff or affected files,
+- related PRD acceptance criteria,
+- API contracts,
+- architecture, ADRs, and security principles.
+
+## Outputs
+
+Expected outputs:
+
+- security review report in `docs/security/`,
+- prioritized findings,
+- mitigation checklist,
+- residual risk summary,
+- approval or revision required decision.
+
+## Process
+
+Step-by-step process:
+
+1. Read the active task, affected files, and relevant contracts.
+2. Identify trust boundaries, roles, inputs, secrets, and external integrations.
+3. Review authentication, authorization, validation, output encoding, rate limits, and audit needs.
+4. Create a report using `templates/security-review-report.template.md`.
+5. Mark findings by severity and link them to concrete remediation.
+6. Record residual risk and whether release should proceed.
+7. Escalate architecture, dependency, or policy decisions to the human owner.
+
+## Rules
+
+Hard rules:
+
+- Do not approve security-sensitive work without checking auth and validation.
+- Do not store secrets in source code.
+- Do not expose internal errors or sensitive data in responses.
+- Do not assume client-side checks replace server-side enforcement.
+- Do not invent compliance guarantees that were not verified.
+
+## Quality Checklist
+
+Before finishing, verify:
+
+- [ ] Auth and authorization were reviewed.
+- [ ] Input validation and output handling were reviewed.
+- [ ] Secrets and environment handling were reviewed.
+- [ ] High-risk integrations were named.
+- [ ] Findings are actionable.
+- [ ] Residual risk is explicit.
+
+## Failure Modes
+
+Watch out for:
+
+- missing role checks,
+- trusting client input,
+- leaking stack traces or tokens,
+- webhook or payment replay risks,
+- security reports with vague recommendations.
+
+## Example Prompt
+
+```text
+Use the security-review skill to review the auth endpoint changes and save findings in docs/security/auth-endpoints-security-review.md.
+```

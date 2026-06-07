@@ -11,13 +11,14 @@ Use this file to choose the smallest useful context set for each task.
 - Active work: `docs/tasks/`.
 - Review evidence: `docs/reviews/`.
 - API contracts and integration notes: `docs/api/`.
+- Local AIOS workflow kit: `.aios/`.
 - Code context: affected files and nearby tests in `frontend/` or `backend/`.
 
 ## Task Routing
 
 ### New Feature
 
-Read the active task, relevant PRD section, related ADRs, API docs if frontend/backend integration is involved, and affected modules.
+Read the active task, relevant PRD section, related ADRs, API docs if frontend/backend integration is involved, `.aios/workflows/new-feature.workflow.md`, and affected modules.
 
 ### Bugfix
 
@@ -29,7 +30,7 @@ Read the refactor task, architecture document, related ADRs, affected modules, a
 
 ### Review
 
-Read the diff, active task acceptance criteria, relevant ADRs, testing evidence, and changed files.
+Read the diff, active task acceptance criteria, relevant ADRs, testing evidence, `.aios/skills/code-review/SKILL.md`, and changed files.
 
 ## Anti-Patterns
 

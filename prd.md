@@ -1286,7 +1286,7 @@ Mitigation:
 
 ## 22. V2 Scope — Assisted Workflow and Automation
 
-V2 is active in version `0.2.0` as a focused assisted workflow upgrade after V1 manual validation. Real-project usage remains the next validation milestone before expanding into V2.x automation.
+V2 is active as a focused assisted workflow upgrade after V1 manual validation. V2.x workflow extensions are implemented as lightweight docs, templates, starters, CLI file generators, local `.aios/` workflow kits, and GitHub dry-run automation. Real-project usage remains the next validation milestone before considering V3 productized platform features.
 
 V2 goal:
 
@@ -1300,24 +1300,78 @@ Implemented minimal CLI:
 
 ```bash
 aios init <project-name>
+aios init <project-name> --lite
+aios starter <starter-name> <project-name>
+aios starter <starter-name> <project-name> --lite
 aios adopt [project-path]
+aios install-kit [project-path]
 aios feature <feature-name>
 aios adr <decision-name>
 aios task <task-name>
 aios review <name>
+aios openapi <api-name>
+aios migration <migration-name>
+aios security <review-name>
+aios release <release-name>
 aios validate [project-path]
+aios validate [project-path] --lite
+aios next [project-path]
 ```
 
 CLI responsibilities:
 
 - copy project skeleton,
+- install local `.aios/` workflow kit by default,
+- copy AI docs only starters,
+- adopt AIOS docs and `.aios/` into existing projects without overwriting files,
 - create feature docs,
+- create OpenAPI contracts,
 - create ADR from template,
 - create task from template,
 - create review report,
-- validate folder structure.
+- create migration plans,
+- create security review reports,
+- create release notes and changelog drafts,
+- validate folder structure and required `.aios/` workflow kit files,
+- recommend the next development step.
 
 CLI must not become a complex orchestration engine in V2.
+
+### 22.1.1 Ready-to-Use Local Workflow Kit
+
+Implemented:
+
+```text
+aios-kit/
+├── skills/
+├── prompts/
+├── references/
+├── templates/
+└── workflows/
+```
+
+Generated projects include the local workflow kit at `.aios/` by default:
+
+```text
+project/
+├── AGENTS.md
+├── docs/
+├── .aios/
+│   ├── skills/
+│   ├── prompts/
+│   ├── references/
+│   ├── templates/
+│   └── workflows/
+├── frontend/
+└── backend/
+```
+
+Purpose:
+
+- make generated projects self-contained for Codex,
+- avoid requiring users to reopen the AIOS repository while working in a generated project,
+- preserve lightweight output with `--lite` when needed,
+- keep `.aios/` limited to workflow assets, not app code or repo metadata.
 
 ---
 
@@ -1338,9 +1392,9 @@ Purpose:
 
 ---
 
-### 22.3 Future Stack Adapters
+### 22.3 Stack Adapters
 
-Future V2.x may add stack-specific skills and references after repeated real-project usage proves the need.
+Stack-specific application adapters remain deferred until repeated real-project usage proves the need. V2.x implements AI docs only starter shells instead of framework code.
 
 Candidate priority:
 
@@ -1365,7 +1419,7 @@ skills/
 
 ### 22.4 Starter Templates
 
-Future V2.x may add starter skeletons:
+Implemented AI docs only starter skeletons:
 
 ```text
 starters/
@@ -1378,7 +1432,7 @@ starters/
 └── fullstack-saas/
 ```
 
-Starter templates should include only minimal app scaffolding and AI docs integration.
+Starter templates include only placeholders and AI docs integration. They do not include framework code or dependencies.
 
 ---
 
@@ -1416,12 +1470,13 @@ Contract test
 
 ### 22.6 Database Migration Workflow
 
-Future V2.x may add:
+Implemented:
 
 ```text
 skills/database-migration/
 workflows/database-migration.workflow.md
 templates/migration-plan.template.md
+prompts/10-plan-database-migration.md
 ```
 
 Checklist:
@@ -1438,12 +1493,13 @@ Checklist:
 
 ### 22.7 Security Review Workflow
 
-Future V2.x may add:
+Implemented:
 
 ```text
 skills/security-review/
 workflows/security-review.workflow.md
 templates/security-review-report.template.md
+prompts/11-review-security.md
 ```
 
 Scope:
@@ -1461,15 +1517,16 @@ Scope:
 
 ---
 
-### 22.8 Release Automation
+### 22.8 Release Preparation and Dry-Run Automation
 
-Future V2.x may add:
+Implemented release preparation:
 
 ```text
 skills/release-management/
 templates/release-note.template.md
 templates/changelog.template.md
 workflows/release.workflow.md
+prompts/12-plan-release.md
 ```
 
 Outputs:
@@ -1479,11 +1536,13 @@ Outputs:
 - deployment checklist,
 - rollback checklist.
 
+Publishing remains manual in V2.x. GitHub automation performs tests and dry-runs only.
+
 ---
 
 ### 22.9 GitHub Integration
 
-Manual issue and pull request templates exist in `.github/`. Future V2.x may add GitHub Actions automation:
+Manual issue and pull request templates exist in `.github/`. Implemented GitHub Actions automation:
 
 ```text
 .github/
@@ -1496,7 +1555,9 @@ Manual issue and pull request templates exist in `.github/`. Future V2.x may add
 Purpose:
 
 - connect AI workflow to Git lifecycle,
-- automate basic checks.
+- automate basic checks,
+- run manual smoke tests,
+- run npm package dry-runs without publishing.
 
 ---
 

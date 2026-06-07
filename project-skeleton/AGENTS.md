@@ -12,6 +12,14 @@ Do not code before reading the active task file.
 
 Use `docs/context/context-map.md` to decide which documents to read. Do not read the whole repository by default.
 
+## Local AIOS Kit
+
+When `.aios/` is installed, use `.aios/skills/*/SKILL.md` when a task matches a reusable workflow.
+Use `.aios/prompts/` for manual AI workflow prompts.
+Use `.aios/templates/` when creating docs.
+Use `.aios/references/` for stable engineering guidance.
+Use `.aios/workflows/` to follow development sequences.
+
 ## Required Before Implementation
 
 1. Read the active task in `docs/tasks/`.

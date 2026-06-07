@@ -6,12 +6,15 @@ export type TemplateValues = Record<string, string | number | undefined>;
 export interface ValidationResult {
   ok: boolean;
   missing: string[];
+  warnings: string[];
 }
 
 export interface RuntimePaths {
   root: string;
+  aiosKit: string;
   projectSkeleton: string;
   templates: string;
+  starters: string;
 }
 
 export interface AdoptResult {
@@ -23,6 +26,7 @@ export const REQUIRED_PROJECT_PATHS = [
   "AGENTS.md",
   "docs",
   "docs/context/context-map.md",
+  "docs/context/development-start.md",
   "docs/product/vision.md",
   "docs/product/prd.md",
   "docs/product/features",
@@ -33,6 +37,25 @@ export const REQUIRED_PROJECT_PATHS = [
   "docs/api",
   "frontend",
   "backend"
+];
+
+export const OPTIONAL_V2X_PROJECT_PATHS = [
+  "docs/security",
+  "docs/releases",
+  "docs/database/migrations"
+];
+
+export const REQUIRED_AIOS_KIT_PATHS = [
+  ".aios/skills/context-management/SKILL.md",
+  ".aios/skills/implementation-planner/SKILL.md",
+  ".aios/skills/task-breakdown/SKILL.md",
+  ".aios/skills/testing/SKILL.md",
+  ".aios/skills/code-review/SKILL.md",
+  ".aios/prompts/01-generate-prd.md",
+  ".aios/references/context-principles.md",
+  ".aios/templates/task.template.md",
+  ".aios/workflows/new-feature.workflow.md",
+  ".aios/workflows/review.workflow.md"
 ];
 
 export function getOsRoot(): string {
@@ -46,20 +69,26 @@ export function getRuntimePaths(): RuntimePaths {
 
   if (
     fs.existsSync(path.join(packageAssetsRoot, "project-skeleton")) &&
-    fs.existsSync(path.join(packageAssetsRoot, "templates"))
+    fs.existsSync(path.join(packageAssetsRoot, "aios-kit")) &&
+    fs.existsSync(path.join(packageAssetsRoot, "templates")) &&
+    fs.existsSync(path.join(packageAssetsRoot, "starters"))
   ) {
     return {
       root: packageAssetsRoot,
+      aiosKit: path.join(packageAssetsRoot, "aios-kit"),
       projectSkeleton: path.join(packageAssetsRoot, "project-skeleton"),
-      templates: path.join(packageAssetsRoot, "templates")
+      templates: path.join(packageAssetsRoot, "templates"),
+      starters: path.join(packageAssetsRoot, "starters")
     };
   }
 
   const repoRoot = path.resolve(packageRoot, "..");
   return {
     root: repoRoot,
+    aiosKit: path.join(repoRoot, "aios-kit"),
     projectSkeleton: path.join(repoRoot, "project-skeleton"),
-    templates: path.join(repoRoot, "templates")
+    templates: path.join(repoRoot, "templates"),
+    starters: path.join(repoRoot, "starters")
   };
 }
 
@@ -146,6 +175,10 @@ export function adoptSkeleton(source: string, target: string): AdoptResult {
   return result;
 }
 
+export function installAiosKit(source: string, projectPath: string): AdoptResult {
+  return adoptSkeleton(source, path.join(projectPath, ".aios"));
+}
+
 function copyMissingEntries(source: string, target: string, root: string, result: AdoptResult): void {
   fs.mkdirSync(target, { recursive: true });
 
@@ -188,13 +221,28 @@ export function writeRenderedTemplate(options: {
   fs.writeFileSync(options.targetPath, rendered, "utf8");
 }
 
-export function validateProject(projectPath: string): ValidationResult {
-  const missing = REQUIRED_PROJECT_PATHS.filter((relativePath) => {
+export function validateProject(projectPath: string, options: { lite?: boolean } = {}): ValidationResult {
+  const requiredPaths = options.lite ? REQUIRED_PROJECT_PATHS : [...REQUIRED_PROJECT_PATHS, ...REQUIRED_AIOS_KIT_PATHS];
+  const missing = requiredPaths.filter((relativePath) => {
     return !fs.existsSync(path.join(projectPath, relativePath));
   });
 
+  const warnings = OPTIONAL_V2X_PROJECT_PATHS.filter((relativePath) => {
+    return !fs.existsSync(path.join(projectPath, relativePath));
+  }).map((relativePath) => `Optional V2.x path not found: ${relativePath}`);
+
+  const apiDirectory = path.join(projectPath, "docs", "api");
+  const hasOpenApiContract =
+    fs.existsSync(apiDirectory) &&
+    fs.readdirSync(apiDirectory).some((file) => file.endsWith(".openapi.yaml") || file === "openapi.yaml");
+
+  if (!hasOpenApiContract) {
+    warnings.push("Optional V2.x OpenAPI contract not found in docs/api/");
+  }
+
   return {
     ok: missing.length === 0,
-    missing
+    missing,
+    warnings
   };
 }

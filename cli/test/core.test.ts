@@ -20,15 +20,19 @@ import {
 test("getOsRoot resolves the repository root from compiled CLI files", () => {
   const root = getOsRoot();
 
+  assert.ok(fs.existsSync(path.join(root, "aios-kit")));
   assert.ok(fs.existsSync(path.join(root, "project-skeleton")));
   assert.ok(fs.existsSync(path.join(root, "templates")));
+  assert.ok(fs.existsSync(path.join(root, "starters")));
 });
 
 test("getRuntimePaths resolves bundled package assets when available", () => {
   const runtimePaths = getRuntimePaths();
 
+  assert.ok(fs.existsSync(runtimePaths.aiosKit));
   assert.ok(fs.existsSync(runtimePaths.projectSkeleton));
   assert.ok(fs.existsSync(runtimePaths.templates));
+  assert.ok(fs.existsSync(runtimePaths.starters));
 });
 
 test("slugify creates filesystem-safe slugs", () => {
@@ -116,4 +120,34 @@ test("validateProject reports missing AI-ready paths", () => {
   assert.ok(result.missing.includes("docs/product/vision.md"));
   assert.ok(result.missing.includes("docs/product/features"));
   assert.ok(result.missing.includes("docs/reviews"));
+  assert.ok(result.missing.includes(".aios/skills/context-management/SKILL.md"));
+  assert.ok(result.warnings.includes("Optional V2.x path not found: docs/security"));
+});
+
+test("validateProject can ignore local AIOS kit in lite mode", () => {
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-lite-"));
+  for (const relativePath of [
+    "docs/context",
+    "docs/product/features",
+    "docs/architecture",
+    "docs/adr",
+    "docs/tasks",
+    "docs/reviews",
+    "docs/api",
+    "frontend",
+    "backend"
+  ]) {
+    fs.mkdirSync(path.join(project, relativePath), { recursive: true });
+  }
+  fs.writeFileSync(path.join(project, "AGENTS.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "context", "context-map.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "context", "development-start.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "product", "vision.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "product", "prd.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "architecture", "architecture.md"), "");
+
+  const result = validateProject(project, { lite: true });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.missing.includes(".aios/skills/context-management/SKILL.md"), false);
 });
