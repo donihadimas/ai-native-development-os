@@ -3,6 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import packageJson from "../package.json" with { type: "json" };
 import { run } from "../src/index.js";
 import type { RuntimePaths } from "../src/core.js";
 
@@ -21,10 +22,16 @@ test("help explains the CLI purpose and available commands", () => {
   const output = run(["help"], { runtimePaths, cwd: tempCwd() });
 
   assert.match(output, /AIOS helps you create and maintain an AI-ready project structure/);
+  assert.match(output, /aios -v/);
   assert.match(output, /aios init <project-name>/);
   assert.match(output, /aios adopt \[project-path\]/);
   assert.match(output, /aios validate \[project-path\]/);
   assert.match(output, /Typical workflow:/);
+});
+
+test("version commands show the installed CLI version", () => {
+  assert.equal(run(["-v"], { runtimePaths, cwd: tempCwd() }), `aios ${packageJson.version}`);
+  assert.equal(run(["--version"], { runtimePaths, cwd: tempCwd() }), `aios ${packageJson.version}`);
 });
 
 test("init copies the project skeleton", () => {

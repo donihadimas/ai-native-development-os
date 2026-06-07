@@ -20,6 +20,15 @@ interface CommandContext {
   cwd: string;
 }
 
+function packageVersion(): string {
+  const compiledSourceDir = path.dirname(new URL(import.meta.url).pathname);
+  const packageRoot = path.resolve(compiledSourceDir, "../..");
+  const packageJsonPath = path.join(packageRoot, "package.json");
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8")) as { version?: string };
+
+  return packageJson.version ?? "0.0.0";
+}
+
 function usage(): string {
   return `AI-Native Development OS CLI
 
@@ -36,6 +45,9 @@ Use it when you want to:
   - validate that a project has the expected AI workflow structure.
 
 Usage:
+  aios -v
+    Show the installed AIOS CLI version.
+
   aios init <project-name>
     Create a new AI-ready project from the bundled skeleton.
 
@@ -58,6 +70,13 @@ Usage:
   aios validate [project-path]
     Check whether a project has the required AI-ready structure.
     Defaults to the current directory.
+
+Other options:
+  aios --version
+    Same as aios -v.
+
+  aios --help
+    Show this help message.
 
 Typical workflow:
   aios init demo-project
@@ -200,6 +219,10 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
     case "--help":
     case "-h":
       return usage();
+    case "version":
+    case "--version":
+    case "-v":
+      return `aios ${packageVersion()}`;
     case "init":
       return commandInit(ctx, name);
     case "adopt":
