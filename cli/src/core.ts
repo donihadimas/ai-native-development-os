@@ -11,7 +11,7 @@ export interface ValidationResult {
 
 export interface RuntimePaths {
   root: string;
-  aiosKit: string;
+  aiosKitSource: string;
   projectSkeleton: string;
   templates: string;
   starters: string;
@@ -46,6 +46,10 @@ export const OPTIONAL_V2X_PROJECT_PATHS = [
 ];
 
 export const REQUIRED_AIOS_KIT_PATHS = [
+  ".aios/skill-router.md",
+  ".aios/commands/generate-prd.md",
+  ".aios/commands/implement-task.md",
+  ".aios/commands/review-code.md",
   ".aios/skills/context-management/SKILL.md",
   ".aios/skills/implementation-planner/SKILL.md",
   ".aios/skills/task-breakdown/SKILL.md",
@@ -56,6 +60,16 @@ export const REQUIRED_AIOS_KIT_PATHS = [
   ".aios/templates/task.template.md",
   ".aios/workflows/new-feature.workflow.md",
   ".aios/workflows/review.workflow.md"
+];
+
+export const AIOS_KIT_ENTRIES = [
+  "skill-router.md",
+  "commands",
+  "skills",
+  "prompts",
+  "references",
+  "templates",
+  "workflows"
 ];
 
 export function getOsRoot(): string {
@@ -70,12 +84,13 @@ export function getRuntimePaths(): RuntimePaths {
   if (
     fs.existsSync(path.join(packageAssetsRoot, "project-skeleton")) &&
     fs.existsSync(path.join(packageAssetsRoot, "aios-kit")) &&
+    fs.existsSync(path.join(packageAssetsRoot, "aios-kit", "skill-router.md")) &&
     fs.existsSync(path.join(packageAssetsRoot, "templates")) &&
     fs.existsSync(path.join(packageAssetsRoot, "starters"))
   ) {
     return {
       root: packageAssetsRoot,
-      aiosKit: path.join(packageAssetsRoot, "aios-kit"),
+      aiosKitSource: path.join(packageAssetsRoot, "aios-kit"),
       projectSkeleton: path.join(packageAssetsRoot, "project-skeleton"),
       templates: path.join(packageAssetsRoot, "templates"),
       starters: path.join(packageAssetsRoot, "starters")
@@ -85,7 +100,7 @@ export function getRuntimePaths(): RuntimePaths {
   const repoRoot = path.resolve(packageRoot, "..");
   return {
     root: repoRoot,
-    aiosKit: path.join(repoRoot, "aios-kit"),
+    aiosKitSource: repoRoot,
     projectSkeleton: path.join(repoRoot, "project-skeleton"),
     templates: path.join(repoRoot, "templates"),
     starters: path.join(repoRoot, "starters")
@@ -175,11 +190,40 @@ export function adoptSkeleton(source: string, target: string): AdoptResult {
   return result;
 }
 
-export function installAiosKit(source: string, projectPath: string): AdoptResult {
-  return adoptSkeleton(source, path.join(projectPath, ".aios"));
+export function installAiosKit(sourceRoot: string, projectPath: string): AdoptResult {
+  const targetRoot = path.join(projectPath, ".aios");
+  const result: AdoptResult = {
+    created: [],
+    skipped: []
+  };
+
+  for (const entry of AIOS_KIT_ENTRIES) {
+    const sourcePath = path.join(sourceRoot, entry);
+    if (!fs.existsSync(sourcePath)) {
+      throw new Error(`Missing AIOS kit source: ${sourcePath}`);
+    }
+    copyMissingEntries(sourcePath, path.join(targetRoot, entry), targetRoot, result);
+  }
+
+  return result;
 }
 
 function copyMissingEntries(source: string, target: string, root: string, result: AdoptResult): void {
+  const sourceStat = fs.statSync(source);
+  const relativeRootPath = path.relative(root, target) || ".";
+
+  if (sourceStat.isFile()) {
+    if (fs.existsSync(target)) {
+      result.skipped.push(relativeRootPath);
+      return;
+    }
+
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.copyFileSync(source, target);
+    result.created.push(relativeRootPath);
+    return;
+  }
+
   fs.mkdirSync(target, { recursive: true });
 
   for (const entry of fs.readdirSync(source, { withFileTypes: true })) {

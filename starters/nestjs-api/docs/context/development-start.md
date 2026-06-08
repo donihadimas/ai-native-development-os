@@ -16,6 +16,8 @@ Use this guide after creating or adopting a project with AIOS.
 
 ```bash
 aios next
+aios command-list
+aios command generate-prd
 aios feature "Feature name"
 aios adr "Decision name"
 aios task "Task name"
@@ -30,5 +32,5 @@ aios release "Release name"
 
 ```text
 Read AGENTS.md, docs/context/context-map.md, and docs/product/vision.md.
-Then use .aios/prompts/01-generate-prd.md to generate docs/product/prd.md.
+Then read .aios/skill-router.md and use .aios/commands/generate-prd.md to generate docs/product/prd.md.
 ```

@@ -7,13 +7,29 @@ const repoRoot = path.resolve(cliRoot, "..");
 const assetsRoot = path.join(cliRoot, "assets");
 
 const copies = [
-  [path.join(repoRoot, "aios-kit"), path.join(assetsRoot, "aios-kit")],
   [path.join(repoRoot, "project-skeleton"), path.join(assetsRoot, "project-skeleton")],
   [path.join(repoRoot, "templates"), path.join(assetsRoot, "templates")],
   [path.join(repoRoot, "starters"), path.join(assetsRoot, "starters")]
 ];
 
+const kitEntries = [
+  "skill-router.md",
+  "commands",
+  "skills",
+  "prompts",
+  "references",
+  "templates",
+  "workflows"
+];
+
 function copyDirectory(source, target) {
+  const sourceStat = fs.statSync(source);
+  if (sourceStat.isFile()) {
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.copyFileSync(source, target);
+    return;
+  }
+
   fs.mkdirSync(target, { recursive: true });
 
   for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
@@ -34,6 +50,15 @@ fs.mkdirSync(assetsRoot, { recursive: true });
 for (const [source, target] of copies) {
   if (!fs.existsSync(source)) {
     throw new Error(`Missing asset source: ${source}`);
+  }
+  copyDirectory(source, target);
+}
+
+for (const entry of kitEntries) {
+  const source = path.join(repoRoot, entry);
+  const target = path.join(assetsRoot, "aios-kit", entry);
+  if (!fs.existsSync(source)) {
+    throw new Error(`Missing AIOS kit asset source: ${source}`);
   }
   copyDirectory(source, target);
 }

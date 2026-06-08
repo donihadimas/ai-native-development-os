@@ -8,8 +8,8 @@ V2 has been implemented as a focused assisted workflow upgrade: a small Node.js 
 
 | Area | Status | Evidence |
 | --- | --- | --- |
-| CLI | Pass | `cli/src/` implements `aios init`, `starter`, `adopt`, `install-kit`, `feature`, `adr`, `task`, `review`, `openapi`, `migration`, `security`, `release`, `validate`, and `next`. |
-| CLI tests | Pass | `npm test` passes 28 Node test-runner tests. |
+| CLI | Pass | `cli/src/` implements `aios init`, `starter`, `adopt`, `install-kit`, `command-list`, `command`, `feature`, `adr`, `task`, `review`, `openapi`, `migration`, `security`, `release`, `validate`, and `next`. |
+| CLI tests | Pass | `npm test` passes 29 Node test-runner tests. |
 | Ready-to-use setup | Pass | Generated projects include `.aios/` workflow kit by default, with `--lite` available for minimal output. |
 | OpenAPI support | Pass | `templates/openapi.template.yaml`, `skills/api-contract-design`, `workflows/api-contract.workflow.md`, and `prompts/09-design-api-contract.md` exist. |
 | Backend API adapter | Pass | `skills/backend-api-development/SKILL.md` and `references/backend-api-standards.md` exist. |
@@ -30,7 +30,7 @@ npm test
 
 Result:
 
-- 28 tests passed.
+- 29 tests passed.
 - 0 tests failed.
 
 Covered behavior:
@@ -46,7 +46,7 @@ Covered behavior:
 - validation coverage for feature PRD and review report directories,
 - local `.aios/` kit installation and validation,
 - V2.x optional validation warnings,
-- `init`, `starter`, `adopt`, `install-kit`, `feature`, `adr`, `task`, `review`, `openapi`, `migration`, `security`, `release`, `validate`, and `next` command behavior,
+- `init`, `starter`, `adopt`, `install-kit`, `command-list`, `command`, `feature`, `adr`, `task`, `review`, `openapi`, `migration`, `security`, `release`, `validate`, and `next` command behavior,
 - runtime OS root resolution from compiled CLI files.
 
 ## Manual Smoke Test Evidence

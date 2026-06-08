@@ -14,7 +14,9 @@ Use `docs/context/context-map.md` to choose the smallest useful context set.
 
 ## Local AIOS Kit
 
+Before selecting a workflow, read `.aios/skill-router.md` when `.aios/` is installed.
 When `.aios/` is installed, use `.aios/skills/*/SKILL.md` when a task matches a reusable workflow.
+Use `.aios/commands/` as a local command palette when the user asks for a known workflow by name.
 Use `.aios/prompts/` for manual AI workflow prompts.
 Use `.aios/templates/` when creating docs.
 Use `.aios/references/` for stable engineering guidance.

@@ -230,6 +230,35 @@ aios install-kit path/to/project
 
 Use this when a project was created in lite mode or when `.aios/` needs to be refreshed with missing assets.
 
+### `aios command-list [project-path]`
+
+Lists portable AIOS command prompts available in `.aios/commands/`.
+
+```bash
+aios command-list
+aios command-list my-saas
+```
+
+Output:
+
+```text
+Available AIOS commands:
+- generate-prd
+- implement-task
+- review-code
+```
+
+### `aios command <name> [project-path]`
+
+Prints one portable AIOS command prompt. This is useful when an agent does not support native slash commands.
+
+```bash
+aios command generate-prd
+aios command review-code my-saas
+```
+
+The command is read-only. It prints the Markdown prompt so you can paste or reference it in Codex or another AI agent.
+
 ### `aios next [project-path]`
 
 Prints the next recommended development step without changing files.
@@ -384,6 +413,8 @@ my-project/
 │       ├── context-map.md
 │       └── development-start.md
 ├── .aios/
+│   ├── skill-router.md
+│   ├── commands/
 │   ├── skills/
 │   ├── prompts/
 │   ├── references/

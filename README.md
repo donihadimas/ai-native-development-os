@@ -31,7 +31,7 @@ Use this project when you want to:
 - `references/` - stable engineering principles and standards.
 - `workflows/` - end-to-end development flows.
 - `prompts/` - thin prompt wrappers that route agents to the right artifacts.
-- `aios-kit/` - source for the local `.aios/` workflow kit copied into generated projects.
+- `skill-router.md` and `commands/` - routing rules and portable command prompts for local AI workflows.
 - `project-skeleton/` - a copy-ready AI-ready project structure.
 - `starters/` - AI docs only starter shells for V2.x stack-oriented project setup.
 - `cli/` - the `aios` helper CLI for skeleton and starter creation, adoption, document generation, numbering, and validation.
@@ -120,6 +120,8 @@ project/
 │       ├── context-map.md
 │       └── development-start.md
 ├── .aios/
+│   ├── skill-router.md
+│   ├── commands/
 │   ├── skills/
 │   ├── prompts/
 │   ├── references/
@@ -141,7 +143,7 @@ npm test
 npm pack --dry-run
 ```
 
-The package build copies `aios-kit/`, `project-skeleton/`, `templates/`, and `starters/` into bundled runtime assets through `cli/scripts/sync-assets.mjs`, then compiles TypeScript. See `validation/npm-publish-readiness-report.md` for the latest publish-readiness evidence.
+The package build creates bundled `assets/aios-kit/` from the root workflow assets (`skill-router.md`, `commands/`, `skills/`, `prompts/`, `references/`, `templates/`, and `workflows/`), then copies `project-skeleton/`, `templates/`, and `starters/` through `cli/scripts/sync-assets.mjs`. See `validation/npm-publish-readiness-report.md` for the latest publish-readiness evidence.
 
 For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`.
 

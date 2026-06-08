@@ -68,6 +68,12 @@ Usage:
     Install or repair the local .aios workflow kit without overwriting
     existing files. Defaults to the current directory.
 
+  aios command-list [project-path]
+    List available local AIOS command prompts.
+
+  aios command <name> [project-path]
+    Print a local AIOS command prompt. Read-only.
+
   aios feature <feature-name>
     Create a feature PRD stub in docs/product/features/.
 
@@ -132,7 +138,7 @@ Existing project workflow:
 
 Next step after generating docs:
   Open the project with Codex and ask it to read AGENTS.md,
-  docs/context/context-map.md, and the active task before coding.
+  docs/context/context-map.md, .aios/skill-router.md, and the active task before coding.
 `;
 }
 
@@ -157,7 +163,7 @@ function commandInit(ctx: CommandContext, name: string | undefined, options: { l
   ensureEmptyOrMissingDirectory(target);
   copyDirectory(ctx.runtimePaths.projectSkeleton, target);
   if (!options.lite) {
-    installAiosKit(ctx.runtimePaths.aiosKit, target);
+    installAiosKit(ctx.runtimePaths.aiosKitSource, target);
   }
   return `Created AI-ready project at ${target}`;
 }
@@ -180,7 +186,7 @@ function commandStarter(
   ensureEmptyOrMissingDirectory(target);
   copyDirectory(source, target);
   if (!options.lite) {
-    installAiosKit(ctx.runtimePaths.aiosKit, target);
+    installAiosKit(ctx.runtimePaths.aiosKitSource, target);
   }
   return `Created AI-ready ${starter} starter at ${target}`;
 }
@@ -190,7 +196,7 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
   const result = adoptSkeleton(ctx.runtimePaths.projectSkeleton, projectPath);
   const kitResult = options.lite
     ? { created: [], skipped: [] }
-    : installAiosKit(ctx.runtimePaths.aiosKit, projectPath);
+    : installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath);
 
   const output = [
     `Adopted AI Dev OS structure in ${projectPath}`,
@@ -208,7 +214,7 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
 
 function commandInstallKit(ctx: CommandContext, projectPathArg: string | undefined): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
-  const result = installAiosKit(ctx.runtimePaths.aiosKit, projectPath);
+  const result = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath);
 
   return [
     `Installed AIOS workflow kit in ${path.join(projectPath, ".aios")}`,
@@ -216,6 +222,43 @@ function commandInstallKit(ctx: CommandContext, projectPathArg: string | undefin
     `Skipped existing: ${result.skipped.length}`,
     "Next step: run `aios validate` from the project root."
   ].join("\n");
+}
+
+function commandDirectory(ctx: CommandContext, projectPathArg: string | undefined): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const projectCommands = path.join(projectPath, ".aios", "commands");
+  if (fs.existsSync(projectCommands)) {
+    return projectCommands;
+  }
+  return path.join(ctx.runtimePaths.aiosKitSource, "commands");
+}
+
+function commandList(ctx: CommandContext, projectPathArg: string | undefined): string {
+  const directory = commandDirectory(ctx, projectPathArg);
+  if (!fs.existsSync(directory)) {
+    throw new Error(`AIOS commands directory not found: ${directory}`);
+  }
+
+  const commands = fs
+    .readdirSync(directory)
+    .filter((file) => file.endsWith(".md"))
+    .map((file) => path.basename(file, ".md"))
+    .sort();
+
+  return ["Available AIOS commands:", ...commands.map((command) => `- ${command}`)].join("\n");
+}
+
+function commandPrompt(ctx: CommandContext, name: string | undefined, projectPathArg: string | undefined): string {
+  const commandName = requireName(name, "command");
+  const slug = slugify(commandName);
+  const directory = commandDirectory(ctx, projectPathArg);
+  const commandPath = path.join(directory, `${slug}.md`);
+
+  if (!fs.existsSync(commandPath)) {
+    throw new Error(`Unknown AIOS command: ${commandName}`);
+  }
+
+  return fs.readFileSync(commandPath, "utf8").trimEnd();
 }
 
 function commandFeature(ctx: CommandContext, name: string | undefined): string {
@@ -476,6 +519,10 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return commandAdopt(ctx, name, { lite: parsed.lite });
     case "install-kit":
       return commandInstallKit(ctx, name);
+    case "command-list":
+      return commandList(ctx, name);
+    case "command":
+      return commandPrompt(ctx, name, secondName);
     case "feature":
       return commandFeature(ctx, name);
     case "adr":

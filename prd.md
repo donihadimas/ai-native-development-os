@@ -1305,6 +1305,8 @@ aios starter <starter-name> <project-name>
 aios starter <starter-name> <project-name> --lite
 aios adopt [project-path]
 aios install-kit [project-path]
+aios command-list [project-path]
+aios command <name> [project-path]
 aios feature <feature-name>
 aios adr <decision-name>
 aios task <task-name>
@@ -1324,6 +1326,7 @@ CLI responsibilities:
 - install local `.aios/` workflow kit by default,
 - copy AI docs only starters,
 - adopt AIOS docs and `.aios/` into existing projects without overwriting files,
+- list and print portable command prompts for agents without slash command support,
 - create feature docs,
 - create OpenAPI contracts,
 - create ADR from template,
@@ -1339,10 +1342,12 @@ CLI must not become a complex orchestration engine in V2.
 
 ### 22.1.1 Ready-to-Use Local Workflow Kit
 
-Implemented:
+Implemented from root workflow assets:
 
 ```text
-aios-kit/
+Root AIOS workflow assets
+├── skill-router.md
+├── commands/
 ├── skills/
 ├── prompts/
 ├── references/
@@ -1357,6 +1362,8 @@ project/
 ├── AGENTS.md
 ├── docs/
 ├── .aios/
+│   ├── skill-router.md
+│   ├── commands/
 │   ├── skills/
 │   ├── prompts/
 │   ├── references/
@@ -1370,6 +1377,7 @@ Purpose:
 
 - make generated projects self-contained for Codex,
 - avoid requiring users to reopen the AIOS repository while working in a generated project,
+- route requests to relevant skills without requiring native slash command support,
 - preserve lightweight output with `--lite` when needed,
 - keep `.aios/` limited to workflow assets, not app code or repo metadata.
 

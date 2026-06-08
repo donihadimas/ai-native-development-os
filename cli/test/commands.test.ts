@@ -10,7 +10,7 @@ import type { RuntimePaths } from "../src/core.js";
 const osRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../..");
 const runtimePaths: RuntimePaths = {
   root: osRoot,
-  aiosKit: path.join(osRoot, "aios-kit"),
+  aiosKitSource: osRoot,
   projectSkeleton: path.join(osRoot, "project-skeleton"),
   templates: path.join(osRoot, "templates"),
   starters: path.join(osRoot, "starters")
@@ -29,6 +29,8 @@ test("help explains the CLI purpose and available commands", () => {
   assert.match(output, /aios starter <starter-name> <project-name> \[--lite\]/);
   assert.match(output, /aios adopt \[project-path\]/);
   assert.match(output, /aios install-kit \[project-path\]/);
+  assert.match(output, /aios command-list \[project-path\]/);
+  assert.match(output, /aios command <name> \[project-path\]/);
   assert.match(output, /aios openapi <api-name>/);
   assert.match(output, /aios migration <migration-name>/);
   assert.match(output, /aios security <review-name>/);
@@ -50,6 +52,8 @@ test("init copies the project skeleton", () => {
 
   assert.match(output, /Created AI-ready project/);
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "skill-router.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "generate-prd.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "prompts", "01-generate-prd.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
@@ -115,8 +119,25 @@ test("install-kit adds missing local workflow assets without overwriting existin
 
   assert.match(output, /Installed AIOS workflow kit/);
   assert.equal(fs.readFileSync(customPrompt, "utf8"), "# Custom prompt\n");
+  assert.ok(fs.existsSync(path.join(project, ".aios", "skill-router.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "review-code.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "workflows", "review.workflow.md")));
+});
+
+test("command-list and command expose local workflow command prompts", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const listOutput = run(["command-list"], { runtimePaths, cwd: project });
+  assert.match(listOutput, /generate-prd/);
+  assert.match(listOutput, /implement-task/);
+  assert.match(listOutput, /review-code/);
+
+  const commandOutput = run(["command", "generate-prd"], { runtimePaths, cwd: project });
+  assert.match(commandOutput, /Command: Generate PRD/);
+  assert.match(commandOutput, /skills\/prd-generator\/SKILL.md/);
 });
 
 test("adr, task, and review create files in a generated project", () => {

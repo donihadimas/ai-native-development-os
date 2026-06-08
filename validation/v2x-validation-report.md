@@ -8,7 +8,9 @@ V2.x has been implemented as lightweight workflow extensions on top of the exist
 
 | Requirement | Status | Evidence |
 | --- | --- | --- |
-| Ready-to-use local kit | Pass | `aios-kit/` contains skills, prompts, references, templates, and workflows copied into generated projects as `.aios/`. |
+| Ready-to-use local kit | Pass | Root workflow assets are copied into generated projects as `.aios/`. |
+| Skill router | Pass | `skill-router.md` is installed as `.aios/skill-router.md` for intent-to-skill routing. |
+| Command palette | Pass | `commands/` is installed as `.aios/commands/`, and `aios command-list` / `aios command` expose portable prompts. |
 | Default full setup | Pass | `aios init`, `starter`, and `adopt` install `.aios/` by default. |
 | Lite mode | Pass | `--lite` skips `.aios/` for `init`, `starter`, `adopt`, and `validate`. |
 | Install kit command | Pass | `aios install-kit` installs or repairs `.aios/` without overwriting existing files. |
@@ -32,7 +34,7 @@ npm test
 
 Result:
 
-- 28 tests passed.
+- 29 tests passed.
 - 0 tests failed.
 
 ## Manual Smoke Coverage
@@ -45,6 +47,8 @@ Covered by CLI tests and manual workflow definition:
 - `aios init demo-project --lite`
 - `aios install-kit`
 - `aios next`
+- `aios command-list`
+- `aios command generate-prd`
 - `aios openapi "Habit API"`
 - `aios migration "Create habits table"`
 - `aios security "Habit API"`
