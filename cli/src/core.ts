@@ -12,6 +12,7 @@ export interface ValidationResult {
 export type SkillDelivery = "portable" | "native" | "both";
 export type AgentTarget = "codex" | "qwen" | "opencode" | "antigravity" | "generic";
 export type AgentScope = "repo" | "user";
+export type ProjectShape = "fullstack" | "frontend" | "backend" | "mobile" | "library" | "docs";
 
 export interface ProjectConfig {
   version: number;
@@ -22,6 +23,7 @@ export interface ProjectConfig {
   selectedAgents: AgentTarget[];
   selectedSkills: string[];
   agentScope: AgentScope;
+  projectShape: ProjectShape;
   starter?: string;
 }
 
@@ -59,12 +61,18 @@ export const PLANNING_SKILLS = [
 export const DELIVERY_SKILLS = ["testing", "code-review", "security-review", "release-management"];
 
 export const AGENT_TARGETS: AgentTarget[] = ["codex", "qwen", "opencode", "antigravity", "generic"];
+export const PROJECT_SHAPES: ProjectShape[] = ["fullstack", "frontend", "backend", "mobile", "library", "docs"];
 
-export const REQUIRED_PROJECT_PATHS = [
-  "AGENTS.md",
-  "frontend",
-  "backend"
-];
+export const REQUIRED_PROJECT_PATHS = ["AGENTS.md"];
+
+export const PROJECT_SHAPE_PATHS: Record<ProjectShape, string[]> = {
+  fullstack: ["frontend", "backend"],
+  frontend: ["frontend"],
+  backend: ["backend"],
+  mobile: ["mobile"],
+  library: ["src"],
+  docs: []
+};
 
 export const REQUIRED_DOCS_PATHS = [
   ".",
@@ -172,6 +180,7 @@ export function defaultProjectConfig(overrides: Partial<ProjectConfig> = {}): Pr
     selectedAgents: [],
     selectedSkills: CORE_SKILLS,
     agentScope: "repo",
+    projectShape: "fullstack",
     ...overrides
   };
 }
@@ -524,9 +533,14 @@ export function writeRenderedTemplate(options: {
   fs.writeFileSync(options.targetPath, rendered, "utf8");
 }
 
-export function validateProject(projectPath: string, options: { lite?: boolean } = {}): ValidationResult {
-  const config = readProjectConfig(projectPath);
+export function validateProject(projectPath: string, options: { lite?: boolean; projectShape?: ProjectShape } = {}): ValidationResult {
+  const currentConfig = readProjectConfig(projectPath);
+  const config = defaultProjectConfig({
+    ...currentConfig,
+    projectShape: options.projectShape ?? currentConfig.projectShape
+  });
   const docsRequired = REQUIRED_DOCS_PATHS.map((relativePath) => path.join(config.docsRoot, relativePath));
+  const shapeRequired = PROJECT_SHAPE_PATHS[config.projectShape] ?? PROJECT_SHAPE_PATHS.fullstack;
   const kitRequired =
     config.skillDelivery === "native"
       ? REQUIRED_AIOS_KIT_PATHS
@@ -543,8 +557,8 @@ export function validateProject(projectPath: string, options: { lite?: boolean }
         })
       : [];
   const requiredPaths = options.lite
-    ? [...REQUIRED_PROJECT_PATHS, ...docsRequired]
-    : [...REQUIRED_PROJECT_PATHS, ...docsRequired, ...kitRequired, ...nativeSkillRequired];
+    ? [...REQUIRED_PROJECT_PATHS, ...shapeRequired, ...docsRequired]
+    : [...REQUIRED_PROJECT_PATHS, ...shapeRequired, ...docsRequired, ...kitRequired, ...nativeSkillRequired];
   const missing = requiredPaths.filter((relativePath) => {
     return !fs.existsSync(path.join(projectPath, relativePath));
   });

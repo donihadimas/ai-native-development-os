@@ -1301,6 +1301,7 @@ Implemented minimal CLI:
 ```bash
 aios init <project-name>
 aios init <project-name> --lite
+aios init <project-name> --shape frontend|backend|mobile|library|docs
 aios starter <starter-name> <project-name>
 aios starter <starter-name> <project-name> --lite
 aios adopt [project-path]
@@ -1329,6 +1330,7 @@ CLI responsibilities:
 - install local `.aios/` workflow kit by default,
 - support interactive setup when the CLI is run without enough arguments,
 - support configurable docs location through `.aios/config.json`,
+- support configurable project shape so generated projects do not always require both `frontend/` and `backend/`,
 - install selected AIOS skills into native agent skill folders for Codex, Qwen Code, OpenCode, Antigravity, and generic Agent Skills,
 - copy AI docs only starters,
 - adopt AIOS docs and `.aios/` into existing projects without overwriting files,

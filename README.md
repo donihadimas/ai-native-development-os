@@ -8,7 +8,7 @@ This repository is not an application framework, SaaS starter, dashboard, or AI 
 
 Use this project when you want to:
 
-- start new frontend/backend projects with an AI-ready documentation structure,
+- start new fullstack, frontend-only, backend-only, mobile, library, or docs-only projects with an AI-ready documentation structure,
 - keep Codex or another coding agent grounded in explicit product and engineering context,
 - avoid repeating the same prompts and project setup across projects,
 - split implementation into small verifiable tasks,
@@ -79,6 +79,7 @@ aios agent-install demo-native --agents opencode,antigravity --skills testing
 ```
 
 Use `--docs-root .aios/project-docs` when you want project docs under `.aios/` instead of the default `docs/`.
+Use `--shape frontend|backend|mobile|library|docs` when a project should not create both `frontend/` and `backend/`.
 
 Adopt an existing project without overwriting existing files:
 

@@ -77,6 +77,46 @@ test("init --lite skips the local AIOS kit", () => {
   assert.match(output, /AI-ready structure validated/);
 });
 
+test("init supports project shapes and validate follows the configured shape", () => {
+  const cwd = tempCwd();
+
+  run(["init", "frontend-project", "--shape", "frontend"], { runtimePaths, cwd });
+  const frontendProject = path.join(cwd, "frontend-project");
+  assert.ok(fs.existsSync(path.join(frontendProject, "frontend")));
+  assert.equal(fs.existsSync(path.join(frontendProject, "backend")), false);
+  assert.match(run(["validate", "frontend-project"], { runtimePaths, cwd }), /AI-ready structure validated/);
+  assert.equal(JSON.parse(run(["config", "frontend-project"], { runtimePaths, cwd })).projectShape, "frontend");
+
+  run(["init", "backend-project", "--shape", "backend"], { runtimePaths, cwd });
+  const backendProject = path.join(cwd, "backend-project");
+  assert.ok(fs.existsSync(path.join(backendProject, "backend")));
+  assert.equal(fs.existsSync(path.join(backendProject, "frontend")), false);
+  assert.match(run(["validate", "backend-project"], { runtimePaths, cwd }), /AI-ready structure validated/);
+
+  run(["init", "mobile-project", "--shape", "mobile"], { runtimePaths, cwd });
+  assert.ok(fs.existsSync(path.join(cwd, "mobile-project", "mobile")));
+  assert.match(run(["validate", "mobile-project"], { runtimePaths, cwd }), /AI-ready structure validated/);
+
+  run(["init", "library-project", "--shape", "library"], { runtimePaths, cwd });
+  assert.ok(fs.existsSync(path.join(cwd, "library-project", "src")));
+  assert.match(run(["validate", "library-project"], { runtimePaths, cwd }), /AI-ready structure validated/);
+
+  run(["init", "docs-project", "--shape", "docs"], { runtimePaths, cwd });
+  assert.equal(fs.existsSync(path.join(cwd, "docs-project", "frontend")), false);
+  assert.equal(fs.existsSync(path.join(cwd, "docs-project", "backend")), false);
+  assert.match(run(["validate", "docs-project"], { runtimePaths, cwd }), /AI-ready structure validated/);
+});
+
+test("lite shape can be validated with an explicit shape override", () => {
+  const cwd = tempCwd();
+  run(["init", "lite-frontend", "--lite", "--shape", "frontend"], { runtimePaths, cwd });
+  const project = path.join(cwd, "lite-frontend");
+
+  assert.ok(fs.existsSync(path.join(project, "frontend")));
+  assert.equal(fs.existsSync(path.join(project, "backend")), false);
+  assert.match(run(["validate", "lite-frontend", "--lite", "--shape", "frontend"], { runtimePaths, cwd }), /AI-ready structure validated/);
+});
+
 test("adopt adds missing AI Dev OS files without overwriting existing files", () => {
   const cwd = tempCwd();
   const project = path.join(cwd, "existing-project");

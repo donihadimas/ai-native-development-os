@@ -38,6 +38,8 @@ For a compact `.aios/` with native skills:
 ```bash
 aios init demo-native --agents codex,qwen --skills core --skill-delivery native
 aios agent-install demo-native --agents opencode,antigravity --skills testing
+aios init demo-web --shape frontend
+aios init demo-api --shape backend
 ```
 
 Or start from a lightweight V2.x starter:
@@ -121,7 +123,7 @@ aios validate
 
 ## Commands
 
-### `aios init <project-name> [--lite] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
+### `aios init <project-name> [--lite] [--shape <shape>] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
 
 Copies the bundled AI-ready project skeleton into a new directory and installs the local `.aios/` workflow kit.
 
@@ -130,6 +132,8 @@ aios init my-saas
 aios init my-saas-lite --lite
 aios init my-saas-native --agents codex,qwen --skills core --skill-delivery native
 aios init my-saas-clean --docs-root .aios/project-docs
+aios init my-web --shape frontend
+aios init my-api --shape backend
 ```
 
 Behavior:
@@ -138,6 +142,7 @@ Behavior:
 - Refuses to overwrite an existing non-empty directory.
 - Includes `AGENTS.md`, optional `CLAUDE.md`, shared docs, `frontend/`, `backend/`, and `.aios/` by default.
 - `--lite` skips `.aios/` and preserves the older minimal behavior.
+- `--shape` accepts `fullstack`, `frontend`, `backend`, `mobile`, `library`, or `docs`; default is `fullstack`.
 - `--docs-root` stores project docs somewhere other than `docs/`.
 - `--skill-delivery` accepts `portable`, `native`, or `both`.
 - `--agents` accepts `codex`, `qwen`, `opencode`, `antigravity`, and `generic`.
@@ -180,7 +185,7 @@ It also reports warnings, without failing validation, when optional V2.x paths a
 
 Warnings are guidance only. Add these folders when the project needs security reviews, release notes, migration plans, or OpenAPI contracts.
 
-### `aios starter <starter-name> <project-name> [--lite] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
+### `aios starter <starter-name> <project-name> [--lite] [--shape <shape>] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
 
 Copies a bundled AI docs only starter into a new directory and installs the local `.aios/` workflow kit.
 
@@ -207,7 +212,7 @@ Behavior:
 - Does not include framework code or dependencies.
 - `--lite` skips `.aios/`.
 
-### `aios adopt [project-path] [--lite] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
+### `aios adopt [project-path] [--lite] [--shape <shape>] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
 
 Adds the AI Dev OS structure and local `.aios/` workflow kit to an existing project without overwriting existing files.
 

@@ -1,6 +1,6 @@
 # AI-Ready Project Skeleton
 
-This skeleton is a generic fullstack project shell for AI-native development. Copy it into a new project, then fill the docs before asking an AI agent to implement code.
+This skeleton is a generic AI-native project shell. `aios init` can keep it fullstack or trim it to frontend-only, backend-only, mobile, library, or docs-only with `--shape`.
 
 ## Structure
 
@@ -16,8 +16,7 @@ This skeleton is a generic fullstack project shell for AI-native development. Co
 - `docs/context/context-map.md` - context routing guide.
 - `docs/context/development-start.md` - first-run guide for AI-native development.
 - `.aios/` - local AIOS workflow kit with skills, prompts, references, templates, and workflows.
-- `frontend/` - frontend application placeholder.
-- `backend/` - backend application placeholder.
+- `frontend/`, `backend/`, `mobile/`, or `src/` - optional app placeholders based on selected project shape.
 
 ## First Use
 

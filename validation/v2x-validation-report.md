@@ -14,6 +14,7 @@ V3-lite setup improvements are also validated: interactive setup entrypoints, co
 | Skill router | Pass | `skill-router.md` is installed as `.aios/skill-router.md` for intent-to-skill routing. |
 | Command palette | Pass | `commands/` is installed as `.aios/commands/`, and `aios command-list` / `aios command` expose portable prompts. |
 | Configurable docs root | Pass | `.aios/config.json` stores docs root and commands write to the configured location. |
+| Configurable project shape | Pass | `--shape` supports fullstack, frontend, backend, mobile, library, and docs-only layouts. |
 | Native agent skills | Pass | `aios agent-install` installs selected skills into Codex/generic, Qwen, OpenCode, and Antigravity repo folders. |
 | Compact native setup | Pass | Native skill delivery skips `.aios/skills` and relies on agent-native skill folders. |
 | Default full setup | Pass | `aios init`, `starter`, and `adopt` install `.aios/` by default. |
@@ -39,7 +40,7 @@ npm test
 
 Result:
 
-- 32 tests passed.
+- 34 tests passed.
 - 0 tests failed.
 
 ## Manual Smoke Coverage
@@ -57,6 +58,7 @@ Covered by CLI tests and manual workflow definition:
 - `aios agent-list`
 - `aios agent-install --agents codex,qwen --skills core`
 - `aios init --docs-root .aios/project-docs`
+- `aios init --shape frontend`
 - `aios openapi "Habit API"`
 - `aios migration "Create habits table"`
 - `aios security "Habit API"`

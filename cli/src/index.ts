@@ -6,6 +6,8 @@ import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import {
   AGENT_TARGETS,
   CORE_SKILLS,
+  PROJECT_SHAPES,
+  PROJECT_SHAPE_PATHS,
   type AgentScope,
   type AgentTarget,
   adoptSkeleton,
@@ -21,6 +23,7 @@ import {
   nextNumber,
   readProjectConfig,
   slugify,
+  type ProjectShape,
   type SkillDelivery,
   titleize,
   validateProject,
@@ -64,15 +67,15 @@ Usage:
   aios -v
     Show the installed AIOS CLI version.
 
-  aios init <project-name> [--lite] [--docs-root <path>] [--skill-delivery portable|native|both]
+  aios init <project-name> [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--skill-delivery portable|native|both]
     Create a new AI-ready project from the bundled skeleton.
     Installs the local .aios workflow kit unless --lite is provided.
 
-  aios starter <starter-name> <project-name> [--lite] [--docs-root <path>] [--skill-delivery portable|native|both]
+  aios starter <starter-name> <project-name> [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--skill-delivery portable|native|both]
     Create a new AI-ready project from a bundled V2.x starter.
     Installs the local .aios workflow kit unless --lite is provided.
 
-  aios adopt [project-path] [--lite] [--docs-root <path>] [--skill-delivery portable|native|both]
+  aios adopt [project-path] [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--skill-delivery portable|native|both]
     Add AI Dev OS folders and docs to an existing project without overwriting
     existing files. Also installs .aios unless --lite is provided.
     Defaults to the current directory.
@@ -175,6 +178,7 @@ interface ParsedArgs {
   agents?: AgentTarget[];
   skills?: string;
   scope?: AgentScope;
+  projectShape?: ProjectShape;
 }
 
 function requireName(value: string | undefined, command: string): string {
@@ -197,7 +201,7 @@ function parseCsv<T extends string>(value: string | undefined): T[] | undefined 
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
-  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope"]);
+  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope", "--shape"]);
   const commandFlags = new Set(["--version", "--help"]);
   const args: string[] = [];
 
@@ -223,15 +227,37 @@ function parseArgs(argv: string[]): ParsedArgs {
     skillDelivery: readFlagValue(argv, "--skill-delivery") as SkillDelivery | undefined,
     agents: parseCsv<AgentTarget>(readFlagValue(argv, "--agents")),
     skills: readFlagValue(argv, "--skills"),
-    scope: readFlagValue(argv, "--scope") as AgentScope | undefined
+    scope: readFlagValue(argv, "--scope") as AgentScope | undefined,
+    projectShape: readFlagValue(argv, "--shape") as ProjectShape | undefined
   };
+}
+
+function inferStarterShape(starter: string | undefined): ProjectShape {
+  switch (starter) {
+    case "flutter-mobile":
+      return "mobile";
+    case "nextjs-web":
+      return "frontend";
+    case "node-api":
+    case "nestjs-api":
+    case "laravel-api":
+      return "backend";
+    case "supabase-app":
+    case "fullstack-saas":
+    default:
+      return "fullstack";
+  }
 }
 
 function normalizeProjectSetup(ctx: CommandContext, options: ParsedArgs, starter?: string) {
   const selectedAgents = options.agents ?? [];
   const skillDelivery = options.skillDelivery ?? (selectedAgents.length > 0 ? "native" : "portable");
+  const projectShape = options.projectShape ?? inferStarterShape(starter);
   if ((skillDelivery === "native" || skillDelivery === "both") && selectedAgents.length === 0) {
     throw new Error("Native skill delivery requires --agents <agent-list>.");
+  }
+  if (!PROJECT_SHAPES.includes(projectShape)) {
+    throw new Error(`Unknown project shape: ${projectShape}`);
   }
 
   const selectedSkills = expandSkillSelection(ctx.runtimePaths.aiosKitSource, options.skills ?? "core");
@@ -242,6 +268,7 @@ function normalizeProjectSetup(ctx: CommandContext, options: ParsedArgs, starter
     selectedAgents,
     selectedSkills,
     agentScope: options.scope ?? "repo",
+    projectShape,
     starter
   });
 }
@@ -259,6 +286,38 @@ function relocateDocsRoot(projectPath: string, docsRootValue: string, skeletonDo
       fs.renameSync(defaultDocs, targetDocs);
     } else if (skeletonDocsSource && fs.existsSync(skeletonDocsSource)) {
       copyDirectory(skeletonDocsSource, targetDocs);
+    }
+  }
+}
+
+function applyProjectShape(projectPath: string, shape: ProjectShape): void {
+  const allShapeDirs = [...new Set(Object.values(PROJECT_SHAPE_PATHS).flat())];
+  const required = new Set(PROJECT_SHAPE_PATHS[shape]);
+
+  for (const directory of allShapeDirs) {
+    const target = path.join(projectPath, directory);
+    if (required.has(directory)) {
+      fs.mkdirSync(target, { recursive: true });
+      const gitkeep = path.join(target, ".gitkeep");
+      if (!fs.existsSync(gitkeep)) {
+        fs.writeFileSync(gitkeep, "", "utf8");
+      }
+      continue;
+    }
+
+    if (fs.existsSync(target)) {
+      fs.rmSync(target, { recursive: true, force: true });
+    }
+  }
+}
+
+function ensureProjectShape(projectPath: string, shape: ProjectShape): void {
+  for (const directory of PROJECT_SHAPE_PATHS[shape]) {
+    const target = path.join(projectPath, directory);
+    fs.mkdirSync(target, { recursive: true });
+    const gitkeep = path.join(target, ".gitkeep");
+    if (!fs.existsSync(gitkeep)) {
+      fs.writeFileSync(gitkeep, "", "utf8");
     }
   }
 }
@@ -302,6 +361,7 @@ function commandInit(ctx: CommandContext, name: string | undefined, options: Par
 
   ensureEmptyOrMissingDirectory(target);
   copyDirectory(ctx.runtimePaths.projectSkeleton, target);
+  applyProjectShape(target, config.projectShape);
   relocateDocsRoot(target, config.docsRoot, path.join(ctx.runtimePaths.projectSkeleton, "docs"));
   if (!options.lite) {
     setupAiosForProject(ctx, target, options, config);
@@ -339,6 +399,7 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
   const config = normalizeProjectSetup(ctx, options);
   const hadDocs = fs.existsSync(path.join(projectPath, "docs"));
   const result = adoptSkeleton(ctx.runtimePaths.projectSkeleton, projectPath);
+  ensureProjectShape(projectPath, config.projectShape);
   if (config.docsRoot !== "docs") {
     if (hadDocs) {
       adoptSkeleton(path.join(ctx.runtimePaths.projectSkeleton, "docs"), path.join(projectPath, config.docsRoot));
@@ -618,9 +679,9 @@ function commandRelease(ctx: CommandContext, name: string | undefined): string {
   return output.join("\n");
 }
 
-function commandValidate(ctx: CommandContext, projectPathArg: string | undefined, options: { lite?: boolean } = {}): string {
+function commandValidate(ctx: CommandContext, projectPathArg: string | undefined, options: ParsedArgs = parseArgs([])): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
-  const result = validateProject(projectPath, options);
+  const result = validateProject(projectPath, { lite: options.lite, projectShape: options.projectShape });
 
   if (result.ok) {
     const output = [`AI-ready structure validated: ${projectPath}`];
@@ -724,9 +785,21 @@ function starterChoices(ctx: CommandContext): string[] {
 }
 
 async function promptSetupOptions(ctx: CommandContext): Promise<ParsedArgs> {
+  const projectShape = await select<ProjectShape>({
+    message: "Project shape?",
+    choices: [
+      { name: "Fullstack: frontend + backend", value: "fullstack" },
+      { name: "Frontend only", value: "frontend" },
+      { name: "Backend only", value: "backend" },
+      { name: "Mobile only", value: "mobile" },
+      { name: "Library/package", value: "library" },
+      { name: "Docs/planning only", value: "docs" }
+    ]
+  });
+
   const lite = await confirm({ message: "Use lite mode without local AIOS kit?", default: false });
   if (lite) {
-    return parseArgs(["--lite"]);
+    return { ...parseArgs(["--lite"]), projectShape };
   }
 
   const docsLocation = await select({
@@ -796,7 +869,8 @@ async function promptSetupOptions(ctx: CommandContext): Promise<ParsedArgs> {
     docsRoot: docsRootValue,
     agents: selectedAgents,
     skills: skillSelection,
-    skillDelivery
+    skillDelivery,
+    projectShape
   };
 }
 
@@ -969,7 +1043,7 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
     case "release":
       return commandRelease(ctx, name);
     case "validate":
-      return commandValidate(ctx, name, { lite: parsed.lite });
+      return commandValidate(ctx, name, parsed);
     case "next":
       return commandNext(ctx, name);
     default:
