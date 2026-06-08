@@ -29,6 +29,19 @@ Expected inputs:
 - known consequences,
 - related PRD, architecture, or task links.
 
+## Clarification Gate
+
+Before writing an ADR, check whether these are clear enough:
+
+- decision topic,
+- why the decision matters now,
+- chosen option or candidate recommendation,
+- meaningful alternatives,
+- trade-offs and consequences,
+- related documents or affected areas.
+
+If the decision, alternatives, or consequences are unclear, stop and ask the user 3-5 focused questions before generating the ADR. Do not turn an unresolved decision into an accepted ADR; use Proposed status or ask for human confirmation.
+
 ## Outputs
 
 Expected outputs:

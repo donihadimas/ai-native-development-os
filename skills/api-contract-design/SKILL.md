@@ -29,6 +29,20 @@ Expected inputs:
 - existing API notes or OpenAPI files,
 - affected frontend and backend tasks.
 
+## Clarification Gate
+
+Before writing an API contract, check whether these are clear enough:
+
+- consumer and provider responsibilities,
+- user action or capability the API supports,
+- resources and endpoint intent,
+- authentication and authorization expectations,
+- request fields,
+- response fields,
+- error cases and status semantics.
+
+If request/response/error behavior is unclear, stop and ask the user 4-7 focused questions before generating the contract. Do not invent fields that are not tied to product behavior.
+
 ## Outputs
 
 Expected outputs:

@@ -11,4 +11,6 @@ Read only:
 - related ADRs if persistence behavior depends on a technical decision,
 - existing schema, migration, or database notes.
 
+Before generating the migration plan, apply the `database-migration` Clarification Gate. If current state, desired change, compatibility, rollout, rollback, or validation is unclear, ask focused questions first.
+
 Do not implement or apply the migration yet. End with rollout risks, rollback notes, validation checks, and open questions.

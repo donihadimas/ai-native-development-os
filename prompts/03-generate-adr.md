@@ -10,4 +10,6 @@ Read only:
 - related PRD or architecture sections,
 - existing ADRs only when checking for conflicts or supersession.
 
+Before generating the ADR, apply the `adr-generator` Clarification Gate. If decision topic, alternatives, or consequences are unclear, ask focused questions first.
+
 Do not overwrite previous ADRs. Create a new ADR when a decision changes.

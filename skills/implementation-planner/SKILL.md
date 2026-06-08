@@ -27,6 +27,18 @@ Expected inputs:
 - relevant PRD, ADR, architecture, or API docs,
 - affected code search results.
 
+## Clarification Gate
+
+Before writing the implementation plan, check whether these are clear enough:
+
+- active task objective,
+- acceptance criteria,
+- affected area or module,
+- constraints from PRD/ADR/API/architecture,
+- validation or test expectations.
+
+If acceptance criteria are missing, contradictory, or too broad, stop and ask the user for clarification before planning or coding. Do not proceed from guesses for behavior-changing work.
+
 ## Outputs
 
 Expected outputs:

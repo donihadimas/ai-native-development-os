@@ -11,4 +11,6 @@ Read only:
 - related ADRs if API behavior depends on a technical decision,
 - existing API contract files in `<docsRoot>/api/`.
 
+Before generating the contract, apply the `api-contract-design` Clarification Gate. If consumer/provider responsibilities, request/response fields, auth, or errors are unclear, ask focused questions first.
+
 Do not implement app code yet. End with contract risks, open questions, and which implementation tasks should link to the contract.

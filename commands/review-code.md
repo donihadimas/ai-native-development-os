@@ -9,4 +9,6 @@ Read:
 - related ADRs when relevant
 - testing evidence
 
+Before writing the review, apply the skill's Clarification Gate. If the diff, task intent, acceptance criteria, or test evidence are missing, ask for the missing inputs or clearly label the review as limited.
+
 Return findings first, ordered by severity, then summarize residual risks and approval or revision required.

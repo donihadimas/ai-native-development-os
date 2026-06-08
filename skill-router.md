@@ -40,5 +40,6 @@ Use this router before choosing a workflow. Match the user request to the smalle
 - Prefer the active task and `<docsRoot>/context/context-map.md` before broader documents.
 - Use only the matched skill and directly relevant references.
 - If more than one skill matches, start with the planning or contract skill before implementation.
+- For generator skills, apply the skill's Clarification Gate before writing final files.
 - Record uncertainty as open questions instead of guessing important product, architecture, security, or dependency decisions.
 - Do not treat this router as permission to modify files without an implementation plan.

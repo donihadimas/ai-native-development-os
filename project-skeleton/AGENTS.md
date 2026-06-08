@@ -24,6 +24,7 @@ Use `.aios/templates/` when creating docs.
 Use `.aios/references/` for stable engineering guidance.
 Use `.aios/workflows/` to follow development sequences.
 Use `projectShape` from `.aios/config.json` to decide whether code lives in `frontend/`, `backend/`, `mobile/`, `src/`, or docs only.
+When a generator skill has a Clarification Gate, ask focused questions before writing final files if the input is vague.
 
 ## Required Before Implementation
 

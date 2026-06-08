@@ -12,4 +12,6 @@ Read only:
 - changelog or release notes if they exist,
 - package or deployment instructions.
 
+Before generating release docs, apply the `release-management` Clarification Gate. If scope, validation evidence, breaking changes, rollback, or post-release checks are unclear, ask focused questions first.
+
 Do not publish or deploy automatically. End with release scope, validation evidence, rollback plan, post-release checks, and human approval status.

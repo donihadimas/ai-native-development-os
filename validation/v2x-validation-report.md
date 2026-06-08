@@ -6,7 +6,7 @@ V2.x has been implemented as lightweight workflow extensions on top of the exist
 
 V3-lite setup improvements are also validated: interactive setup entrypoints, configurable docs location, and native agent skill installation while keeping `.aios/` compact when native skills are selected.
 
-Instruction-layer cleanup has also been validated: generated `AGENTS.md`, command prompts, workflow prompts, context maps, starter guides, references, and workflows now resolve `.aios/config.json` before choosing document paths or skill access mode.
+Instruction-layer cleanup has also been validated: generated `AGENTS.md`, command prompts, workflow prompts, context maps, starter guides, references, and workflows now resolve `.aios/config.json` before choosing document paths or skill access mode. Generator skills now include Clarification Gates so agents ask focused questions before writing final artifacts when input is too vague.
 
 ## Acceptance Criteria Status
 
@@ -32,6 +32,7 @@ Instruction-layer cleanup has also been validated: generated `AGENTS.md`, comman
 | Validation | Pass | `aios validate` requires base structure and `.aios/` by default, while V2.x document folders remain warnings. |
 | GitHub Actions | Pass | CI, manual smoke test, and release dry-run workflows exist. |
 | Config-aware generated instructions | Pass | AGENTS, skill router, commands, prompts, context maps, references, and workflows use `docsRoot`, `projectShape`, and skill delivery mode. |
+| Clarification Gates | Pass | Generator skills, prompts, commands, and onboarding docs instruct agents to ask focused questions before generating final files from vague input. |
 
 ## Automated Test Evidence
 
@@ -72,6 +73,7 @@ Covered by CLI tests and manual workflow definition:
 - `aios validate`
 - generated `.aios/commands/*` route through `.aios/skill-router.md`
 - generated context maps use the configured `docsRoot`
+- generator prompts apply Clarification Gates before final PRD, architecture, ADR, task, API, migration, security, test, and release documents
 
 ## Result
 

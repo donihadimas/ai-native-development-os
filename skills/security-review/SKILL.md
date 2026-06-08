@@ -29,6 +29,20 @@ Expected inputs:
 - API contracts,
 - architecture, ADRs, and security principles.
 
+## Clarification Gate
+
+Before writing a security review, check whether these are clear enough:
+
+- review target or diff,
+- trust boundaries,
+- user roles and permissions,
+- sensitive data involved,
+- inputs and external integrations,
+- auth/session/token behavior,
+- release or risk tolerance.
+
+If the security-sensitive surface is unclear, stop and ask the user 3-6 focused questions before generating the review report. Do not approve security-sensitive work with missing auth, authorization, or validation evidence.
+
 ## Outputs
 
 Expected outputs:

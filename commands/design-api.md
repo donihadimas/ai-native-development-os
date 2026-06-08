@@ -9,4 +9,6 @@ Read:
 - existing API contracts in `<docsRoot>/api/`
 - `.aios/templates/openapi.template.yaml`
 
+Before creating the contract, apply the skill's Clarification Gate. If consumer/provider responsibilities, request/response fields, auth, or errors are unclear, ask focused questions first.
+
 Create or update an OpenAPI contract in `<docsRoot>/api/` before app integration.

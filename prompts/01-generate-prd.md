@@ -10,4 +10,6 @@ Read only:
 - existing `<docsRoot>/product/prd.md` if updating,
 - relevant user-provided notes.
 
+Before generating the final PRD, apply the `prd-generator` Clarification Gate. If the inputs are too thin for testable acceptance criteria, ask focused product questions first.
+
 Do not design architecture or implementation tasks yet. End with open questions and risks.

@@ -10,4 +10,6 @@ Read:
 - related ADRs if mentioned
 - `.aios/templates/task.template.md`
 
+Before creating task files, apply the skill's Clarification Gate. If scope, ownership, acceptance criteria, dependencies, or tests are unclear, ask focused questions first.
+
 Create small implementation-ready tasks in `<docsRoot>/tasks/` with acceptance criteria and testing expectations.

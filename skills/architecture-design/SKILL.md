@@ -28,6 +28,20 @@ Expected inputs:
 - existing ADRs if any,
 - API or database requirements if known.
 
+## Clarification Gate
+
+Before writing architecture, check whether these are clear enough:
+
+- project shape and major app areas,
+- chosen or constrained stack,
+- core capabilities from the PRD,
+- data ownership and persistence needs,
+- integration/API needs,
+- auth and authorization expectations,
+- deployment or operational constraints.
+
+If major constraints are missing, stop and ask the user 3-7 focused questions before generating the final architecture. Do not choose stack-specific details unless the user has chosen them or the existing project already implies them.
+
 ## Outputs
 
 Expected outputs:

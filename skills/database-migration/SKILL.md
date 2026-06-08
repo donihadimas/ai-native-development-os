@@ -29,6 +29,20 @@ Expected inputs:
 - existing schema or migration notes,
 - affected API contracts and backend tasks.
 
+## Clarification Gate
+
+Before writing a migration plan, check whether these are clear enough:
+
+- current schema or data shape,
+- desired schema or data change,
+- compatibility requirements,
+- data volume or backfill needs,
+- rollout order,
+- rollback expectation,
+- validation checks.
+
+If destructive impact, compatibility, or rollback is unclear, stop and ask the user 4-7 focused questions before generating the migration plan.
+
 ## Outputs
 
 Expected outputs:

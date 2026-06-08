@@ -11,4 +11,6 @@ Read only:
 - related PRD/ADR/API docs named by the task,
 - affected files and nearby tests found by search.
 
+Before writing the plan, apply the `implementation-planner` Clarification Gate. If acceptance criteria or behavior expectations are missing or contradictory, ask focused questions first.
+
 Do not code until the plan identifies affected files, risks, and tests.

@@ -11,4 +11,6 @@ Read only:
 - related ADRs,
 - API notes if app integration is involved.
 
+Before creating task files, apply the `task-breakdown` Clarification Gate. If scope, ownership, acceptance criteria, dependencies, or tests are unclear, ask focused questions first.
+
 Keep tasks small, single-objective, testable, and scoped.

@@ -12,4 +12,6 @@ Read only:
 - related ADRs or architecture sections,
 - available test and review evidence.
 
+Before generating the security review, apply the `security-review` Clarification Gate. If trust boundaries, roles, sensitive data, inputs, auth, or validation evidence are unclear, ask focused questions first.
+
 Do not approve security-sensitive work unless findings, residual risk, and required mitigations are explicit.

@@ -11,4 +11,6 @@ Read only:
 - related ADRs or architecture docs when relevant,
 - testing evidence.
 
+Before writing the review, apply the `code-review` Clarification Gate. If the diff, task intent, acceptance criteria, or test evidence are missing, ask for the missing inputs or label the review as limited.
+
 Findings must come first, ordered by severity. Approve only when acceptance criteria and testing expectations are satisfied.

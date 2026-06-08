@@ -29,6 +29,20 @@ Expected inputs:
 - known risks and deferred work,
 - release target and version name.
 
+## Clarification Gate
+
+Before writing release notes, check whether these are clear enough:
+
+- release version or name,
+- included and excluded scope,
+- user-visible changes,
+- validation evidence,
+- review evidence,
+- breaking changes or migration notes,
+- rollback and post-release checks.
+
+If scope or validation evidence is missing, stop and ask the user 3-6 focused questions before generating the release documentation. Do not imply release approval or test success.
+
 ## Outputs
 
 Expected outputs:

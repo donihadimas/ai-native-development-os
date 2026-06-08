@@ -16,6 +16,8 @@ Run `aios config` first when path locations, project shape, selected agents, or 
 
 If native agent skills are installed, use the agent's skill system first. If portable mode is active, use `.aios/skill-router.md` to open the matching `.aios/skills/*/SKILL.md`.
 
+Generator workflows may ask clarification questions before writing PRD, architecture, ADR, task, API, migration, security, test, or release documents. Answering those questions is part of the normal AIOS flow and helps avoid generic artifacts.
+
 ## Useful Commands
 
 ```bash
@@ -41,4 +43,5 @@ aios release "Release name"
 Read AGENTS.md and .aios/config.json.
 Resolve docsRoot, then read <docsRoot>/context/context-map.md and <docsRoot>/product/vision.md.
 Then read .aios/skill-router.md and use .aios/commands/generate-prd.md to generate <docsRoot>/product/prd.md.
+If the PRD inputs are incomplete, ask me focused clarification questions before writing the final file.
 ```
