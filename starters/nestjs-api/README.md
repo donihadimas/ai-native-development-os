@@ -5,4 +5,5 @@ AI-ready NestJS API project shell. Add NestJS code only after product, architect
 ## Structure
 
 - `backend/` - NestJS API placeholder.
-- `docs/` - shared AI development context.
+- `docs/` by default, or configured `<docsRoot>` - shared AI development context.
+- `.aios/` - local workflow kit, command prompts, config, and optional portable skills.

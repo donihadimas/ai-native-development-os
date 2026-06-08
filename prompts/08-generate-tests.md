@@ -1,6 +1,8 @@
 # Prompt: Generate Tests
 
-Use `skills/testing/SKILL.md` and `templates/test-plan.template.md`.
+Resolve `.aios/config.json` first if it exists. Use its `docsRoot`; otherwise use `docs`.
+
+Use `.aios/skill-router.md` to route through `testing`. Use `.aios/templates/test-plan.template.md`.
 
 Read only:
 

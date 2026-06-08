@@ -5,4 +5,5 @@ AI-ready Flutter mobile project shell. Add Flutter code only after product, arch
 ## Structure
 
 - `mobile/` - Flutter application placeholder.
-- `docs/` - shared AI development context.
+- `docs/` by default, or configured `<docsRoot>` - shared AI development context.
+- `.aios/` - local workflow kit, command prompts, config, and optional portable skills.

@@ -9,18 +9,19 @@
 
 ## Process
 
-1. Confirm the feature requires a database change.
-2. Read acceptance criteria and persistence behavior.
-3. Use `skills/database-migration` to define schema, data, index, seed, and compatibility impact.
-4. Create `docs/database/migrations/MIGRATION-XXX-title.md` using `templates/migration-plan.template.md`.
-5. Link the migration plan from related backend, API, and release tasks.
-6. Implement the migration only after rollout and rollback steps are clear.
-7. Add validation checks for pre-migration and post-migration state.
+1. Resolve `.aios/config.json`; use `docsRoot` for documentation paths.
+2. Confirm the feature requires a database change.
+3. Read acceptance criteria and persistence behavior.
+4. Use `.aios/skill-router.md` to route through `database-migration`.
+5. Create `<docsRoot>/database/migrations/MIGRATION-XXX-title.md` using `.aios/templates/migration-plan.template.md`.
+6. Link the migration plan from related API, implementation, and release tasks.
+7. Implement the migration only after rollout and rollback steps are clear.
+8. Add validation checks for pre-migration and post-migration state.
 
 ## Output
 
-- Migration plan in `docs/database/migrations/`.
-- Linked backend or API tasks.
+- Migration plan in `<docsRoot>/database/migrations/`.
+- Linked implementation or API tasks.
 - Rollout and rollback notes.
 - Validation checks.
 

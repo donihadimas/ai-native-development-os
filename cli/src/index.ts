@@ -56,7 +56,7 @@ or another coding agent work with clear context, small tasks, review notes,
 API contracts, and repeatable project workflows.
 
 Use it when you want to:
-  - start a new frontend/backend project with AI-ready docs,
+  - start a new project shape with AI-ready docs,
   - start from a lightweight AI docs only stack starter,
   - add AI Dev OS structure to an existing project,
   - create PRDs, ADRs, implementation tasks, API contracts, migration plans,
@@ -100,28 +100,28 @@ Usage:
     Print resolved AIOS project configuration.
 
   aios feature <feature-name>
-    Create a feature PRD stub in docs/product/features/.
+    Create a feature PRD stub in the configured docsRoot product/features folder.
 
   aios adr <decision-name>
-    Create the next numbered Architecture Decision Record in docs/adr/.
+    Create the next numbered Architecture Decision Record in the configured docsRoot adr folder.
 
   aios task <task-name>
-    Create the next numbered implementation task in docs/tasks/.
+    Create the next numbered implementation task in the configured docsRoot tasks folder.
 
   aios review <name>
-    Create a review report stub in docs/reviews/.
+    Create a review report stub in the configured docsRoot reviews folder.
 
   aios openapi <api-name>
-    Create an OpenAPI contract stub in docs/api/.
+    Create an OpenAPI contract stub in the configured docsRoot api folder.
 
   aios migration <migration-name>
-    Create the next numbered migration plan in docs/database/migrations/.
+    Create the next numbered migration plan in the configured docsRoot database/migrations folder.
 
   aios security <review-name>
-    Create a security review report stub in docs/security/.
+    Create a security review report stub in the configured docsRoot security folder.
 
   aios release <release-name>
-    Create a release note in docs/releases/ and a changelog draft if missing.
+    Create a release note in the configured docsRoot releases folder and a changelog draft if missing.
 
   aios validate [project-path] [--lite]
     Check whether a project has the required AI-ready structure.
@@ -162,8 +162,8 @@ Existing project workflow:
   aios validate
 
 Next step after generating docs:
-  Open the project with Codex and ask it to read AGENTS.md,
-  docs/context/context-map.md, .aios/skill-router.md, and the active task before coding.
+  Open the project with Codex and ask it to read AGENTS.md, .aios/config.json,
+  the resolved context map, .aios/skill-router.md, and the active task before coding.
 `;
 }
 

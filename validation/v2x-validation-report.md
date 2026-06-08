@@ -6,6 +6,8 @@ V2.x has been implemented as lightweight workflow extensions on top of the exist
 
 V3-lite setup improvements are also validated: interactive setup entrypoints, configurable docs location, and native agent skill installation while keeping `.aios/` compact when native skills are selected.
 
+Instruction-layer cleanup has also been validated: generated `AGENTS.md`, command prompts, workflow prompts, context maps, starter guides, references, and workflows now resolve `.aios/config.json` before choosing document paths or skill access mode.
+
 ## Acceptance Criteria Status
 
 | Requirement | Status | Evidence |
@@ -29,6 +31,7 @@ V3-lite setup improvements are also validated: interactive setup entrypoints, co
 | OpenAPI generation | Pass | `aios openapi` creates `docs/api/<slug>.openapi.yaml`. |
 | Validation | Pass | `aios validate` requires base structure and `.aios/` by default, while V2.x document folders remain warnings. |
 | GitHub Actions | Pass | CI, manual smoke test, and release dry-run workflows exist. |
+| Config-aware generated instructions | Pass | AGENTS, skill router, commands, prompts, context maps, references, and workflows use `docsRoot`, `projectShape`, and skill delivery mode. |
 
 ## Automated Test Evidence
 
@@ -36,12 +39,15 @@ Command run from `cli/`:
 
 ```bash
 npm test
+npm pack --dry-run
 ```
 
 Result:
 
 - 34 tests passed.
 - 0 tests failed.
+- Package dry-run succeeded and included `assets/aios-kit/`, `assets/project-skeleton/`, `assets/starters/`, and `assets/templates/`.
+- `git diff --check` passed with no whitespace errors.
 
 ## Manual Smoke Coverage
 
@@ -64,6 +70,8 @@ Covered by CLI tests and manual workflow definition:
 - `aios security "Habit API"`
 - `aios release "0.3.0"`
 - `aios validate`
+- generated `.aios/commands/*` route through `.aios/skill-router.md`
+- generated context maps use the configured `docsRoot`
 
 ## Result
 

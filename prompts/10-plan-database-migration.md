@@ -1,8 +1,8 @@
 # Prompt: Plan Database Migration
 
-Use `skills/context-management/SKILL.md` first.
+Resolve `.aios/config.json` first if it exists. Use its `docsRoot`; otherwise use `docs`.
 
-Then use `skills/database-migration/SKILL.md`, `references/database-standards.md`, and `templates/migration-plan.template.md` to create a migration plan in `docs/database/migrations/`.
+Use `.aios/skill-router.md` to route through `context-management`, then `database-migration`. Use `.aios/references/database-standards.md` and `.aios/templates/migration-plan.template.md` to create a migration plan in `<docsRoot>/database/migrations/`.
 
 Read only:
 

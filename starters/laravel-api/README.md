@@ -5,4 +5,5 @@ AI-ready Laravel API project shell. Add Laravel code only after product, archite
 ## Structure
 
 - `backend/` - Laravel API placeholder.
-- `docs/` - shared AI development context.
+- `docs/` by default, or configured `<docsRoot>` - shared AI development context.
+- `.aios/` - local workflow kit, command prompts, config, and optional portable skills.

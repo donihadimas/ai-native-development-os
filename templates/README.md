@@ -2,6 +2,6 @@
 
 Templates define reusable document shapes for product and engineering artifacts. Use them with the matching skill rather than filling them mechanically without context.
 
-V2 adds `openapi.template.yaml` as a starter API contract for FE/BE integration work.
+V2 adds `openapi.template.yaml` as a starter API contract for app integration work.
 
 V2.x adds migration plan, security review report, release note, and changelog templates.

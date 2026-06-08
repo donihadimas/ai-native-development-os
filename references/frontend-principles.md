@@ -18,4 +18,4 @@ Every async flow should define loading, empty, success, and error behavior.
 
 ## Respect API Contracts
 
-Do not assume backend response shapes. Use `docs/api/` when integration is involved.
+Do not assume backend response shapes. Use `<docsRoot>/api/` when integration is involved, resolving `docsRoot` from `.aios/config.json` or defaulting to `docs`.

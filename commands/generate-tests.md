@@ -1,6 +1,6 @@
 # Command: Generate Tests
 
-Use `prompts/08-generate-tests.md` and `skills/testing/SKILL.md`.
+Resolve `.aios/config.json` first. Use `.aios/prompts/08-generate-tests.md` and the `testing` skill through `.aios/skill-router.md`.
 
 Read:
 

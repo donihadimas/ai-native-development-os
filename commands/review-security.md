@@ -1,6 +1,6 @@
 # Command: Review Security
 
-Use `prompts/11-review-security.md` and `skills/security-review/SKILL.md`.
+Resolve `.aios/config.json` first. Use `.aios/prompts/11-review-security.md` and the `security-review` skill through `.aios/skill-router.md`.
 
 Read:
 
@@ -10,4 +10,4 @@ Read:
 - security principles
 - test and review evidence
 
-Create a security review in `docs/security/` and clearly mark approval or revision required.
+Create a security review in `<docsRoot>/security/` and clearly mark approval or revision required.

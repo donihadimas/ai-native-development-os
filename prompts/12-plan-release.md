@@ -1,8 +1,8 @@
 # Prompt: Plan Release
 
-Use `skills/context-management/SKILL.md` first.
+Resolve `.aios/config.json` first if it exists. Use its `docsRoot`; otherwise use `docs`.
 
-Then use `skills/release-management/SKILL.md`, `workflows/release.workflow.md`, `templates/release-note.template.md`, and `templates/changelog.template.md` to prepare release documentation in `docs/releases/`.
+Use `.aios/skill-router.md` to route through `context-management`, then `release-management`. Use `.aios/workflows/release.workflow.md`, `.aios/templates/release-note.template.md`, and `.aios/templates/changelog.template.md` to prepare release documentation in `<docsRoot>/releases/`.
 
 Read only:
 

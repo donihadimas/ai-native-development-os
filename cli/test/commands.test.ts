@@ -249,7 +249,8 @@ test("command-list and command expose local workflow command prompts", () => {
 
   const commandOutput = run(["command", "generate-prd"], { runtimePaths, cwd: project });
   assert.match(commandOutput, /Command: Generate PRD/);
-  assert.match(commandOutput, /skills\/prd-generator\/SKILL.md/);
+  assert.match(commandOutput, /\.aios\/skill-router\.md/);
+  assert.match(commandOutput, /prd-generator/);
 });
 
 test("adr, task, and review create files in a generated project", () => {

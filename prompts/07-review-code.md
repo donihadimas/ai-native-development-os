@@ -1,6 +1,8 @@
 # Prompt: Review Code
 
-Use `skills/code-review/SKILL.md` and `templates/review-report.template.md`.
+Resolve `.aios/config.json` first if it exists. Use its `docsRoot`; otherwise use `docs`.
+
+Use `.aios/skill-router.md` to route through `code-review`. Use `.aios/templates/review-report.template.md`.
 
 Read only:
 

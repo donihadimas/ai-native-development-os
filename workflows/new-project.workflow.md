@@ -7,15 +7,16 @@
 
 ## Process
 
-1. Create or fill `docs/product/vision.md` using `skills/product-discovery`.
-2. Generate `docs/product/prd.md` using `skills/prd-generator`.
-3. Generate `docs/architecture/architecture.md` using `skills/architecture-design`.
-4. Create initial ADRs for important decisions using `skills/adr-generator`.
-5. Break the PRD into small tasks using `skills/task-breakdown`.
-6. Initialize frontend and backend folders with the chosen stack outside the AI Dev OS core.
-7. Implement one task at a time using `skills/implementation-planner` before coding.
-8. Add or update tests using `skills/testing`.
-9. Review each change using `skills/code-review`.
+1. Resolve `.aios/config.json`; use `docsRoot`, `projectShape`, selected agents, and skill delivery mode.
+2. Create or fill `<docsRoot>/product/vision.md` using `.aios/skill-router.md` and `product-discovery`.
+3. Generate `<docsRoot>/product/prd.md` using `prd-generator`.
+4. Generate `<docsRoot>/architecture/architecture.md` using `architecture-design`.
+5. Create initial ADRs for important decisions using `adr-generator`.
+6. Break the PRD into small tasks using `task-breakdown`.
+7. Initialize app code with the chosen stack outside the AIOS core when needed.
+8. Implement one task at a time using `implementation-planner` before coding.
+9. Add or update tests using `testing`.
+10. Review each change using `code-review`.
 
 ## Output
 
@@ -24,7 +25,7 @@
 - Architecture document.
 - Initial ADRs.
 - Initial task list.
-- AI-ready project skeleton with frontend and backend areas.
+- AI-ready project skeleton matching the selected project shape.
 
 ## Done Criteria
 

@@ -1,8 +1,8 @@
 # Prompt: Review Security
 
-Use `skills/context-management/SKILL.md` first.
+Resolve `.aios/config.json` first if it exists. Use its `docsRoot`; otherwise use `docs`.
 
-Then use `skills/security-review/SKILL.md`, `references/security-principles.md`, and `templates/security-review-report.template.md` to create a focused security review in `docs/security/`.
+Use `.aios/skill-router.md` to route through `context-management`, then `security-review`. Use `.aios/references/security-principles.md` and `.aios/templates/security-review-report.template.md` to create a focused security review in `<docsRoot>/security/`.
 
 Read only:
 

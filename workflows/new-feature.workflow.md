@@ -7,17 +7,18 @@
 
 ## Process
 
-1. Update or extend the PRD for the feature.
-2. Check whether architecture changes are needed.
-3. Create or update ADRs for important decisions.
-4. Define or update API contract notes in `docs/api/` when frontend/backend integration is involved.
-5. Break the feature into small tasks.
-6. Split frontend and backend tasks when complexity is medium or high.
-7. Plan implementation for one task.
-8. Implement the task.
-9. Add or update tests.
-10. Review the diff.
-11. Update docs when behavior or decisions changed.
+1. Resolve `.aios/config.json`; use `docsRoot` and `projectShape`.
+2. Update or extend the PRD for the feature.
+3. Check whether architecture changes are needed.
+4. Create or update ADRs for important decisions.
+5. Define or update API contract notes in `<docsRoot>/api/` when app integration is involved.
+6. Break the feature into small tasks.
+7. Split tasks by affected project area when complexity is medium or high.
+8. Plan implementation for one task.
+9. Implement the task.
+10. Add or update tests.
+11. Review the diff.
+12. Update docs when behavior or decisions changed.
 
 ## Output
 

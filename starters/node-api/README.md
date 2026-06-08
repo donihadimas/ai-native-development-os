@@ -5,4 +5,5 @@ AI-ready Node API project shell. Add API code only after product, architecture, 
 ## Structure
 
 - `backend/` - Node API placeholder.
-- `docs/` - shared AI development context.
+- `docs/` by default, or configured `<docsRoot>` - shared AI development context.
+- `.aios/` - local workflow kit, command prompts, config, and optional portable skills.

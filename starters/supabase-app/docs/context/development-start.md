@@ -2,17 +2,19 @@
 
 Use this guide after creating or adopting a project with AIOS.
 
+Run `aios config` first when path locations, project shape, selected agents, or skill delivery mode are unclear. In generated projects, `docsRoot` may be `docs`, `.aios/project-docs`, or a custom path.
+
 ## First Steps
 
-1. Fill `docs/product/vision.md` with the problem, target users, MVP scope, and success metrics.
-2. Ask Codex to use `.aios/prompts/01-generate-prd.md` to generate `docs/product/prd.md`.
-3. Ask Codex to use `.aios/prompts/02-generate-architecture.md` to generate `docs/architecture/architecture.md`.
+1. Fill `<docsRoot>/product/vision.md` with the problem, target users, MVP scope, and success metrics.
+2. Ask Codex to use `.aios/prompts/01-generate-prd.md` to generate `<docsRoot>/product/prd.md`.
+3. Ask Codex to use `.aios/prompts/02-generate-architecture.md` to generate `<docsRoot>/architecture/architecture.md`.
 4. Create ADRs when technical decisions need a durable record.
-5. Create the first implementation task in `docs/tasks/`.
+5. Create the first implementation task in `<docsRoot>/tasks/`.
 6. Implement one task at a time.
 7. Review, test, and prepare release notes before marking work done.
 
-Run `aios config` when path locations or skill delivery mode are unclear. If native agent skills are installed, use the agent's skill system first; otherwise use portable skills in `.aios/skills/`.
+If native agent skills are installed, use the agent skill system first. If portable mode is active, use `.aios/skill-router.md` to open the matching `.aios/skills/*/SKILL.md`.
 
 ## Useful Commands
 
@@ -36,6 +38,7 @@ aios release "Release name"
 ## First Codex Prompt
 
 ```text
-Read AGENTS.md, docs/context/context-map.md, and docs/product/vision.md.
-Then read .aios/skill-router.md and use .aios/commands/generate-prd.md to generate docs/product/prd.md.
+Read AGENTS.md and .aios/config.json.
+Resolve docsRoot, then read <docsRoot>/context/context-map.md and <docsRoot>/product/vision.md.
+Then read .aios/skill-router.md and use .aios/commands/generate-prd.md to generate <docsRoot>/product/prd.md.
 ```

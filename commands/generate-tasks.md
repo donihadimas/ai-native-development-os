@@ -1,13 +1,13 @@
 # Command: Generate Tasks
 
-Use `prompts/04-generate-tasks.md` and `skills/task-breakdown/SKILL.md`.
+Resolve `.aios/config.json` first. Use `.aios/prompts/04-generate-tasks.md` and the `task-breakdown` skill through `.aios/skill-router.md`.
 
 Read:
 
 - `AGENTS.md`
-- `docs/context/context-map.md`
+- `<docsRoot>/context/context-map.md`
 - relevant PRD or feature PRD
 - related ADRs if mentioned
-- `templates/task.template.md`
+- `.aios/templates/task.template.md`
 
-Create small implementation-ready tasks in `docs/tasks/` with acceptance criteria and testing expectations.
+Create small implementation-ready tasks in `<docsRoot>/tasks/` with acceptance criteria and testing expectations.

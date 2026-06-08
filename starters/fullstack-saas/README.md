@@ -6,4 +6,5 @@ AI-ready fullstack SaaS project shell. Add application code only after product, 
 
 - `frontend/` - frontend application placeholder.
 - `backend/` - backend application placeholder.
-- `docs/` - shared AI development context.
+- `docs/` by default, or configured `<docsRoot>` - shared AI development context.
+- `.aios/` - local workflow kit, command prompts, config, and optional portable skills.

@@ -6,4 +6,5 @@ AI-ready Supabase app project shell. Add Supabase or application code only after
 
 - `app/` - application placeholder.
 - `supabase/` - Supabase configuration or migration placeholder.
-- `docs/` - shared AI development context.
+- `docs/` by default, or configured `<docsRoot>` - shared AI development context.
+- `.aios/` - local workflow kit, command prompts, config, and optional portable skills.

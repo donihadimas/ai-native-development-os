@@ -1,12 +1,12 @@
 # Command: Plan Migration
 
-Use `prompts/10-plan-database-migration.md` and `skills/database-migration/SKILL.md`.
+Resolve `.aios/config.json` first. Use `.aios/prompts/10-plan-database-migration.md` and the `database-migration` skill through `.aios/skill-router.md`.
 
 Read:
 
 - active task or feature PRD
 - related architecture and ADRs
 - existing schema or migration notes
-- `templates/migration-plan.template.md`
+- `.aios/templates/migration-plan.template.md`
 
-Create a migration plan in `docs/database/migrations/`. Do not apply a migration.
+Create a migration plan in `<docsRoot>/database/migrations/`. Do not apply a migration.

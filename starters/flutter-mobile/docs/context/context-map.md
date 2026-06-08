@@ -1,12 +1,14 @@
 # Context Map
 
+Read `.aios/config.json` first if it exists. Use `docsRoot` as the documentation root; otherwise use `docs`.
+
 ## Source of Truth
 
-- Product: `docs/product/vision.md`, `docs/product/prd.md`, and `docs/product/features/`.
-- Architecture: `docs/architecture/architecture.md`.
-- Decisions: `docs/adr/`.
-- Active tasks: `docs/tasks/`.
-- API contracts: `docs/api/`.
+- Product: `<docsRoot>/product/vision.md`, `<docsRoot>/product/prd.md`, and `<docsRoot>/product/features/`.
+- Architecture: `<docsRoot>/architecture/architecture.md`.
+- Decisions: `<docsRoot>/adr/`.
+- Active tasks: `<docsRoot>/tasks/`.
+- API contracts: `<docsRoot>/api/`.
 - App code: `mobile/`.
 
 ## Routing

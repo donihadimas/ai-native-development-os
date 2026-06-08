@@ -1,6 +1,6 @@
 # Command: Review Code
 
-Use `prompts/07-review-code.md` and `skills/code-review/SKILL.md`.
+Resolve `.aios/config.json` first. Use `.aios/prompts/07-review-code.md` and the `code-review` skill through `.aios/skill-router.md`.
 
 Read:
 

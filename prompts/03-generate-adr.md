@@ -1,6 +1,8 @@
 # Prompt: Generate ADR
 
-Use `skills/adr-generator/SKILL.md` and `templates/adr.template.md` to create `docs/adr/ADR-XXX-title.md`.
+Resolve `.aios/config.json` first if it exists. Use its `docsRoot`; otherwise use `docs`.
+
+Use `.aios/skill-router.md` to route through `adr-generator`. Use `.aios/templates/adr.template.md` to create `<docsRoot>/adr/ADR-XXX-title.md`.
 
 Read only:
 

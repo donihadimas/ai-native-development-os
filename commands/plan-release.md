@@ -1,6 +1,6 @@
 # Command: Plan Release
 
-Use `prompts/12-plan-release.md` and `skills/release-management/SKILL.md`.
+Resolve `.aios/config.json` first. Use `.aios/prompts/12-plan-release.md` and the `release-management` skill through `.aios/skill-router.md`.
 
 Read:
 
@@ -9,4 +9,4 @@ Read:
 - test evidence
 - changelog or release notes if present
 
-Create release documentation in `docs/releases/`. Do not publish or deploy automatically.
+Create release documentation in `<docsRoot>/releases/`. Do not publish or deploy automatically.

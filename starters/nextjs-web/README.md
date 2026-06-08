@@ -5,4 +5,5 @@ AI-ready Next.js web project shell. Add Next.js code only after product, archite
 ## Structure
 
 - `frontend/` - Next.js application placeholder.
-- `docs/` - shared AI development context.
+- `docs/` by default, or configured `<docsRoot>` - shared AI development context.
+- `.aios/` - local workflow kit, command prompts, config, and optional portable skills.

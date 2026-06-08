@@ -1,12 +1,12 @@
 # Command: Generate PRD
 
-Use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md`.
+Resolve `.aios/config.json` first. Use `.aios/prompts/01-generate-prd.md` and the `prd-generator` skill through `.aios/skill-router.md`.
 
 Read:
 
 - `AGENTS.md`
-- `docs/context/context-map.md`
-- `docs/product/vision.md`
-- `templates/prd.template.md`
+- `<docsRoot>/context/context-map.md`
+- `<docsRoot>/product/vision.md`
+- `.aios/templates/prd.template.md`
 
-Create or update `docs/product/prd.md`. Keep acceptance criteria testable and record open questions.
+Create or update `<docsRoot>/product/prd.md`. Keep acceptance criteria testable and record open questions.

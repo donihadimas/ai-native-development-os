@@ -2,7 +2,7 @@
 
 ## Contract Before Integration
 
-When frontend and backend integration is involved, define or update the API contract before frontend implementation.
+When app integration is involved, define or update the API contract before client implementation.
 
 ## Consistent Shape
 
@@ -16,6 +16,6 @@ Errors should be predictable, typed or coded where possible, and useful to both 
 
 Avoid breaking existing clients without a migration path. Document breaking changes clearly.
 
-## V1 Hook
+## Contract Location
 
-This OS reserves `docs/api/` for contracts and integration notes. Full OpenAPI templates and contract workflows are deferred to V2.
+Generated projects store contracts under `<docsRoot>/api/`, where `docsRoot` comes from `.aios/config.json` or defaults to `docs`.

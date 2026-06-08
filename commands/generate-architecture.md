@@ -1,12 +1,12 @@
 # Command: Generate Architecture
 
-Use `prompts/02-generate-architecture.md` and `skills/architecture-design/SKILL.md`.
+Resolve `.aios/config.json` first. Use `.aios/prompts/02-generate-architecture.md` and the `architecture-design` skill through `.aios/skill-router.md`.
 
 Read:
 
 - `AGENTS.md`
-- `docs/context/context-map.md`
-- `docs/product/prd.md`
-- `templates/architecture.template.md`
+- `<docsRoot>/context/context-map.md`
+- `<docsRoot>/product/prd.md`
+- `.aios/templates/architecture.template.md`
 
-Create or update `docs/architecture/architecture.md`. Include constraints, FE/BE boundaries, API, data, auth, testing, deployment, and observability notes.
+Create or update `<docsRoot>/architecture/architecture.md`. Include constraints, app boundaries from `projectShape`, API, data, auth, testing, deployment, and observability notes.
