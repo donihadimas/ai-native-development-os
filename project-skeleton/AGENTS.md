@@ -15,12 +15,14 @@ Use `docs/context/context-map.md` to decide which documents to read. Do not read
 ## Local AIOS Kit
 
 Before selecting a workflow, read `.aios/skill-router.md` when `.aios/` is installed.
-When `.aios/` is installed, use `.aios/skills/*/SKILL.md` when a task matches a reusable workflow.
+If native agent skills are installed, use the agent's skill system first.
+If portable skills are installed, use `.aios/skills/*/SKILL.md` when a task matches a reusable workflow.
 Use `.aios/commands/` as a local command palette when the user asks for a known workflow by name.
 Use `.aios/prompts/` for manual AI workflow prompts.
 Use `.aios/templates/` when creating docs.
 Use `.aios/references/` for stable engineering guidance.
 Use `.aios/workflows/` to follow development sequences.
+Read `.aios/config.json` when path locations or skill delivery mode are unclear.
 
 ## Required Before Implementation
 

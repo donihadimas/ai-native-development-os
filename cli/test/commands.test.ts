@@ -31,6 +31,9 @@ test("help explains the CLI purpose and available commands", () => {
   assert.match(output, /aios install-kit \[project-path\]/);
   assert.match(output, /aios command-list \[project-path\]/);
   assert.match(output, /aios command <name> \[project-path\]/);
+  assert.match(output, /aios agent-install \[project-path\]/);
+  assert.match(output, /aios agent-list/);
+  assert.match(output, /aios config \[project-path\]/);
   assert.match(output, /aios openapi <api-name>/);
   assert.match(output, /aios migration <migration-name>/);
   assert.match(output, /aios security <review-name>/);
@@ -123,6 +126,75 @@ test("install-kit adds missing local workflow assets without overwriting existin
   assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "review-code.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "workflows", "review.workflow.md")));
+});
+
+test("init can use a configurable docs root", () => {
+  const cwd = tempCwd();
+  run(["init", "clean-project", "--docs-root", ".aios/project-docs"], { runtimePaths, cwd });
+  const project = path.join(cwd, "clean-project");
+
+  assert.equal(fs.existsSync(path.join(project, "docs")), false);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "project-docs", "product", "vision.md")));
+
+  run(["task", "Implement Auth"], { runtimePaths, cwd: project });
+  run(["openapi", "Auth API"], { runtimePaths, cwd: project });
+
+  assert.ok(fs.existsSync(path.join(project, ".aios", "project-docs", "tasks", "TASK-001-implement-auth.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "project-docs", "api", "auth-api.openapi.yaml")));
+  assert.match(run(["next"], { runtimePaths, cwd: project }), /\.aios\/project-docs\/product\/vision.md/);
+  assert.match(run(["validate"], { runtimePaths, cwd: project }), /AI-ready structure validated/);
+});
+
+test("native skill delivery installs agent skills without portable .aios skills", () => {
+  const cwd = tempCwd();
+  run(
+    [
+      "init",
+      "native-project",
+      "--agents",
+      "codex,qwen",
+      "--skills",
+      "core",
+      "--skill-delivery",
+      "native"
+    ],
+    { runtimePaths, cwd }
+  );
+  const project = path.join(cwd, "native-project");
+
+  assert.equal(fs.existsSync(path.join(project, ".aios", "skills")), false);
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "context-management", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "context-management", "agents", "openai.yaml")));
+  assert.ok(fs.existsSync(path.join(project, ".qwen", "skills", "implementation-planner", "SKILL.md")));
+  assert.match(run(["validate"], { runtimePaths, cwd: project }), /AI-ready structure validated/);
+
+  const config = JSON.parse(run(["config"], { runtimePaths, cwd: project })) as { skillDelivery: string; selectedAgents: string[] };
+  assert.equal(config.skillDelivery, "native");
+  assert.deepEqual(config.selectedAgents, ["codex", "qwen"]);
+});
+
+test("agent-install supports dry-run, selected agents, selected skills, and skip existing", () => {
+  const cwd = tempCwd();
+  run(["init", "agent-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "agent-project");
+
+  const dryRun = run(["agent-install", "agent-project", "--agents", "opencode,antigravity", "--skills", "testing", "--dry-run"], {
+    runtimePaths,
+    cwd
+  });
+  assert.match(dryRun, /Planned native agent skill install/);
+  assert.equal(fs.existsSync(path.join(project, ".opencode", "skills", "testing", "SKILL.md")), false);
+
+  const output = run(["agent-install", "agent-project", "--agents", "opencode,antigravity", "--skills", "testing"], {
+    runtimePaths,
+    cwd
+  });
+  assert.match(output, /Created: 2/);
+  assert.ok(fs.existsSync(path.join(project, ".opencode", "skills", "testing", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agent", "skills", "testing", "SKILL.md")));
+
+  const skipped = run(["agent-install", "agent-project", "--agents", "opencode", "--skills", "testing"], { runtimePaths, cwd });
+  assert.match(skipped, /Skipped existing: 1/);
 });
 
 test("command-list and command expose local workflow command prompts", () => {

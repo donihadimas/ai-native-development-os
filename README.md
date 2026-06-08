@@ -21,6 +21,7 @@ Use this project when you want to:
 - V2 assisted workflow is implemented as a focused Node.js CLI in `cli/`.
 - V2.x workflow extensions are implemented for AI docs only starters, database migration planning, security review, release preparation, OpenAPI generation, and GitHub Actions dry-run automation.
 - Ready-to-use project generation is implemented: `aios init`, `starter`, and `adopt` install a local `.aios/` workflow kit by default.
+- V3-lite setup is implemented for interactive CLI setup, configurable docs location, and native agent skill install for Codex, Qwen Code, OpenCode, Antigravity, and generic Agent Skills.
 - The CLI is designed for publishing as `@donihadimas/aios`.
 - V3 remains intentionally deferred for productized platform capabilities such as an interactive CLI, skill installer, health checker, dashboard, and GitHub Issues integration.
 
@@ -68,7 +69,16 @@ aios next demo-project
 cd demo-project
 ```
 
-`aios init` installs a local `.aios/` workflow kit by default, so the generated project is self-contained for Codex. Use `--lite` only when you want the old minimal skeleton behavior.
+`aios init` installs a local `.aios/` workflow kit by default, so the generated project is self-contained for Codex. Use `--lite` only when you want the old minimal skeleton behavior. Run `aios` without arguments for the interactive wizard.
+
+Native agent skill install keeps `.aios/` compact and installs selected skills into agent-specific folders:
+
+```bash
+aios init demo-native --agents codex,qwen --skills core --skill-delivery native
+aios agent-install demo-native --agents opencode,antigravity --skills testing
+```
+
+Use `--docs-root .aios/project-docs` when you want project docs under `.aios/` instead of the default `docs/`.
 
 Adopt an existing project without overwriting existing files:
 
@@ -120,13 +130,18 @@ project/
 │       ├── context-map.md
 │       └── development-start.md
 ├── .aios/
+│   ├── config.json
 │   ├── skill-router.md
 │   ├── commands/
-│   ├── skills/
+│   ├── skills/        # present in portable or both skill delivery mode
 │   ├── prompts/
 │   ├── references/
 │   ├── templates/
 │   └── workflows/
+├── .agents/           # optional native Codex/generic skills
+├── .qwen/             # optional native Qwen Code skills
+├── .opencode/         # optional native OpenCode skills
+├── .agent/            # optional native Antigravity skills
 ├── frontend/
 └── backend/
 ```

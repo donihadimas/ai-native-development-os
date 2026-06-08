@@ -1307,6 +1307,9 @@ aios adopt [project-path]
 aios install-kit [project-path]
 aios command-list [project-path]
 aios command <name> [project-path]
+aios agent-list
+aios agent-install [project-path]
+aios config [project-path]
 aios feature <feature-name>
 aios adr <decision-name>
 aios task <task-name>
@@ -1324,6 +1327,9 @@ CLI responsibilities:
 
 - copy project skeleton,
 - install local `.aios/` workflow kit by default,
+- support interactive setup when the CLI is run without enough arguments,
+- support configurable docs location through `.aios/config.json`,
+- install selected AIOS skills into native agent skill folders for Codex, Qwen Code, OpenCode, Antigravity, and generic Agent Skills,
 - copy AI docs only starters,
 - adopt AIOS docs and `.aios/` into existing projects without overwriting files,
 - list and print portable command prompts for agents without slash command support,
@@ -1575,8 +1581,8 @@ V3 is optional and should only begin after V2 proves useful.
 
 Potential features:
 
-1. Interactive CLI.
-2. Skill installer.
+1. Interactive CLI. Status: V3-lite implemented for setup/adopt/agent skill install.
+2. Skill installer. Status: V3-lite implemented for selected local AIOS skills and native agent folders.
 3. Project health checker.
 4. Context health checker.
 5. Documentation freshness checker.

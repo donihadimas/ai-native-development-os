@@ -31,6 +31,15 @@ cd demo-project
 
 By default, generated projects include `.aios/` with skills, prompts, references, templates, and workflows. Use `--lite` only when you want a minimal structure without the local workflow kit.
 
+Run `aios` without arguments to use the interactive wizard. The wizard can create a new project, adopt an existing project, choose docs location, and install selected skills into native agent folders.
+
+For a compact `.aios/` with native skills:
+
+```bash
+aios init demo-native --agents codex,qwen --skills core --skill-delivery native
+aios agent-install demo-native --agents opencode,antigravity --skills testing
+```
+
 Or start from a lightweight V2.x starter:
 
 ```bash
@@ -64,7 +73,7 @@ aios validate
 Open the project in your IDE and ask Codex to start from the generated docs:
 
 ```text
-Read AGENTS.md, docs/context/context-map.md, .aios/skills/implementation-planner/SKILL.md, and docs/tasks/TASK-001-implement-habit-api.md. Create an implementation plan before coding.
+Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and docs/tasks/TASK-001-implement-habit-api.md. Use the matching native agent skill when installed, otherwise use the portable .aios skill. Create an implementation plan before coding.
 ```
 
 ## Recommended Workflow
@@ -112,13 +121,15 @@ aios validate
 
 ## Commands
 
-### `aios init <project-name> [--lite]`
+### `aios init <project-name> [--lite] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
 
 Copies the bundled AI-ready project skeleton into a new directory and installs the local `.aios/` workflow kit.
 
 ```bash
 aios init my-saas
 aios init my-saas-lite --lite
+aios init my-saas-native --agents codex,qwen --skills core --skill-delivery native
+aios init my-saas-clean --docs-root .aios/project-docs
 ```
 
 Behavior:
@@ -127,6 +138,10 @@ Behavior:
 - Refuses to overwrite an existing non-empty directory.
 - Includes `AGENTS.md`, optional `CLAUDE.md`, shared docs, `frontend/`, `backend/`, and `.aios/` by default.
 - `--lite` skips `.aios/` and preserves the older minimal behavior.
+- `--docs-root` stores project docs somewhere other than `docs/`.
+- `--skill-delivery` accepts `portable`, `native`, or `both`.
+- `--agents` accepts `codex`, `qwen`, `opencode`, `antigravity`, and `generic`.
+- `--skills` accepts `core`, `planning`, `delivery`, `all`, or a comma-separated skill list.
 
 ### `aios validate [project-path] [--lite]`
 
@@ -154,6 +169,7 @@ It checks for:
 - `frontend/`
 - `backend/`
 - required `.aios/` workflow kit files unless `--lite` is provided
+- native agent skill files when `.aios/config.json` uses native repo-scope skill delivery
 
 It also reports warnings, without failing validation, when optional V2.x paths are missing:
 
@@ -164,7 +180,7 @@ It also reports warnings, without failing validation, when optional V2.x paths a
 
 Warnings are guidance only. Add these folders when the project needs security reviews, release notes, migration plans, or OpenAPI contracts.
 
-### `aios starter <starter-name> <project-name> [--lite]`
+### `aios starter <starter-name> <project-name> [--lite] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
 
 Copies a bundled AI docs only starter into a new directory and installs the local `.aios/` workflow kit.
 
@@ -191,7 +207,7 @@ Behavior:
 - Does not include framework code or dependencies.
 - `--lite` skips `.aios/`.
 
-### `aios adopt [project-path] [--lite]`
+### `aios adopt [project-path] [--lite] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
 
 Adds the AI Dev OS structure and local `.aios/` workflow kit to an existing project without overwriting existing files.
 
@@ -229,6 +245,48 @@ aios install-kit path/to/project
 ```
 
 Use this when a project was created in lite mode or when `.aios/` needs to be refreshed with missing assets.
+
+### `aios agent-list`
+
+Lists supported native agent targets and available AIOS skills.
+
+```bash
+aios agent-list
+```
+
+Supported agent targets:
+
+- `codex` -> repo `.agents/skills`, user `~/.agents/skills`
+- `generic` -> repo `.agents/skills`, user `~/.agents/skills`
+- `qwen` -> repo `.qwen/skills`, user `~/.qwen/skills`
+- `opencode` -> repo `.opencode/skills`, user `~/.config/opencode/skills`
+- `antigravity` -> repo `.agent/skills`
+
+### `aios agent-install [project-path]`
+
+Installs selected AIOS skills into native agent skill folders.
+
+```bash
+aios agent-install . --agents codex,qwen --skills core
+aios agent-install . --agents opencode --skills testing --dry-run
+aios agent-install . --agents generic --skills all --scope user
+```
+
+Behavior:
+
+- Skips existing skill folders by default.
+- Uses `--overwrite` only when you intentionally want to replace existing installed skills.
+- Uses `--dry-run` to preview target files without writing.
+- Updates `.aios/config.json` after a real install.
+
+### `aios config [project-path]`
+
+Prints the resolved AIOS project config.
+
+```bash
+aios config
+aios config my-saas
+```
 
 ### `aios command-list [project-path]`
 
@@ -413,13 +471,18 @@ my-project/
 │       ├── context-map.md
 │       └── development-start.md
 ├── .aios/
+│   ├── config.json
 │   ├── skill-router.md
 │   ├── commands/
-│   ├── skills/
+│   ├── skills/        # portable or both skill delivery mode
 │   ├── prompts/
 │   ├── references/
 │   ├── templates/
 │   └── workflows/
+├── .agents/           # optional Codex/generic native skills
+├── .qwen/             # optional Qwen Code native skills
+├── .opencode/         # optional OpenCode native skills
+├── .agent/            # optional Antigravity native skills
 ├── frontend/
 └── backend/
 ```
@@ -437,7 +500,7 @@ Read AGENTS.md, docs/product/vision.md, and .aios/prompts/01-generate-prd.md. Ge
 For task implementation:
 
 ```text
-Read AGENTS.md, docs/context/context-map.md, .aios/skills/implementation-planner/SKILL.md, and the active task in docs/tasks/. Create a short implementation plan before editing files. Do not modify unrelated files.
+Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and the active task in docs/tasks/. Use native agent skills when installed, otherwise use .aios/skills. Create a short implementation plan before editing files. Do not modify unrelated files.
 ```
 
 For review:

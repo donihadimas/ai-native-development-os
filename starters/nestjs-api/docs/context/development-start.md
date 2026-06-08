@@ -12,12 +12,17 @@ Use this guide after creating or adopting a project with AIOS.
 6. Implement one task at a time.
 7. Review, test, and prepare release notes before marking work done.
 
+Run `aios config` when path locations or skill delivery mode are unclear. If native agent skills are installed, use the agent's skill system first; otherwise use portable skills in `.aios/skills/`.
+
 ## Useful Commands
 
 ```bash
 aios next
+aios config
 aios command-list
 aios command generate-prd
+aios agent-list
+aios agent-install . --agents codex --skills core
 aios feature "Feature name"
 aios adr "Decision name"
 aios task "Task name"

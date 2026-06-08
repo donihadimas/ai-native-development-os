@@ -4,6 +4,8 @@
 
 V2.x has been implemented as lightweight workflow extensions on top of the existing V2 CLI. Generated projects now include a local `.aios/` workflow kit by default, making them self-contained for AI-native development. The implementation preserves the product boundary: no app code generation, no dependency installation, no database migration execution, and no automatic publishing.
 
+V3-lite setup improvements are also validated: interactive setup entrypoints, configurable docs location, and native agent skill installation while keeping `.aios/` compact when native skills are selected.
+
 ## Acceptance Criteria Status
 
 | Requirement | Status | Evidence |
@@ -11,6 +13,9 @@ V2.x has been implemented as lightweight workflow extensions on top of the exist
 | Ready-to-use local kit | Pass | Root workflow assets are copied into generated projects as `.aios/`. |
 | Skill router | Pass | `skill-router.md` is installed as `.aios/skill-router.md` for intent-to-skill routing. |
 | Command palette | Pass | `commands/` is installed as `.aios/commands/`, and `aios command-list` / `aios command` expose portable prompts. |
+| Configurable docs root | Pass | `.aios/config.json` stores docs root and commands write to the configured location. |
+| Native agent skills | Pass | `aios agent-install` installs selected skills into Codex/generic, Qwen, OpenCode, and Antigravity repo folders. |
+| Compact native setup | Pass | Native skill delivery skips `.aios/skills` and relies on agent-native skill folders. |
 | Default full setup | Pass | `aios init`, `starter`, and `adopt` install `.aios/` by default. |
 | Lite mode | Pass | `--lite` skips `.aios/` for `init`, `starter`, `adopt`, and `validate`. |
 | Install kit command | Pass | `aios install-kit` installs or repairs `.aios/` without overwriting existing files. |
@@ -34,7 +39,7 @@ npm test
 
 Result:
 
-- 29 tests passed.
+- 32 tests passed.
 - 0 tests failed.
 
 ## Manual Smoke Coverage
@@ -49,6 +54,9 @@ Covered by CLI tests and manual workflow definition:
 - `aios next`
 - `aios command-list`
 - `aios command generate-prd`
+- `aios agent-list`
+- `aios agent-install --agents codex,qwen --skills core`
+- `aios init --docs-root .aios/project-docs`
 - `aios openapi "Habit API"`
 - `aios migration "Create habits table"`
 - `aios security "Habit API"`
