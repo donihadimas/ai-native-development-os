@@ -28,16 +28,16 @@ test("help explains the CLI purpose and available commands", () => {
   assert.match(output, /aios init <project-name> \[--lite\]/);
   assert.match(output, /aios starter <starter-name> <project-name> \[--lite\]/);
   assert.match(output, /aios adopt \[project-path\]/);
-  assert.match(output, /aios install-kit \[project-path\]/);
-  assert.match(output, /aios command-list \[project-path\]/);
-  assert.match(output, /aios command <name> \[project-path\]/);
-  assert.match(output, /aios agent-install \[project-path\]/);
-  assert.match(output, /aios agent-list/);
+  assert.match(output, /aios kit install \[project-path\]/);
+  assert.match(output, /aios prompt list \[project-path\]/);
+  assert.match(output, /aios prompt show <name> \[project-path\]/);
+  assert.match(output, /aios agent install \[project-path\]/);
+  assert.match(output, /aios agent list/);
   assert.match(output, /aios config \[project-path\]/);
-  assert.match(output, /aios openapi <api-name>/);
-  assert.match(output, /aios migration <migration-name>/);
-  assert.match(output, /aios security <review-name>/);
-  assert.match(output, /aios release <release-name>/);
+  assert.match(output, /aios create openapi <api-name>/);
+  assert.match(output, /aios create migration <migration-name>/);
+  assert.match(output, /aios create security <review-name>/);
+  assert.match(output, /aios create release <release-name>/);
   assert.match(output, /aios validate \[project-path\] \[--lite\]/);
   assert.match(output, /aios next \[project-path\]/);
   assert.match(output, /Typical workflow:/);
@@ -150,7 +150,7 @@ test("adopt defaults to the current working directory", () => {
   assert.ok(fs.existsSync(path.join(project, ".aios", "templates", "task.template.md")));
 });
 
-test("install-kit adds missing local workflow assets without overwriting existing files", () => {
+test("kit install adds missing local workflow assets without overwriting existing files", () => {
   const cwd = tempCwd();
   run(["init", "demo-project", "--lite"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
@@ -158,7 +158,7 @@ test("install-kit adds missing local workflow assets without overwriting existin
   fs.mkdirSync(path.dirname(customPrompt), { recursive: true });
   fs.writeFileSync(customPrompt, "# Custom prompt\n");
 
-  const output = run(["install-kit"], { runtimePaths, cwd: project });
+  const output = run(["kit", "install"], { runtimePaths, cwd: project });
 
   assert.match(output, /Installed AIOS workflow kit/);
   assert.equal(fs.readFileSync(customPrompt, "utf8"), "# Custom prompt\n");
@@ -176,8 +176,8 @@ test("init can use a configurable docs root", () => {
   assert.equal(fs.existsSync(path.join(project, "docs")), false);
   assert.ok(fs.existsSync(path.join(project, ".aios", "project-docs", "product", "vision.md")));
 
-  run(["task", "Implement Auth"], { runtimePaths, cwd: project });
-  run(["openapi", "Auth API"], { runtimePaths, cwd: project });
+  run(["create", "task", "Implement Auth"], { runtimePaths, cwd: project });
+  run(["create", "openapi", "Auth API"], { runtimePaths, cwd: project });
 
   assert.ok(fs.existsSync(path.join(project, ".aios", "project-docs", "tasks", "TASK-001-implement-auth.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "project-docs", "api", "auth-api.openapi.yaml")));
@@ -213,19 +213,19 @@ test("native skill delivery installs agent skills without portable .aios skills"
   assert.deepEqual(config.selectedAgents, ["codex", "qwen"]);
 });
 
-test("agent-install supports dry-run, selected agents, selected skills, and skip existing", () => {
+test("agent install supports dry-run, selected agents, selected skills, and skip existing", () => {
   const cwd = tempCwd();
   run(["init", "agent-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "agent-project");
 
-  const dryRun = run(["agent-install", "agent-project", "--agents", "opencode,antigravity", "--skills", "testing", "--dry-run"], {
+  const dryRun = run(["agent", "install", "agent-project", "--agents", "opencode,antigravity", "--skills", "testing", "--dry-run"], {
     runtimePaths,
     cwd
   });
   assert.match(dryRun, /Planned native agent skill install/);
   assert.equal(fs.existsSync(path.join(project, ".opencode", "skills", "testing", "SKILL.md")), false);
 
-  const output = run(["agent-install", "agent-project", "--agents", "opencode,antigravity", "--skills", "testing"], {
+  const output = run(["agent", "install", "agent-project", "--agents", "opencode,antigravity", "--skills", "testing"], {
     runtimePaths,
     cwd
   });
@@ -233,24 +233,31 @@ test("agent-install supports dry-run, selected agents, selected skills, and skip
   assert.ok(fs.existsSync(path.join(project, ".opencode", "skills", "testing", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, ".agent", "skills", "testing", "SKILL.md")));
 
-  const skipped = run(["agent-install", "agent-project", "--agents", "opencode", "--skills", "testing"], { runtimePaths, cwd });
+  const skipped = run(["agent", "install", "agent-project", "--agents", "opencode", "--skills", "testing"], { runtimePaths, cwd });
   assert.match(skipped, /Skipped existing: 1/);
 });
 
-test("command-list and command expose local workflow command prompts", () => {
+test("prompt list and prompt show expose local workflow command prompts", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
-  const listOutput = run(["command-list"], { runtimePaths, cwd: project });
+  const listOutput = run(["prompt", "list"], { runtimePaths, cwd: project });
   assert.match(listOutput, /generate-prd/);
   assert.match(listOutput, /implement-task/);
   assert.match(listOutput, /review-code/);
 
-  const commandOutput = run(["command", "generate-prd"], { runtimePaths, cwd: project });
+  const commandOutput = run(["prompt", "show", "generate-prd"], { runtimePaths, cwd: project });
   assert.match(commandOutput, /Command: Generate PRD/);
   assert.match(commandOutput, /\.aios\/skill-router\.md/);
   assert.match(commandOutput, /prd-generator/);
+});
+
+test("legacy flat commands are not accepted", () => {
+  const cwd = tempCwd();
+  assert.throws(() => run(["task", "Old Shape"], { runtimePaths, cwd }), /Unknown command: task/);
+  assert.throws(() => run(["agent-install"], { runtimePaths, cwd }), /Unknown command: agent-install/);
+  assert.throws(() => run(["command-list"], { runtimePaths, cwd }), /Unknown command: command-list/);
 });
 
 test("adr, task, and review create files in a generated project", () => {
@@ -258,9 +265,9 @@ test("adr, task, and review create files in a generated project", () => {
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
-  run(["adr", "Use Server Date"], { runtimePaths, cwd: project });
-  run(["task", "Implement Habit API"], { runtimePaths, cwd: project });
-  run(["review", "Habit API"], { runtimePaths, cwd: project });
+  run(["create", "adr", "Use Server Date"], { runtimePaths, cwd: project });
+  run(["create", "task", "Implement Habit API"], { runtimePaths, cwd: project });
+  run(["create", "review", "Habit API"], { runtimePaths, cwd: project });
 
   assert.ok(fs.existsSync(path.join(project, "docs", "adr", "ADR-001-use-server-date.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "tasks", "TASK-001-implement-habit-api.md")));
@@ -272,7 +279,7 @@ test("feature creates a feature PRD stub", () => {
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
-  run(["feature", "Habit Reminders"], { runtimePaths, cwd: project });
+  run(["create", "feature", "Habit Reminders"], { runtimePaths, cwd: project });
 
   assert.ok(fs.existsSync(path.join(project, "docs", "product", "features", "habit-reminders.prd.md")));
 });
@@ -323,10 +330,10 @@ test("openapi, migration, security, and release create V2.x documents", () => {
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
-  run(["openapi", "Habit API"], { runtimePaths, cwd: project });
-  run(["migration", "Create Habits Table"], { runtimePaths, cwd: project });
-  run(["security", "Habit API"], { runtimePaths, cwd: project });
-  const releaseOutput = run(["release", "0.3.0"], { runtimePaths, cwd: project });
+  run(["create", "openapi", "Habit API"], { runtimePaths, cwd: project });
+  run(["create", "migration", "Create Habits Table"], { runtimePaths, cwd: project });
+  run(["create", "security", "Habit API"], { runtimePaths, cwd: project });
+  const releaseOutput = run(["create", "release", "0.3.0"], { runtimePaths, cwd: project });
 
   assert.ok(fs.existsSync(path.join(project, "docs", "api", "habit-api.openapi.yaml")));
   assert.ok(fs.existsSync(path.join(project, "docs", "database", "migrations", "MIGRATION-001-create-habits-table.md")));
@@ -377,6 +384,6 @@ test("next reports vision, PRD, architecture, task creation, and task-ready stat
   fs.writeFileSync(path.join(project, "docs", "architecture", "architecture.md"), "# Architecture\n\nReal architecture.\n");
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Create the first implementation task/);
 
-  run(["task", "Implement habit API"], { runtimePaths, cwd: project });
+  run(["create", "task", "Implement habit API"], { runtimePaths, cwd: project });
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Open the active task/);
 });

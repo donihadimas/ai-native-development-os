@@ -8,8 +8,8 @@ V2 has been implemented as a focused assisted workflow upgrade: a small Node.js 
 
 | Area | Status | Evidence |
 | --- | --- | --- |
-| CLI | Pass | `cli/src/` implements `aios init`, `starter`, `adopt`, `install-kit`, `command-list`, `command`, `agent-list`, `agent-install`, `config`, `feature`, `adr`, `task`, `review`, `openapi`, `migration`, `security`, `release`, `validate`, and `next`. |
-| CLI tests | Pass | `npm test` passes 34 Node test-runner tests. |
+| CLI | Pass | `cli/src/` implements `aios init`, `starter`, `adopt`, `kit install`, `prompt list`, `prompt show`, `agent list`, `agent install`, `config`, `create feature`, `create adr`, `create task`, `create review`, `create openapi`, `create migration`, `create security`, `create release`, `validate`, and `next`. |
+| CLI tests | Pass | `npm test` passes 35 Node test-runner tests. |
 | Ready-to-use setup | Pass | Generated projects include `.aios/` workflow kit by default, with `--lite` available for minimal output. |
 | OpenAPI support | Pass | `templates/openapi.template.yaml`, `skills/api-contract-design`, `workflows/api-contract.workflow.md`, and `prompts/09-design-api-contract.md` exist. |
 | Backend API adapter | Pass | `skills/backend-api-development/SKILL.md` and `references/backend-api-standards.md` exist. |
@@ -30,7 +30,7 @@ npm test
 
 Result:
 
-- 34 tests passed.
+- 35 tests passed.
 - 0 tests failed.
 
 Covered behavior:
@@ -46,7 +46,7 @@ Covered behavior:
 - validation coverage for feature PRD and review report directories,
 - local `.aios/` kit installation and validation,
 - V2.x optional validation warnings,
-- `init`, `starter`, `adopt`, `install-kit`, `command-list`, `command`, `agent-list`, `agent-install`, `config`, `feature`, `adr`, `task`, `review`, `openapi`, `migration`, `security`, `release`, `validate`, and `next` command behavior,
+- `init`, `starter`, `adopt`, `kit install`, `prompt list`, `prompt show`, `agent list`, `agent install`, `config`, `create feature`, `create adr`, `create task`, `create review`, `create openapi`, `create migration`, `create security`, `create release`, `validate`, and `next` command behavior,
 - configurable docs root behavior,
 - configurable project shape behavior,
 - compact native agent skill installation behavior,
@@ -60,10 +60,10 @@ Commands were run against a temporary project using the compiled CLI:
 node cli/dist/src/index.js starter fullstack-saas <tmp>/demo-saas
 node cli/dist/src/index.js validate <tmp>/demo-saas
 cd <tmp>/demo-saas
-node <repo>/cli/dist/src/index.js openapi "Habit API"
-node <repo>/cli/dist/src/index.js migration "Create habits table"
-node <repo>/cli/dist/src/index.js security "Habit API"
-node <repo>/cli/dist/src/index.js release "0.3.0"
+node <repo>/cli/dist/src/index.js create openapi "Habit API"
+node <repo>/cli/dist/src/index.js create migration "Create habits table"
+node <repo>/cli/dist/src/index.js create security "Habit API"
+node <repo>/cli/dist/src/index.js create release "0.3.0"
 ```
 
 Result:

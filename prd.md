@@ -1305,20 +1305,20 @@ aios init <project-name> --shape frontend|backend|mobile|library|docs
 aios starter <starter-name> <project-name>
 aios starter <starter-name> <project-name> --lite
 aios adopt [project-path]
-aios install-kit [project-path]
-aios command-list [project-path]
-aios command <name> [project-path]
-aios agent-list
-aios agent-install [project-path]
+aios kit install [project-path]
+aios prompt list [project-path]
+aios prompt show <name> [project-path]
+aios agent list
+aios agent install [project-path]
 aios config [project-path]
-aios feature <feature-name>
-aios adr <decision-name>
-aios task <task-name>
-aios review <name>
-aios openapi <api-name>
-aios migration <migration-name>
-aios security <review-name>
-aios release <release-name>
+aios create feature <feature-name>
+aios create adr <decision-name>
+aios create task <task-name>
+aios create review <name>
+aios create openapi <api-name>
+aios create migration <migration-name>
+aios create security <review-name>
+aios create release <release-name>
 aios validate [project-path]
 aios validate [project-path] --lite
 aios next [project-path]

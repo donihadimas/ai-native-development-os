@@ -75,7 +75,7 @@ Native agent skill install keeps `.aios/` compact and installs selected skills i
 
 ```bash
 aios init demo-native --agents codex,qwen --skills core --skill-delivery native
-aios agent-install demo-native --agents opencode,antigravity --skills testing
+aios agent install demo-native --agents opencode,antigravity --skills testing
 ```
 
 Use `--docs-root .aios/project-docs` when you want project docs under `.aios/` instead of the default `docs/`.
@@ -92,14 +92,14 @@ aios validate
 Create planning and review documents:
 
 ```bash
-aios feature "Habit reminders"
-aios openapi "Habit API"
-aios migration "Create habits table"
-aios security "Habit API"
-aios adr "Use server date for completion"
-aios task "Implement habit API"
-aios review "Habit API"
-aios release "0.3.0"
+aios create feature "Habit reminders"
+aios create openapi "Habit API"
+aios create migration "Create habits table"
+aios create security "Habit API"
+aios create adr "Use server date for completion"
+aios create task "Implement habit API"
+aios create review "Habit API"
+aios create release "0.3.0"
 ```
 
 Start from a lightweight V2.x starter:

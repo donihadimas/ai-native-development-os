@@ -37,7 +37,7 @@ For a compact `.aios/` with native skills:
 
 ```bash
 aios init demo-native --agents codex,qwen --skills core --skill-delivery native
-aios agent-install demo-native --agents opencode,antigravity --skills testing
+aios agent install demo-native --agents opencode,antigravity --skills testing
 aios init demo-web --shape frontend
 aios init demo-api --shape backend
 ```
@@ -54,14 +54,14 @@ cd demo-saas
 Create the first planning artifacts:
 
 ```bash
-aios feature "Habit reminders"
-aios openapi "Habit API"
-aios migration "Create habits table"
-aios security "Habit API"
-aios adr "Use server date for habit completion"
-aios task "Implement habit API"
-aios review "Habit API"
-aios release "0.3.0"
+aios create feature "Habit reminders"
+aios create openapi "Habit API"
+aios create migration "Create habits table"
+aios create security "Habit API"
+aios create adr "Use server date for habit completion"
+aios create task "Implement habit API"
+aios create review "Habit API"
+aios create release "0.3.0"
 ```
 
 Or adopt an existing project:
@@ -89,13 +89,13 @@ Fill docs/product/vision.md
 ↓
 Use Codex with the prompts from .aios/prompts/
 ↓
-aios adr <decision-name>
+aios create adr <decision-name>
 ↓
-aios task <task-name>
+aios create task <task-name>
 ↓
 Codex plans and implements one task
 ↓
-aios review <name>
+aios create review <name>
 ↓
 Codex reviews the diff against acceptance criteria
 ↓
@@ -105,10 +105,10 @@ aios validate
 For V2.x workflow docs, add only the pieces the project needs:
 
 ```text
-aios openapi <api-name>
-aios migration <migration-name>
-aios security <review-name>
-aios release <release-name>
+aios create openapi <api-name>
+aios create migration <migration-name>
+aios create security <review-name>
+aios create release <release-name>
 ```
 
 For an existing project, replace the first step with:
@@ -240,23 +240,23 @@ Behavior:
 
 Use `adopt` when a project already exists and `init` would be too destructive.
 
-### `aios install-kit [project-path]`
+### `aios kit install [project-path]`
 
 Installs or repairs the local `.aios/` workflow kit without overwriting existing files.
 
 ```bash
-aios install-kit
-aios install-kit path/to/project
+aios kit install
+aios kit install path/to/project
 ```
 
 Use this when a project was created in lite mode or when `.aios/` needs to be refreshed with missing assets.
 
-### `aios agent-list`
+### `aios agent list`
 
 Lists supported native agent targets and available AIOS skills.
 
 ```bash
-aios agent-list
+aios agent list
 ```
 
 Supported agent targets:
@@ -267,14 +267,14 @@ Supported agent targets:
 - `opencode` -> repo `.opencode/skills`, user `~/.config/opencode/skills`
 - `antigravity` -> repo `.agent/skills`
 
-### `aios agent-install [project-path]`
+### `aios agent install [project-path]`
 
 Installs selected AIOS skills into native agent skill folders.
 
 ```bash
-aios agent-install . --agents codex,qwen --skills core
-aios agent-install . --agents opencode --skills testing --dry-run
-aios agent-install . --agents generic --skills all --scope user
+aios agent install . --agents codex,qwen --skills core
+aios agent install . --agents opencode --skills testing --dry-run
+aios agent install . --agents generic --skills all --scope user
 ```
 
 Behavior:
@@ -293,13 +293,13 @@ aios config
 aios config my-saas
 ```
 
-### `aios command-list [project-path]`
+### `aios prompt list [project-path]`
 
 Lists portable AIOS command prompts available in `.aios/commands/`.
 
 ```bash
-aios command-list
-aios command-list my-saas
+aios prompt list
+aios prompt list my-saas
 ```
 
 Output:
@@ -311,13 +311,13 @@ Available AIOS commands:
 - review-code
 ```
 
-### `aios command <name> [project-path]`
+### `aios prompt show <name> [project-path]`
 
 Prints one portable AIOS command prompt. This is useful when an agent does not support native slash commands.
 
 ```bash
-aios command generate-prd
-aios command review-code my-saas
+aios prompt show generate-prd
+aios prompt show review-code my-saas
 ```
 
 The command is read-only. It prints the Markdown prompt so you can paste or reference it in Codex or another AI agent.
@@ -333,12 +333,12 @@ aios next my-saas
 
 It checks whether vision, PRD, architecture, and tasks are ready, then points the user to the next local prompt or command.
 
-### `aios feature <feature-name>`
+### `aios create feature <feature-name>`
 
 Creates a feature PRD stub from the PRD template.
 
 ```bash
-aios feature "Team invitations"
+aios create feature "Team invitations"
 ```
 
 Output:
@@ -347,12 +347,12 @@ Output:
 docs/product/features/team-invitations.prd.md
 ```
 
-### `aios adr <decision-name>`
+### `aios create adr <decision-name>`
 
 Creates the next numbered ADR from the ADR template.
 
 ```bash
-aios adr "Use JWT access tokens"
+aios create adr "Use JWT access tokens"
 ```
 
 Output:
@@ -363,12 +363,12 @@ docs/adr/ADR-001-use-jwt-access-tokens.md
 
 If ADR files already exist, the CLI uses the next available number.
 
-### `aios task <task-name>`
+### `aios create task <task-name>`
 
 Creates the next numbered implementation task from the task template.
 
 ```bash
-aios task "Implement login endpoint"
+aios create task "Implement login endpoint"
 ```
 
 Output:
@@ -379,12 +379,12 @@ docs/tasks/TASK-001-implement-login-endpoint.md
 
 Use this for small, specific, Codex-sized tasks.
 
-### `aios review <name>`
+### `aios create review <name>`
 
 Creates a review report stub from the review template.
 
 ```bash
-aios review "Login endpoint"
+aios create review "Login endpoint"
 ```
 
 Output:
@@ -393,12 +393,12 @@ Output:
 docs/reviews/login-endpoint-review.md
 ```
 
-### `aios openapi <api-name>`
+### `aios create openapi <api-name>`
 
 Creates an OpenAPI contract stub.
 
 ```bash
-aios openapi "Login API"
+aios create openapi "Login API"
 ```
 
 Output:
@@ -407,12 +407,12 @@ Output:
 docs/api/login-api.openapi.yaml
 ```
 
-### `aios migration <migration-name>`
+### `aios create migration <migration-name>`
 
 Creates the next numbered database migration plan.
 
 ```bash
-aios migration "Create users table"
+aios create migration "Create users table"
 ```
 
 Output:
@@ -423,12 +423,12 @@ docs/database/migrations/MIGRATION-001-create-users-table.md
 
 This command does not apply a database migration.
 
-### `aios security <review-name>`
+### `aios create security <review-name>`
 
 Creates a security review report stub.
 
 ```bash
-aios security "Login API"
+aios create security "Login API"
 ```
 
 Output:
@@ -437,12 +437,12 @@ Output:
 docs/security/login-api-security-review.md
 ```
 
-### `aios release <release-name>`
+### `aios create release <release-name>`
 
 Creates a release note and creates a changelog draft when one does not already exist.
 
 ```bash
-aios release "0.3.0"
+aios create release "0.3.0"
 ```
 
 Output:

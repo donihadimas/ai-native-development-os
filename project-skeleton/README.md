@@ -8,7 +8,7 @@ This skeleton is a generic AI-native project shell. `aios init` can keep it full
 - `CLAUDE.md` - optional compatibility instructions for Claude-style agents.
 - `.aios/config.json` - selected docs root, project shape, agents, and skill delivery mode.
 - `<docsRoot>/product/` - vision and PRD.
-- `<docsRoot>/product/features/` - feature-level PRD stubs created by `aios feature`.
+- `<docsRoot>/product/features/` - feature-level PRD stubs created by `aios create feature`.
 - `<docsRoot>/architecture/` - system architecture.
 - `<docsRoot>/adr/` - architecture decision records.
 - `<docsRoot>/tasks/` - small implementation-ready tasks.

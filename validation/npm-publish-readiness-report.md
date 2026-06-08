@@ -36,15 +36,15 @@ npm install <tmp>/donihadimas-aios-0.2.0.tgz
 ./node_modules/.bin/aios validate demo-project
 ./node_modules/.bin/aios adopt existing-project
 cd demo-project
-../node_modules/.bin/aios adr "Use Server Date"
-../node_modules/.bin/aios task "Implement Habit API"
-../node_modules/.bin/aios review "Habit API"
-../node_modules/.bin/aios feature "Habit Reminders"
+../node_modules/.bin/aios create adr "Use Server Date"
+../node_modules/.bin/aios create task "Implement Habit API"
+../node_modules/.bin/aios create review "Habit API"
+../node_modules/.bin/aios create feature "Habit Reminders"
 ```
 
 ## Results
 
-- `npm test`: 17 passed, 0 failed.
+- `npm test`: 35 passed, 0 failed.
 - `npm pack --dry-run`: tarball includes only runtime files and assets, including feature PRD and review report directories.
 - Installed tarball smoke test: passed.
 - Generated project can be initialized and validated from installed package binary.

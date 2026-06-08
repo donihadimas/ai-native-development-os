@@ -80,47 +80,47 @@ Usage:
     existing files. Also installs .aios unless --lite is provided.
     Defaults to the current directory.
 
-  aios install-kit [project-path]
+  aios kit install [project-path]
     Install or repair the local .aios workflow kit without overwriting
     existing files. Defaults to the current directory.
 
-  aios command-list [project-path]
+  aios prompt list [project-path]
     List available local AIOS command prompts.
 
-  aios command <name> [project-path]
+  aios prompt show <name> [project-path]
     Print a local AIOS command prompt. Read-only.
 
-  aios agent-install [project-path] [--agents codex,qwen] [--skills core|all|name,name] [--scope repo|user]
+  aios agent install [project-path] [--agents codex,qwen] [--skills core|all|name,name] [--scope repo|user]
     Install selected AIOS skills into native agent skill folders.
 
-  aios agent-list
+  aios agent list
     List supported agent targets and available AIOS skills.
 
   aios config [project-path]
     Print resolved AIOS project configuration.
 
-  aios feature <feature-name>
+  aios create feature <feature-name>
     Create a feature PRD stub in the configured docsRoot product/features folder.
 
-  aios adr <decision-name>
+  aios create adr <decision-name>
     Create the next numbered Architecture Decision Record in the configured docsRoot adr folder.
 
-  aios task <task-name>
+  aios create task <task-name>
     Create the next numbered implementation task in the configured docsRoot tasks folder.
 
-  aios review <name>
+  aios create review <name>
     Create a review report stub in the configured docsRoot reviews folder.
 
-  aios openapi <api-name>
+  aios create openapi <api-name>
     Create an OpenAPI contract stub in the configured docsRoot api folder.
 
-  aios migration <migration-name>
+  aios create migration <migration-name>
     Create the next numbered migration plan in the configured docsRoot database/migrations folder.
 
-  aios security <review-name>
+  aios create security <review-name>
     Create a security review report stub in the configured docsRoot security folder.
 
-  aios release <release-name>
+  aios create release <release-name>
     Create a release note in the configured docsRoot releases folder and a changelog draft if missing.
 
   aios validate [project-path] [--lite]
@@ -143,14 +143,14 @@ Typical workflow:
   aios validate demo-project
   aios next demo-project
   cd demo-project
-  aios feature "Habit reminders"
-  aios openapi "Habit API"
-  aios migration "Create habits table"
-  aios security "Habit API"
-  aios adr "Use server date for completion"
-  aios task "Implement habit API"
-  aios review "Habit API"
-  aios release "0.3.0"
+  aios create feature "Habit reminders"
+  aios create openapi "Habit API"
+  aios create migration "Create habits table"
+  aios create security "Habit API"
+  aios create adr "Use server date for completion"
+  aios create task "Implement habit API"
+  aios create review "Habit API"
+  aios create release "0.3.0"
 
 Starter workflow:
   aios starter fullstack-saas demo-saas
@@ -460,7 +460,7 @@ function commandList(ctx: CommandContext, projectPathArg: string | undefined): s
 }
 
 function commandPrompt(ctx: CommandContext, name: string | undefined, projectPathArg: string | undefined): string {
-  const commandName = requireName(name, "command");
+  const commandName = requireName(name, "prompt show");
   const slug = slugify(commandName);
   const directory = commandDirectory(ctx, projectPathArg);
   const commandPath = path.join(directory, `${slug}.md`);
@@ -470,6 +470,17 @@ function commandPrompt(ctx: CommandContext, name: string | undefined, projectPat
   }
 
   return fs.readFileSync(commandPath, "utf8").trimEnd();
+}
+
+function commandPromptGroup(ctx: CommandContext, action: string | undefined, name: string | undefined, projectPathArg: string | undefined): string {
+  switch (action) {
+    case "list":
+      return commandList(ctx, name);
+    case "show":
+      return commandPrompt(ctx, name, projectPathArg);
+    default:
+      throw new Error("Missing prompt action. Usage: aios prompt <list|show> [name] [project-path]");
+  }
 }
 
 function commandAgentList(ctx: CommandContext): string {
@@ -525,6 +536,27 @@ function commandAgentInstall(ctx: CommandContext, projectPathArg: string | undef
     `Skipped existing: ${result.skipped.length}`,
     ...((options.dryRun ? result.planned : result.created).slice(0, 20).map((item) => `- ${item}`))
   ].join("\n");
+}
+
+function commandAgent(ctx: CommandContext, action: string | undefined, projectPathArg: string | undefined, options: ParsedArgs): string {
+  switch (action) {
+    case "list":
+      return commandAgentList(ctx);
+    case "install":
+      return commandAgentInstall(ctx, projectPathArg, options);
+    default:
+      throw new Error("Missing agent action. Usage: aios agent <list|install> [project-path]");
+  }
+}
+
+function commandKit(ctx: CommandContext, action: string | undefined, projectPathArg: string | undefined): string {
+  switch (action) {
+    case "install":
+    case "repair":
+      return commandInstallKit(ctx, projectPathArg);
+    default:
+      throw new Error("Missing kit action. Usage: aios kit install [project-path]");
+  }
 }
 
 function commandConfig(ctx: CommandContext, projectPathArg: string | undefined): string {
@@ -679,6 +711,29 @@ function commandRelease(ctx: CommandContext, name: string | undefined): string {
   return output.join("\n");
 }
 
+function commandCreate(ctx: CommandContext, type: string | undefined, name: string | undefined): string {
+  switch (type) {
+    case "feature":
+      return commandFeature(ctx, name);
+    case "adr":
+      return commandAdr(ctx, name);
+    case "task":
+      return commandTask(ctx, name);
+    case "review":
+      return commandReview(ctx, name);
+    case "openapi":
+      return commandOpenApi(ctx, name);
+    case "migration":
+      return commandMigration(ctx, name);
+    case "security":
+      return commandSecurity(ctx, name);
+    case "release":
+      return commandRelease(ctx, name);
+    default:
+      throw new Error("Missing artifact type. Usage: aios create <feature|adr|task|review|openapi|migration|security|release> <name>");
+  }
+}
+
 function commandValidate(ctx: CommandContext, projectPathArg: string | undefined, options: ParsedArgs = parseArgs([])): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
   const result = validateProject(projectPath, { lite: options.lite, projectShape: options.projectShape });
@@ -762,7 +817,7 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
     return [
       `Next recommended step for ${projectPath}:`,
       `Create the first implementation task in \`${tasksRelative}/\`.`,
-      "Use `aios task \"Task name\"` or ask Codex to use `.aios/prompts/04-generate-tasks.md`."
+      "Use `aios create task \"Task name\"` or ask Codex to use `.aios/prompts/04-generate-tasks.md`."
     ].join("\n");
   }
 
@@ -959,7 +1014,7 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
     choices: [
       { name: "Create new project", value: "create" },
       { name: "Adopt existing project", value: "adopt" },
-      { name: "Install native agent skills", value: "agent-install" },
+      { name: "Install native agent skills", value: "agent install" },
       { name: "Validate project", value: "validate" },
       { name: "Show next recommended step", value: "next" },
       { name: "Print AIOS command prompt", value: "command" },
@@ -972,7 +1027,7 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       return interactiveCreate(ctx);
     case "adopt":
       return interactiveAdopt(ctx);
-    case "agent-install":
+    case "agent install":
       return interactiveAgentInstall(ctx);
     case "validate":
       return commandValidate(ctx, await input({ message: "Project path:", default: "." }));
@@ -996,7 +1051,7 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
 
 export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }): string {
   const parsed = parseArgs(argv);
-  const [command, name, secondName] = parsed.args;
+  const [command, name, secondName, thirdName] = parsed.args;
 
   switch (command) {
     case undefined:
@@ -1014,34 +1069,16 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return commandStarter(ctx, name, secondName, parsed);
     case "adopt":
       return commandAdopt(ctx, name, parsed);
-    case "install-kit":
-      return commandInstallKit(ctx, name);
-    case "command-list":
-      return commandList(ctx, name);
-    case "command":
-      return commandPrompt(ctx, name, secondName);
-    case "agent-list":
-      return commandAgentList(ctx);
-    case "agent-install":
-      return commandAgentInstall(ctx, name, parsed);
+    case "kit":
+      return commandKit(ctx, name, secondName);
+    case "prompt":
+      return commandPromptGroup(ctx, name, secondName, thirdName);
+    case "agent":
+      return commandAgent(ctx, name, secondName, parsed);
     case "config":
       return commandConfig(ctx, name);
-    case "feature":
-      return commandFeature(ctx, name);
-    case "adr":
-      return commandAdr(ctx, name);
-    case "task":
-      return commandTask(ctx, name);
-    case "review":
-      return commandReview(ctx, name);
-    case "openapi":
-      return commandOpenApi(ctx, name);
-    case "migration":
-      return commandMigration(ctx, name);
-    case "security":
-      return commandSecurity(ctx, name);
-    case "release":
-      return commandRelease(ctx, name);
+    case "create":
+      return commandCreate(ctx, name, secondName);
     case "validate":
       return commandValidate(ctx, name, parsed);
     case "next":

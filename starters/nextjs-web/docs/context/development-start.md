@@ -23,18 +23,18 @@ Generator workflows may ask clarification questions before writing PRD, architec
 ```bash
 aios next
 aios config
-aios command-list
-aios command generate-prd
-aios agent-list
-aios agent-install . --agents codex --skills core
-aios feature "Feature name"
-aios adr "Decision name"
-aios task "Task name"
-aios review "Review name"
-aios openapi "API name"
-aios migration "Migration name"
-aios security "Review name"
-aios release "Release name"
+aios prompt list
+aios prompt show generate-prd
+aios agent list
+aios agent install . --agents codex --skills core
+aios create feature "Feature name"
+aios create adr "Decision name"
+aios create task "Task name"
+aios create review "Review name"
+aios create openapi "API name"
+aios create migration "Migration name"
+aios create security "Review name"
+aios create release "Release name"
 ```
 
 ## First Codex Prompt
