@@ -23,18 +23,24 @@ function tempCwd(): string {
 test("help explains the CLI purpose and available commands", () => {
   const output = run(["help"], { runtimePaths, cwd: tempCwd() });
 
-  assert.match(output, /AIOS helps you create and maintain an AI-ready project structure/);
+  assert.match(output, /AIOS creates an AI-ready project setup/);
+  assert.match(output, /aios\n    Open the guided setup wizard/);
+  assert.match(output, /Start here:/);
+  assert.match(output, /Common commands:/);
+  assert.match(output, /Advanced commands:/);
+  assert.match(output, /Document commands:/);
   assert.match(output, /aios -v/);
-  assert.match(output, /aios init <project-name> \[--lite\]/);
-  assert.match(output, /aios starter <starter-name> <project-name> \[--lite\]/);
+  assert.match(output, /aios init <project-name> \[--lite\].*\[--agents <list>\].*\[--yes\]/);
+  assert.match(output, /aios starter <starter-name> <project-name> \[--lite\].*\[--agents <list>\].*\[--yes\]/);
   assert.match(output, /aios adopt \[project-path\]/);
   assert.match(output, /aios kit install \[project-path\]/);
   assert.match(output, /aios prompt list \[project-path\]/);
   assert.match(output, /aios prompt show <name> \[project-path\]/);
-  assert.match(output, /aios agent install \[project-path\]/);
+  assert.match(output, /aios agent install \[project-path\].*\[--skills core\|planning\|delivery\|all\|name,name\]/);
   assert.match(output, /aios agent list/);
   assert.match(output, /aios integration list/);
   assert.match(output, /aios integration status \[project-path\]/);
+  assert.match(output, /aios integration add <rtk\|caveman\|all>.*\[--agents <list>\].*\[--yes\]/);
   assert.match(output, /aios integration doctor \[project-path\]/);
   assert.match(output, /aios integration repair \[project-path\]/);
   assert.match(output, /aios config \[project-path\]/);

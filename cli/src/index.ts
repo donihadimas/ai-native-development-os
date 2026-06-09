@@ -55,36 +55,38 @@ function packageVersion(): string {
 function usage(): string {
   return `AI-Native Development OS CLI
 
-AIOS helps you create and maintain an AI-ready project structure for
-AI-assisted software development. It does not generate application code.
-Instead, it prepares the docs, folders, and planning files that help Codex
-or another coding agent work with clear context, small tasks, review notes,
-API contracts, and repeatable project workflows.
+AIOS creates an AI-ready project setup for Codex and other coding agents:
+docs, tasks, prompts, skills, workflow rules, validation, and optional
+RTK/Caveman integration rules. It does not generate application code.
 
-Use it when you want to:
-  - start a new project shape with AI-ready docs,
-  - start from a lightweight AI docs only stack starter,
-  - add AI Dev OS structure to an existing project,
-  - create PRDs, ADRs, implementation tasks, API contracts, migration plans,
-    security reviews, release notes, and review reports,
-  - validate that a project has the expected AI workflow structure.
+Start here:
+  aios
+    Open the guided setup wizard.
 
-Usage:
+  aios init <project-name>
+    Create a new AI-ready project from the bundled skeleton.
+
+  aios adopt [project-path]
+    Add AIOS to an existing project without overwriting existing files.
+
+  aios next [project-path]
+    Show the next recommended development step.
+
+  aios validate [project-path]
+    Check whether a project has the expected AI-ready structure.
+
+Common commands:
   aios -v
     Show the installed AIOS CLI version.
 
-  aios init <project-name> [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--skill-delivery portable|native|both]
-    Create a new AI-ready project from the bundled skeleton.
-    Installs the local .aios workflow kit unless --lite is provided.
+  aios init <project-name> [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery portable|native|both] [--yes]
+    Create a new project. Installs the local .aios workflow kit unless --lite is provided.
 
-  aios starter <starter-name> <project-name> [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--skill-delivery portable|native|both]
-    Create a new AI-ready project from a bundled V2.x starter.
-    Installs the local .aios workflow kit unless --lite is provided.
+  aios starter <starter-name> <project-name> [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery portable|native|both] [--yes]
+    Create a new project from a bundled AI docs only starter.
 
-  aios adopt [project-path] [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--skill-delivery portable|native|both]
-    Add AI Dev OS folders and docs to an existing project without overwriting
-    existing files. Also installs .aios unless --lite is provided.
-    Defaults to the current directory.
+  aios adopt [project-path] [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery portable|native|both] [--yes]
+    Add AIOS folders and docs to an existing project.
 
   aios kit install [project-path]
     Install or repair the local .aios workflow kit without overwriting
@@ -96,23 +98,24 @@ Usage:
   aios prompt show <name> [project-path]
     Print a local AIOS command prompt. Read-only.
 
-  aios agent install [project-path] [--agents codex,qwen] [--skills core|all|name,name] [--scope repo|user]
+  aios agent install [project-path] [--agents codex,qwen] [--skills core|planning|delivery|all|name,name] [--scope repo|user] [--dry-run]
     Install selected AIOS skills into native agent skill folders.
 
   aios agent list
     List supported agent targets and available AIOS skills.
 
+Advanced commands:
   aios integration list
     List optional external integrations supported by AIOS.
 
   aios integration status [project-path]
     Show project config, local rules, and detected external tool status.
 
-  aios integration add <rtk|caveman|all> [project-path] [--install] [--mode lite|full|ultra] [--dry-run]
+  aios integration add <rtk|caveman|all> [project-path] [--install] [--mode lite|full|ultra] [--agents <list>] [--dry-run] [--yes]
     Enable optional RTK/Caveman rules in the local .aios kit.
     With --install --yes, also runs the external installer when supported.
 
-  aios integration remove <rtk|caveman|all> [project-path] [--scope project|user|both] [--dry-run]
+  aios integration remove <rtk|caveman|all> [project-path] [--scope project|user|both] [--dry-run] [--yes]
     Disable local rules, offer user-computer uninstall, or both.
     External uninstall only runs with --yes.
 
@@ -125,6 +128,7 @@ Usage:
   aios config [project-path]
     Print resolved AIOS project configuration.
 
+Document commands:
   aios create feature <feature-name>
     Create a feature PRD stub in the configured docsRoot product/features folder.
 
@@ -157,7 +161,28 @@ Usage:
   aios next [project-path]
     Print the next recommended development step. Read-only.
 
-Other options:
+Options:
+  --lite
+    Create or validate only the base project docs, without the local .aios kit.
+
+  --shape fullstack|frontend|backend|mobile|library|docs
+    Choose which app placeholder folders should exist.
+
+  --docs-root <path>
+    Put product, architecture, task, review, and API docs somewhere other than docs/.
+
+  --agents codex,qwen,opencode,antigravity,generic
+    Install native skills for selected AI agents.
+
+  --skills core|planning|delivery|all|name,name
+    Choose which AIOS skills to install.
+
+  --skill-delivery portable|native|both
+    Choose whether skills live in .aios/skills, native agent folders, or both.
+
+  --yes
+    Confirm external install/uninstall actions after the command has enough information.
+
   aios --version
     Same as aios -v.
 
@@ -1363,6 +1388,69 @@ function starterChoices(ctx: CommandContext): string[] {
     .sort();
 }
 
+function formatList(values: string[], empty = "none"): string {
+  return values.length > 0 ? values.join(", ") : empty;
+}
+
+function formatSetupSummary(projectPath: string, setup: ParsedArgs, action: "create" | "adopt", starter?: string): string {
+  const projectShape = setup.projectShape ?? inferStarterShape(starter);
+  const docsRootValue = setup.docsRoot ?? "docs";
+  const selectedAgents = setup.agents ?? [];
+  const skillDelivery = setup.lite ? "none (lite mode)" : setup.skillDelivery ?? (selectedAgents.length > 0 ? "native" : "portable");
+  const selectedSkills = setup.lite ? "none (lite mode)" : setup.skills ?? "core";
+
+  return [
+    "",
+    action === "create" ? "Project setup summary:" : "Adopt setup summary:",
+    `- target: ${projectPath}`,
+    starter ? `- starter: ${starter}` : "- starter: none",
+    `- shape: ${projectShape}`,
+    `- setup mode: ${setup.lite ? "lite project docs only" : "full AIOS workflow kit"}`,
+    `- docs root: ${docsRootValue}`,
+    `- native agents: ${formatList(selectedAgents)}`,
+    `- skills: ${selectedSkills}`,
+    `- skill delivery: ${skillDelivery}`
+  ].join("\n");
+}
+
+async function promptSkillSelection(ctx: CommandContext, message = "Which AIOS skills should be installed?"): Promise<string> {
+  const skillMode = await select({
+    message,
+    choices: [
+      { name: "Core skills (recommended)", value: "core" },
+      { name: "Planning skills", value: "planning" },
+      { name: "Delivery skills", value: "delivery" },
+      { name: "All skills", value: "all" },
+      { name: "Pick skills manually", value: "custom" }
+    ]
+  });
+
+  if (skillMode !== "custom") {
+    return skillMode;
+  }
+
+  const selectedSkills = await checkbox<string>({
+    message: "Pick skills:",
+    choices: availableSkills(ctx.runtimePaths.aiosKitSource).map((skill) => ({ name: skill, value: skill })),
+    required: true
+  });
+  return selectedSkills.join(",");
+}
+
+function integrationReviewMessage(selected: IntegrationName[], projectPath: string): string {
+  const lines = ["Review installer plan above. Run external installer commands now?"];
+  if (selected.includes("caveman")) {
+    const config = readProjectConfig(projectPath);
+    const targets = normalizeCavemanTargetAgents(config, { ...parseArgs([]), agents: config.selectedAgents });
+    lines.push(`Caveman target agents: ${formatList(targets)}.`);
+  }
+  if (selected.includes("rtk")) {
+    lines.push("RTK may install a user-level command-line tool.");
+  }
+  lines.push(`Commands will run from: ${projectPath}`);
+  return lines.join(" ");
+}
+
 async function promptSetupOptions(ctx: CommandContext): Promise<ParsedArgs> {
   const projectShape = await select<ProjectShape>({
     message: "Project shape?",
@@ -1376,7 +1464,14 @@ async function promptSetupOptions(ctx: CommandContext): Promise<ParsedArgs> {
     ]
   });
 
-  const lite = await confirm({ message: "Use lite mode without local AIOS kit?", default: false });
+  const setupMode = await select({
+    message: "Setup mode?",
+    choices: [
+      { name: "Full AIOS setup: .aios kit + workflow guidance (recommended)", value: "full" },
+      { name: "Lite setup: project docs only", value: "lite" }
+    ]
+  });
+  const lite = setupMode === "lite";
   if (lite) {
     return { ...parseArgs(["--lite"]), projectShape };
   }
@@ -1408,27 +1503,7 @@ async function promptSetupOptions(ctx: CommandContext): Promise<ParsedArgs> {
 
   let skillSelection = "core";
   if (selectedAgents.length > 0) {
-    const skillMode = await select({
-      message: "Which AIOS skills should be installed?",
-      choices: [
-        { name: "Core skills", value: "core" },
-        { name: "Planning skills", value: "planning" },
-        { name: "Delivery skills", value: "delivery" },
-        { name: "All skills", value: "all" },
-        { name: "Pick skills manually", value: "custom" }
-      ]
-    });
-
-    if (skillMode === "custom") {
-      const selectedSkills = await checkbox<string>({
-        message: "Pick skills:",
-        choices: availableSkills(ctx.runtimePaths.aiosKitSource).map((skill) => ({ name: skill, value: skill })),
-        required: true
-      });
-      skillSelection = selectedSkills.join(",");
-    } else {
-      skillSelection = skillMode;
-    }
+    skillSelection = await promptSkillSelection(ctx);
   }
 
   const skillDelivery =
@@ -1457,18 +1532,19 @@ async function interactiveCreate(ctx: CommandContext): Promise<string> {
   const projectType = await select({
     message: "What do you want to create?",
     choices: [
-      { name: "Generic frontend/backend project", value: "generic" },
+      { name: "Blank AIOS project", value: "generic" },
       ...starterChoices(ctx).map((starter) => ({ name: `Starter: ${starter}`, value: starter }))
     ]
   });
   const projectName = await input({ message: "Project name:", required: true });
   const setup = await promptSetupOptions(ctx);
+  const projectPath = path.resolve(ctx.cwd, projectName);
+  console.log(formatSetupSummary(projectPath, setup, "create", projectType === "generic" ? undefined : projectType));
   const shouldCreate = await confirm({ message: "Create project now?", default: true });
   if (!shouldCreate) {
     return "Cancelled.";
   }
 
-  const projectPath = path.resolve(ctx.cwd, projectName);
   const output =
     projectType === "generic"
       ? commandInit(ctx, projectName, setup)
@@ -1502,7 +1578,14 @@ async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: 
         ]
       })
     : "lite";
-  const install = await confirm({ message: "Offer external install if missing?", default: false });
+  const installMode = await select({
+    message: "Integration setup mode:",
+    choices: [
+      { name: "Generate AIOS rules only", value: "rules" },
+      { name: "Generate rules and offer installer if missing", value: "install" }
+    ]
+  });
+  const install = installMode === "install";
   if (install) {
     console.log(
       commandIntegrationAdd(ctx, integrationArg, projectPath, {
@@ -1516,7 +1599,7 @@ async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: 
   }
   const yes = install
     ? await confirm({
-        message: `Run targeted installer commands after review? Caveman targets: ${normalizeCavemanTargetAgents(readProjectConfig(projectPath), { ...parseArgs([]), agents: readProjectConfig(projectPath).selectedAgents }).join(", ")}`,
+        message: integrationReviewMessage(selected, projectPath),
         default: false
       })
     : false;
@@ -1532,12 +1615,13 @@ async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: 
 async function interactiveAdopt(ctx: CommandContext): Promise<string> {
   const projectPath = await input({ message: "Existing project path:", default: "." });
   const setup = await promptSetupOptions(ctx);
+  const resolvedProjectPath = path.resolve(ctx.cwd, projectPath);
+  console.log(formatSetupSummary(resolvedProjectPath, setup, "adopt"));
   const shouldAdopt = await confirm({ message: "Adopt AIOS into this project now?", default: true });
   if (!shouldAdopt) {
     return "Cancelled.";
   }
 
-  const resolvedProjectPath = path.resolve(ctx.cwd, projectPath);
   const output = commandAdopt(ctx, projectPath, setup);
   const integrationOutput = setup.lite ? "" : await promptOptionalIntegrationSetup(ctx, resolvedProjectPath);
   return [output, integrationOutput].filter(Boolean).join("\n\n");
@@ -1545,6 +1629,11 @@ async function interactiveAdopt(ctx: CommandContext): Promise<string> {
 
 async function interactiveInit(ctx: CommandContext, projectName: string, setup: ParsedArgs): Promise<string> {
   const projectPath = path.resolve(ctx.cwd, projectName);
+  console.log(formatSetupSummary(projectPath, setup, "create"));
+  const shouldCreate = await confirm({ message: "Create project now?", default: true });
+  if (!shouldCreate) {
+    return "Cancelled.";
+  }
   const output = commandInit(ctx, projectName, setup);
   const integrationOutput = setup.lite ? "" : await promptOptionalIntegrationSetup(ctx, projectPath);
   return [output, integrationOutput].filter(Boolean).join("\n\n");
@@ -1552,6 +1641,11 @@ async function interactiveInit(ctx: CommandContext, projectName: string, setup: 
 
 async function interactiveStarter(ctx: CommandContext, starter: string, projectName: string, setup: ParsedArgs): Promise<string> {
   const projectPath = path.resolve(ctx.cwd, projectName);
+  console.log(formatSetupSummary(projectPath, setup, "create", starter));
+  const shouldCreate = await confirm({ message: "Create project now?", default: true });
+  if (!shouldCreate) {
+    return "Cancelled.";
+  }
   const output = commandStarter(ctx, starter, projectName, setup);
   const integrationOutput = setup.lite ? "" : await promptOptionalIntegrationSetup(ctx, projectPath);
   return [output, integrationOutput].filter(Boolean).join("\n\n");
@@ -1570,11 +1664,7 @@ async function interactiveAgentInstall(ctx: CommandContext): Promise<string> {
     ],
     required: true
   });
-  const skills = await checkbox<string>({
-    message: "Pick skills:",
-    choices: availableSkills(ctx.runtimePaths.aiosKitSource).map((skill) => ({ name: skill, value: skill })),
-    required: true
-  });
+  const skillSelection = await promptSkillSelection(ctx, "Which skill set should be installed?");
   const scope = await select<AgentScope>({
     message: "Install scope:",
     choices: [
@@ -1587,7 +1677,7 @@ async function interactiveAgentInstall(ctx: CommandContext): Promise<string> {
   return commandAgentInstall(ctx, projectPath, {
     ...parseArgs([]),
     agents,
-    skills: skills.join(","),
+    skills: skillSelection,
     scope,
     dryRun
   });
@@ -1638,7 +1728,14 @@ async function interactiveIntegration(ctx: CommandContext): Promise<string> {
           ]
         })
       : "lite";
-    const install = await confirm({ message: "Offer external install if missing?", default: false });
+    const installMode = await select({
+      message: "Integration setup mode:",
+      choices: [
+        { name: "Generate AIOS rules only", value: "rules" },
+        { name: "Generate rules and offer installer if missing", value: "install" }
+      ]
+    });
+    const install = installMode === "install";
     if (install) {
       console.log(
         commandIntegrationAdd(ctx, integrationArg, projectPath, {
@@ -1650,7 +1747,7 @@ async function interactiveIntegration(ctx: CommandContext): Promise<string> {
         })
       );
     }
-    const yes = install ? await confirm({ message: "Run installer automatically after showing it?", default: false }) : false;
+    const yes = install ? await confirm({ message: integrationReviewMessage(selected, path.resolve(ctx.cwd, projectPath)), default: false }) : false;
     return commandIntegrationAdd(ctx, integrationArg, projectPath, {
       ...parseArgs([]),
       install,

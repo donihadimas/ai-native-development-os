@@ -69,7 +69,7 @@ aios next demo-project
 cd demo-project
 ```
 
-`aios init` installs a local `.aios/` workflow kit by default, so the generated project is self-contained for Codex. Use `--lite` only when you want the old minimal skeleton behavior. Run `aios` without arguments for the interactive wizard; the guided create/adopt flow can also offer optional RTK/Caveman integration setup after the project kit is installed.
+`aios init` installs a local `.aios/` workflow kit by default, so the generated project is self-contained for Codex. Use `--lite` only when you want the old minimal skeleton behavior. Run `aios` without arguments for the guided setup wizard; it can create or adopt a project, choose full or lite setup, choose project shape and docs location, install native agent skill sets, show a setup summary before writing files, and offer optional RTK/Caveman integration setup after the project kit is installed.
 
 Native agent skill install keeps `.aios/` compact and installs selected skills into agent-specific folders:
 

@@ -31,7 +31,7 @@ cd demo-project
 
 By default, generated projects include `.aios/` with skills, prompts, references, templates, and workflows. Use `--lite` only when you want a minimal structure without the local workflow kit.
 
-Run `aios` without arguments to use the interactive wizard. The wizard can create a new project, adopt an existing project, choose docs location, install selected skills into native agent folders, and offer optional RTK/Caveman integration setup after the local `.aios/` kit is installed.
+Run `aios` without arguments to use the guided setup wizard. The wizard can create a blank AIOS project, start from a starter, adopt an existing project, choose the project shape, choose full or lite setup, choose docs location, install selected skill sets into native agent folders, show a setup summary before writing files, and offer optional RTK/Caveman integration setup after the local `.aios/` kit is installed.
 
 For a compact `.aios/` with native skills:
 
@@ -284,12 +284,14 @@ Installs selected AIOS skills into native agent skill folders.
 
 ```bash
 aios agent install . --agents codex,qwen --skills core
+aios agent install . --agents codex --skills planning
 aios agent install . --agents opencode --skills testing --dry-run
 aios agent install . --agents generic --skills all --scope user
 ```
 
 Behavior:
 
+- In the interactive wizard, choose `core`, `planning`, `delivery`, `all`, or a custom checkbox selection.
 - Skips existing skill folders by default.
 - Uses `--overwrite` only when you intentionally want to replace existing installed skills.
 - Uses `--dry-run` to preview target files without writing.
