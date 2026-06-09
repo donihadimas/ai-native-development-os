@@ -190,3 +190,7 @@ For the full release process, including versioning, npm publish, Git tags, GitHu
 The CLI only creates, copies, numbers, renders, recommends next steps, validates files, and optionally manages AIOS integration rules. It does not generate application code, run Codex, install app dependencies, apply database migrations, or publish releases.
 
 The included starters are AI docs only shells. GitHub Actions are intentionally limited to tests, smoke checks, and npm package dry-runs.
+
+## License
+
+This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md) files for more details.

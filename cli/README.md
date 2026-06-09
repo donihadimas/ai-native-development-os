@@ -709,3 +709,7 @@ aios adopt
 ```
 
 Use `init` only for new project directories.
+
+## License
+
+This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md) files for more details.
