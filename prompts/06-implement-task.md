@@ -1,6 +1,8 @@
 # Prompt: Implement Task
 
-Read `AGENTS.md` first, then use `prompts/05-plan-implementation.md` if no plan exists.
+Read `AGENTS.md` first. Resolve `.aios/config.json` if it exists, then use `.aios/prompts/05-plan-implementation.md` if no plan exists.
+
+Before coding, apply the implementation-planner Clarification Gate. If acceptance criteria or expected behavior are unclear, ask focused questions first.
 
 Implement only the active task. Do not modify unrelated files.
 

@@ -27,6 +27,20 @@ Expected inputs:
 - target users,
 - existing PRD sections if updating.
 
+## Clarification Gate
+
+Before writing the PRD, check whether these are clear enough:
+
+- target users,
+- user problem and desired outcome,
+- MVP scope,
+- non-goals,
+- functional requirements or feature list,
+- success metrics,
+- constraints, risks, or assumptions.
+
+If the inputs are too thin to create testable acceptance criteria, stop and ask the user 4-7 focused questions before generating the final PRD. Ask about missing product intent first, then scope and success criteria. You may produce a draft only when assumptions are explicit and the user asked for a draft.
+
 ## Outputs
 
 Expected outputs:

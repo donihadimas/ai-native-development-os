@@ -18,6 +18,11 @@ Use the minimum context needed:
 4. Search existing files before creating new patterns.
 5. Avoid reading or rewriting unrelated areas.
 
+If `.aios/config.json` enables integrations, use `.aios/integrations/` and `.aios/references/` for routing:
+
+- Use RTK only for noisy command output and never when exact full output is requested.
+- Use Caveman-style brevity only for operational updates, not formal PRD, ADR, architecture, security, migration, or release artifacts.
+
 ## Required Before Implementation
 
 - Identify the artifact type being changed: skill, template, reference, workflow, prompt, skeleton, or documentation.

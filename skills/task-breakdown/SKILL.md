@@ -28,6 +28,19 @@ Expected inputs:
 - known affected modules,
 - API or database impact if any.
 
+## Clarification Gate
+
+Before writing tasks, check whether these are clear enough:
+
+- feature or PRD scope,
+- acceptance criteria,
+- affected project area,
+- dependencies or required ADR/API/migration work,
+- testing expectations,
+- known out-of-scope work.
+
+If tasks would be broad, unverifiable, or based on unclear ownership, stop and ask the user 3-6 focused questions before creating task files. Do not create implementation-ready tasks until acceptance criteria and testing expectations are specific.
+
 ## Outputs
 
 Expected outputs:

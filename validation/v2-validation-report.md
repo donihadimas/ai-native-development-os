@@ -2,17 +2,23 @@
 
 ## Summary
 
-V2 has been implemented as a focused assisted workflow upgrade: a small Node.js TypeScript CLI, OpenAPI contract workflow, and a generic backend API adapter.
+V2 has been implemented as a focused assisted workflow upgrade: a small Node.js TypeScript CLI, OpenAPI contract workflow, generic backend API adapter, local `.aios` workflow kit setup, and V2.x documentation/automation extensions.
 
 ## Implemented Scope
 
 | Area | Status | Evidence |
 | --- | --- | --- |
-| CLI | Pass | `cli/src/` implements `aios init`, `adopt`, `feature`, `adr`, `task`, `review`, and `validate`. |
-| CLI tests | Pass | `npm test` passes 17 Node test-runner tests. |
+| CLI | Pass | `cli/src/` implements `aios init`, `starter`, `adopt`, `kit install`, `prompt list`, `prompt show`, `agent list`, `agent install`, `config`, `create feature`, `create adr`, `create task`, `create review`, `create openapi`, `create migration`, `create security`, `create release`, `validate`, and `next`. |
+| CLI tests | Pass | `npm test` passes 40 Node test-runner tests. |
+| Ready-to-use setup | Pass | Generated projects include `.aios/` workflow kit by default, with `--lite` available for minimal output. |
 | OpenAPI support | Pass | `templates/openapi.template.yaml`, `skills/api-contract-design`, `workflows/api-contract.workflow.md`, and `prompts/09-design-api-contract.md` exist. |
 | Backend API adapter | Pass | `skills/backend-api-development/SKILL.md` and `references/backend-api-standards.md` exist. |
-| Docs update | Pass | Root README and directory READMEs explain V2 assisted flow. |
+| V2.x starters | Pass | `starters/` contains AI docs only starter shells for all PRD candidate starters. |
+| Database migration workflow | Pass | `skills/database-migration`, `workflows/database-migration.workflow.md`, `templates/migration-plan.template.md`, and `prompts/10-plan-database-migration.md` exist. |
+| Security review workflow | Pass | `skills/security-review`, `workflows/security-review.workflow.md`, `templates/security-review-report.template.md`, and `prompts/11-review-security.md` exist. |
+| Release workflow | Pass | `skills/release-management`, release/changelog templates, release workflow updates, and `prompts/12-plan-release.md` exist. |
+| GitHub automation | Pass | `.github/workflows/ci.yml`, `test.yml`, and `release.yml` provide test, smoke, and dry-run automation. |
+| Docs update | Pass | Root README, CLI README, starters README, PRD, and validation docs explain V2.x assisted flow. |
 
 ## Automated Test Evidence
 
@@ -24,7 +30,7 @@ npm test
 
 Result:
 
-- 17 tests passed.
+- 41 tests passed.
 - 0 tests failed.
 
 Covered behavior:
@@ -38,7 +44,12 @@ Covered behavior:
 - non-destructive project adoption,
 - project validation,
 - validation coverage for feature PRD and review report directories,
-- `init`, `adopt`, `feature`, `adr`, `task`, `review`, and `validate` command behavior,
+- local `.aios/` kit installation and validation,
+- V2.x optional validation warnings,
+- `init`, `starter`, `adopt`, `kit install`, `prompt list`, `prompt show`, `agent list`, `agent install`, `integration list`, `integration status`, `integration add`, `integration remove`, `integration doctor`, `integration repair`, `config`, `create feature`, `create adr`, `create task`, `create review`, `create openapi`, `create migration`, `create security`, `create release`, `validate`, and `next` command behavior,
+- configurable docs root behavior,
+- configurable project shape behavior,
+- compact native agent skill installation behavior,
 - runtime OS root resolution from compiled CLI files.
 
 ## Manual Smoke Test Evidence
@@ -46,30 +57,26 @@ Covered behavior:
 Commands were run against a temporary project using the compiled CLI:
 
 ```bash
-node cli/dist/src/index.js init <tmp>/demo-project
-node cli/dist/src/index.js validate <tmp>/demo-project
-node cli/dist/src/index.js adopt <tmp>/existing-project
-node cli/dist/src/index.js adr "Use Server Date"
-node cli/dist/src/index.js task "Implement Habit API"
-node cli/dist/src/index.js review "Habit API"
-node cli/dist/src/index.js feature "Habit Reminders"
+node cli/dist/src/index.js starter fullstack-saas <tmp>/demo-saas
+node cli/dist/src/index.js validate <tmp>/demo-saas
+cd <tmp>/demo-saas
+node <repo>/cli/dist/src/index.js create openapi "Habit API"
+node <repo>/cli/dist/src/index.js create migration "Create habits table"
+node <repo>/cli/dist/src/index.js create security "Habit API"
+node <repo>/cli/dist/src/index.js create release "0.3.0"
 ```
 
 Result:
 
-- Project skeleton copied successfully.
+- Fullstack SaaS starter copied successfully.
 - AI-ready structure validated successfully.
-- Existing project adopted without overwriting existing files.
-- ADR file generated as `docs/adr/ADR-001-use-server-date.md`.
-- Task file generated as `docs/tasks/TASK-001-implement-habit-api.md`.
-- Review report generated as `docs/reviews/habit-api-review.md`.
-- Feature PRD generated as `docs/product/features/habit-reminders.prd.md`.
+- OpenAPI contract generated as `docs/api/habit-api.openapi.yaml`.
+- Migration plan generated as `docs/database/migrations/MIGRATION-001-create-habits-table.md`.
+- Security review generated as `docs/security/habit-api-security-review.md`.
+- Release note generated as `docs/releases/0-3-0-release.md`.
+- Changelog draft generated as `docs/releases/CHANGELOG.md`.
 
-## Deferred V2.x Items
+## Deferred Items
 
-- Stack-specific starter apps.
-- GitHub Actions automation.
-- Database migration workflow.
-- Dedicated security-review workflow.
-- Release automation.
-- Real-project validation before expanding the V2.x roadmap.
+- Real-project validation before considering V3 productized platform features.
+- Stack starters remain AI docs only; app code generation is intentionally out of scope.

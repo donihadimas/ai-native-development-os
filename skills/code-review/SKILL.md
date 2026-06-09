@@ -28,6 +28,17 @@ Expected inputs:
 - related ADRs or architecture docs,
 - tests run and results.
 
+## Clarification Gate
+
+Before writing a review report, check whether these are available:
+
+- diff or changed files,
+- active task or stated intent,
+- acceptance criteria or expected behavior,
+- tests run and results.
+
+If the review target or expected behavior is unclear, stop and ask for the missing inputs before approving or requesting changes. You may still perform a limited review, but label its scope and gaps explicitly.
+
 ## Outputs
 
 Expected outputs:

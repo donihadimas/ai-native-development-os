@@ -2,7 +2,7 @@
 
 ## Contract Alignment
 
-Backend API behavior should match the contract in `docs/api/`. If implementation reveals the contract is wrong, update and review the contract before continuing frontend integration.
+Backend API behavior should match the contract in `<docsRoot>/api/`. Resolve `docsRoot` from `.aios/config.json` or default to `docs`. If implementation reveals the contract is wrong, update and review the contract before continuing client integration.
 
 ## Boundary Validation
 

@@ -28,6 +28,18 @@ Expected inputs:
 - existing tests,
 - known bug reproduction steps if any.
 
+## Clarification Gate
+
+Before writing a test plan, check whether these are clear enough:
+
+- behavior to verify,
+- acceptance criteria,
+- success and failure paths,
+- affected files or module,
+- existing test framework or conventions.
+
+If expected behavior or pass/fail criteria are unclear, stop and ask the user 3-5 focused questions before generating the final test plan.
+
 ## Outputs
 
 Expected outputs:

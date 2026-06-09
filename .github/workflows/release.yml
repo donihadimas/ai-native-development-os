@@ -1,0 +1,32 @@
+name: Release Dry Run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dry-run:
+    name: npm package dry run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: cli/package-lock.json
+
+      - name: Install dependencies
+        working-directory: cli
+        run: npm ci
+
+      - name: Test
+        working-directory: cli
+        run: npm test
+
+      - name: Package dry run
+        working-directory: cli
+        run: npm pack --dry-run

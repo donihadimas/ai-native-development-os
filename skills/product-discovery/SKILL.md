@@ -27,6 +27,19 @@ Expected inputs:
 - business or personal constraints,
 - existing notes or market assumptions.
 
+## Clarification Gate
+
+Before writing the vision document, check whether these are clear enough:
+
+- primary user,
+- painful problem or job-to-be-done,
+- smallest useful MVP,
+- explicit non-goals,
+- success metrics or observable signals,
+- important constraints.
+
+If two or more items are missing or vague, stop and ask the user 3-6 focused questions before generating the final document. Prefer multiple-choice questions when they reduce friction. Do not invent business facts; mark unresolved items as open questions only after asking.
+
 ## Outputs
 
 Expected outputs:
