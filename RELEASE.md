@@ -1,10 +1,10 @@
-# Release Guide
+# 🚀 Release Guide
 
 This guide explains how to release a new AI-Native Development OS version to GitHub and publish the CLI package to npm.
 
 The repository and the npm package should use the same version number. The npm package is published from `cli/` as `@donihadimas/aios`.
 
-## Semantic Versioning
+## 📦 Semantic Versioning
 
 This project follows Semantic Versioning using `MAJOR.MINOR.PATCH`. While the CLI is still pre-`1.0.0`, minor releases may include intentional command or workflow cleanup when migration notes are documented.
 
@@ -21,7 +21,7 @@ Use the version number consistently in:
 - GitHub Release title
 - npm package version
 
-### Version Rules
+### 📏 Version Rules
 
 - `MAJOR`: breaking changes that require users to migrate.
 - `MINOR`: new features or pre-`1.0.0` workflow cleanup with documented migration notes.
@@ -33,7 +33,7 @@ Examples:
 - `0.3.0`: add a new command, skill, template, workflow, or non-breaking skeleton capability.
 - `1.0.0`: stable public API and workflow contract after real-project usage proves the system is ready for stronger compatibility expectations.
 
-### Current Release Version
+### 📌 Current Release Version
 
 The current CLI release should use:
 
@@ -48,13 +48,13 @@ Reason:
 - V2.x ready-to-use workflow setup, guided CLI, native agent skills, and optional RTK/Caveman integrations are implemented.
 - This release includes intentional command cleanup while the project is still pre-`1.0.0`; document migration notes in the changelog and GitHub release.
 
-## Release Types
+## 🏷️ Release Types
 
 - Patch: documentation fixes, validation updates, and bug fixes.
 - Minor: new CLI commands, skills, templates, references, workflows, or non-breaking skeleton changes.
 - Major: breaking CLI behavior, template format changes, or workflow changes that require users to migrate.
 
-## Pre-Release Checklist
+## ✅ Pre-Release Checklist
 
 1. Confirm the working tree contains only intended changes:
 
@@ -93,7 +93,7 @@ cd ..
 
 6. Confirm the dry-run tarball does not include source tests, `dist/test/`, local caches, or unrelated files.
 
-## Commit The Release
+## 💾 Commit The Release
 
 Commit the release changes before publishing:
 
@@ -106,7 +106,7 @@ If the release includes other source, template, skill, workflow, or validation c
 
 Do not commit `cli/dist/` unless the project intentionally changes that policy. The build output is generated during package preparation.
 
-## Publish To npm
+## 🚢 Publish To npm
 
 From `cli/`, publish the scoped package:
 
@@ -127,7 +127,7 @@ aios validate demo-project
 
 If publish fails, do not create the GitHub release yet. Fix the issue, rerun validation, and publish again.
 
-## Create The Git Tag
+## 🏷️ Create The Git Tag
 
 After npm publish succeeds:
 
@@ -139,7 +139,7 @@ git push origin vX.Y.Z
 
 Use the same version number as `cli/package.json`.
 
-## Create The GitHub Release
+## 📝 Create The GitHub Release
 
 1. Open the repository on GitHub.
 2. Go to **Releases**.
@@ -163,7 +163,7 @@ installed-package smoke test: passed
 
 9. Publish the GitHub release.
 
-### Current `v0.3.0` GitHub Release
+### 🔄 Current `v0.3.0` GitHub Release
 
 Recommended release title:
 
@@ -202,7 +202,7 @@ npm install -g @donihadimas/aios
 ```
 ````
 
-### Future GitHub Release Template
+### 📄 Future GitHub Release Template
 
 Use this format for later releases:
 
@@ -235,7 +235,7 @@ npm install -g @donihadimas/aios
 ```
 ````
 
-## Post-Release Checks
+## 🔍 Post-Release Checks
 
 After the GitHub release is public:
 
@@ -248,11 +248,11 @@ aios --help
 Also confirm:
 
 - GitHub shows the expected release tag.
-- The root repository shows the MIT license.
+- The root repository shows the Apache License 2.0.
 - The README install command points to `@donihadimas/aios`.
 - The next planned work is documented in issues, tasks, or the roadmap.
 
-## Rollback Notes
+## ⏪ Rollback Notes
 
 npm packages cannot be fully removed from user machines after publish. If a release is bad:
 

@@ -1,31 +1,33 @@
-# Security Policy
+# 🛡️ Security Policy
 
-## Reporting Security Issues
+## 🚨 Reporting Security Issues
 
-Please do not report security issues in public GitHub issues.
+> [!WARNING]
+> Please **do not** report security issues in public GitHub issues.
 
 If you find a security concern, contact the maintainer privately with:
 
-- a clear description of the issue,
-- reproduction steps if available,
-- affected files or commands,
-- potential impact,
-- suggested mitigation if you have one.
+- A clear description of the issue.
+- Reproduction steps if available.
+- Affected files or commands.
+- Potential impact.
+- Suggested mitigation if you have one.
 
-## Scope
+## 🔍 Scope
 
 Security concerns may include:
 
-- unsafe CLI behavior,
-- accidental overwrite or destructive file operations,
-- package publishing risks,
-- secret exposure in templates or docs,
-- dependency or supply-chain concerns.
+- Unsafe CLI behavior.
+- Accidental overwrite or destructive file operations.
+- Package publishing risks.
+- Secret exposure in templates or docs.
+- Dependency or supply-chain concerns.
 
-## Maintainer Response
+## 🛠️ Maintainer Response
 
 The maintainer will review reports, assess impact, and publish fixes or guidance when appropriate.
 
-## Current Security Posture
+## 📊 Current Security Posture
 
-The CLI is intentionally small. It copies, renders, numbers, and validates files. It does not run AI agents, execute project code, manage credentials, or perform destructive overwrite operations by default.
+> [!NOTE]
+> The CLI is intentionally small. It copies, renders, numbers, and validates files. It does not run AI agents, execute project code, manage credentials, or perform destructive overwrite operations by default.

@@ -1,10 +1,13 @@
 # AI-Native Development OS
 
+![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
+![Node Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)
+
 AI-Native Development OS is a reusable workflow foundation for building software with AI coding agents. It gives a solo fullstack developer a consistent way to move from idea to product docs, architecture, ADRs, small tasks, implementation, review, testing, and release.
 
 This repository is not an application framework, SaaS starter, dashboard, or AI agent. It is a portable operating system for AI-assisted development: reusable skills, templates, references, workflows, project skeletons, and a small helper CLI.
 
-## What It Is For
+## 🎯 What It Is For
 
 Use this project when you want to:
 
@@ -15,7 +18,7 @@ Use this project when you want to:
 - keep review, testing, and acceptance criteria visible before marking work done,
 - publish or reuse the workflow as a small CLI-assisted toolkit.
 
-## Current Status
+## 📊 Current Status
 
 - V1 manual workflow is complete and usable by copying `project-skeleton/` and using the prompts, skills, templates, references, and workflows directly.
 - V2 assisted workflow is implemented as a focused Node.js CLI in `cli/`.
@@ -25,7 +28,7 @@ Use this project when you want to:
 - The CLI is designed for publishing as `@donihadimas/aios`.
 - Productized V3 platform capabilities remain intentionally deferred, including dashboard, remote skill marketplace, GitHub Issues integration, and multi-agent orchestration.
 
-## What Is Included
+## 📦 What Is Included
 
 - `skills/` - reusable operating procedures for AI agents.
 - `templates/` - document templates for PRD, architecture, ADR, task, review, testing, implementation plans, OpenAPI contracts, migration plans, security reviews, release notes, and changelog drafts.
@@ -40,7 +43,7 @@ Use this project when you want to:
 - `validation/` - validation reports and smoke-test evidence.
 - `RELEASE.md` - GitHub release and npm publish procedure.
 
-## Quickstart: Manual Use
+## 🚀 Quickstart: Manual Use
 
 Use the manual flow when you want full control and do not need the CLI.
 
@@ -52,7 +55,7 @@ Use the manual flow when you want full control and do not need the CLI.
 6. Implement one small task at a time.
 7. Save review evidence in `docs/reviews/`, run tests, and summarize before marking work done.
 
-## Quickstart: CLI Assisted Use
+## ⚡ Quickstart: CLI Assisted Use
 
 After publishing, install the CLI globally:
 
@@ -120,46 +123,46 @@ aios starter fullstack-saas demo-saas
 aios validate demo-saas
 ```
 
-## Generated Project Shape
+## 📂 Generated Project Shape
 
 ```text
-project/
-├── AGENTS.md
-├── CLAUDE.md
-├── README.md
-├── docs/
-│   ├── product/
-│   │   ├── vision.md
-│   │   ├── prd.md
-│   │   └── features/
-│   ├── architecture/
-│   │   └── architecture.md
-│   ├── adr/
-│   ├── tasks/
-│   ├── reviews/
-│   ├── api/
-│   └── context/
-│       ├── context-map.md
-│       └── development-start.md
-├── .aios/
-│   ├── config.json
-│   ├── skill-router.md
-│   ├── commands/
-│   ├── integrations/
-│   ├── skills/        # present in portable or both skill delivery mode
-│   ├── prompts/
-│   ├── references/
-│   ├── templates/
-│   └── workflows/
-├── .agents/           # optional native Codex/generic skills
-├── .qwen/             # optional native Qwen Code skills
-├── .opencode/         # optional native OpenCode skills
-├── .agent/            # optional native Antigravity skills
-├── frontend/
-└── backend/
+📁 project/
+├── 📄 AGENTS.md
+├── 📄 CLAUDE.md
+├── 📄 README.md
+├── 📁 docs/
+│   ├── 📁 product/
+│   │   ├── 📄 vision.md
+│   │   ├── 📄 prd.md
+│   │   └── 📁 features/
+│   ├── 📁 architecture/
+│   │   └── 📄 architecture.md
+│   ├── 📁 adr/
+│   ├── 📁 tasks/
+│   ├── 📁 reviews/
+│   ├── 📁 api/
+│   └── 📁 context/
+│       ├── 📄 context-map.md
+│       └── 📄 development-start.md
+├── 📁 .aios/
+│   ├── 📄 config.json
+│   ├── 📄 skill-router.md
+│   ├── 📁 commands/
+│   ├── 📁 integrations/
+│   ├── 📁 skills/        # present in portable or both skill delivery mode
+│   ├── 📁 prompts/
+│   ├── 📁 references/
+│   ├── 📁 templates/
+│   └── 📁 workflows/
+├── 📁 .agents/           # optional native Codex/generic skills
+├── 📁 .qwen/             # optional native Qwen Code skills
+├── 📁 .opencode/         # optional native OpenCode skills
+├── 📁 .agent/            # optional native Antigravity skills
+├── 📁 frontend/
+└── 📁 backend/
 ```
 
-## Publishing The CLI
+## 🚢 Publishing The CLI
 
 The CLI lives in `cli/` and is packaged separately from the repository root.
 
@@ -175,7 +178,7 @@ The package build creates bundled `assets/aios-kit/` from the root workflow asse
 
 For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`.
 
-## Operating Principles
+## ⚖️ Operating Principles
 
 - Docs are the source of truth.
 - Skills beat one-off prompts.
@@ -185,8 +188,12 @@ For the full release process, including versioning, npm publish, Git tags, GitHu
 - Frontend and backend share the same product, architecture, ADR, task, review, and API context.
 - Work is not done until acceptance criteria, tests, review, and summary are complete.
 
-## Boundaries
+## 🚧 Boundaries
 
 The CLI only creates, copies, numbers, renders, recommends next steps, validates files, and optionally manages AIOS integration rules. It does not generate application code, run Codex, install app dependencies, apply database migrations, or publish releases.
 
 The included starters are AI docs only shells. GitHub Actions are intentionally limited to tests, smoke checks, and npm package dry-runs.
+
+## 📜 License
+
+This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md) files for more details.

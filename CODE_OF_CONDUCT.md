@@ -1,12 +1,12 @@
-# Code of Conduct
+# 📜 Code of Conduct
 
-## Our Pledge
+## 🤝 Our Pledge
 
 We want this project to be a respectful, useful, and welcoming space for people building better AI-assisted development workflows.
 
 Contributors are expected to communicate with patience, curiosity, and good faith.
 
-## Expected Behavior
+## ✅ Expected Behavior
 
 - Be respectful and constructive.
 - Assume good intent, especially when discussing ambiguous design choices.
@@ -14,14 +14,14 @@ Contributors are expected to communicate with patience, curiosity, and good fait
 - Help keep discussions clear and actionable.
 - Respect maintainers' scope decisions.
 
-## Unacceptable Behavior
+## ❌ Unacceptable Behavior
 
 - Harassment, threats, or personal attacks.
 - Discriminatory language or behavior.
 - Deliberate disruption of issues, pull requests, or discussions.
 - Publishing private or sensitive information without permission.
 
-## Enforcement
+## ⚖️ Enforcement
 
 Maintainers may remove comments, close issues, reject pull requests, or block participants who violate this code of conduct.
 

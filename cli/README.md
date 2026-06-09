@@ -1,10 +1,28 @@
 # AIOS CLI
 
+[![NPM Version](https://img.shields.io/npm/v/@donihadimas/aios.svg)](https://www.npmjs.com/package/@donihadimas/aios)
+![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
+![Node Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)
+
 `aios` is the small CLI for AI-Native Development OS. It helps you create an AI-ready project with a local `.aios/` workflow kit, generate common planning documents from templates, and validate that a project has the expected AI workflow structure.
 
 It does not replace Codex or another coding agent. The CLI only creates, copies, numbers, renders, and validates files. Your agent still does the product thinking, planning, implementation, testing, and review with the generated docs as context.
 
-## Install
+## 📑 Table of Contents
+
+- [📥 Install](#-install)
+- [⏱️ 10-Minute Quickstart](#️-10-minute-quickstart)
+- [🔄 Recommended Workflow](#-recommended-workflow)
+- [🛠️ Commands](#️-commands)
+- [📂 Generated Project Structure](#-generated-project-structure)
+- [🤖 How To Use With Codex](#-how-to-use-with-codex)
+- [🚧 What The CLI Does Not Do](#-what-the-cli-does-not-do)
+- [💻 Local Development](#-local-development)
+- [🚢 Publishing Checklist](#-publishing-checklist)
+- [🚑 Troubleshooting](#-troubleshooting)
+- [📜 License](#-license)
+
+## 📥 Install
 
 After the package is published:
 
@@ -18,7 +36,7 @@ Requirements:
 - Node.js 20 or newer.
 - npm for global install.
 
-## 10-Minute Quickstart
+## ⏱️ 10-Minute Quickstart
 
 Create a new AI-ready project:
 
@@ -89,7 +107,7 @@ Open the project in your IDE and ask Codex to start from the generated docs:
 Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and docs/tasks/TASK-001-implement-habit-api.md. Use the matching native agent skill when installed, otherwise use the portable .aios skill. Create an implementation plan before coding.
 ```
 
-## Recommended Workflow
+## 🔄 Recommended Workflow
 
 ```text
 aios init <project-name>
@@ -132,7 +150,7 @@ aios adopt
 aios validate
 ```
 
-## Commands
+## 🛠️ Commands
 
 ### `aios init <project-name> [--lite] [--shape <shape>] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
 
@@ -558,7 +576,7 @@ docs/releases/0-3-0-release.md
 docs/releases/CHANGELOG.md
 ```
 
-## Generated Project Structure
+## 📂 Generated Project Structure
 
 A project created with `aios init` looks like this:
 
@@ -599,7 +617,7 @@ my-project/
 └── backend/
 ```
 
-## How To Use With Codex
+## 🤖 How To Use With Codex
 
 The CLI prepares files. Codex should still follow the AI Dev OS workflow.
 
@@ -621,7 +639,7 @@ For review:
 Review the diff against the active task acceptance criteria. Findings first, then test evidence, risks, and approval or revision required.
 ```
 
-## What The CLI Does Not Do
+## 🚧 What The CLI Does Not Do
 
 `aios` does not:
 
@@ -637,7 +655,7 @@ Review the diff against the active task acceptance criteria. Findings first, the
 
 That restraint is intentional. The CLI keeps setup fast while preserving the core AI Dev OS principle: human-owned decisions, small tasks, and verifiable work.
 
-## Local Development
+## 💻 Local Development
 
 Clone this repository, then from `cli/`:
 
@@ -648,7 +666,7 @@ npm run build
 npm run aios -- init ../demo-project
 ```
 
-## Publishing Checklist
+## 🚢 Publishing Checklist
 
 Before publishing to npm:
 
@@ -669,7 +687,7 @@ The package must include:
 
 The package should not include source tests or `dist/test/`.
 
-## Troubleshooting
+## 🚑 Troubleshooting
 
 ### `aios: command not found`
 
@@ -709,3 +727,7 @@ aios adopt
 ```
 
 Use `init` only for new project directories.
+
+## 📜 License
+
+This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md) files for more details.

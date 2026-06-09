@@ -3,7 +3,7 @@
   "version": "0.3.0",
   "description": "Small CLI for AI-Native Development OS.",
   "type": "module",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "ai",
     "codex",
@@ -19,6 +19,7 @@
   "files": [
     "README.md",
     "LICENSE",
+    "NOTICE.md",
     "dist/src/**",
     "assets/**"
   ],
