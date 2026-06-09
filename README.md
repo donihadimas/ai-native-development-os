@@ -7,6 +7,22 @@ AI-Native Development OS is a reusable workflow foundation for building software
 
 This repository is not an application framework, SaaS starter, dashboard, or AI agent. It is a portable operating system for AI-assisted development: reusable skills, templates, references, workflows, project skeletons, and a small helper CLI.
 
+## 📑 Table of Contents
+
+- [🎯 What It Is For](#-what-it-is-for)
+- [📊 Current Status](#-current-status)
+- [📦 What Is Included](#-what-is-included)
+- [📥 Install](#-install)
+- [⏱️ Quickstart](#️-quickstart)
+- [🔄 Recommended Workflow](#-recommended-workflow)
+- [🤖 How To Use With Codex](#-how-to-use-with-codex)
+- [🛠️ CLI Commands](#️-cli-commands)
+- [📂 Generated Project Structure](#-generated-project-structure)
+- [⚖️ Operating Principles](#️-operating-principles)
+- [🚧 Boundaries](#-boundaries)
+- [🚢 Publishing The CLI](#-publishing-the-cli)
+- [📜 License](#-license)
+
 ## 🎯 What It Is For
 
 Use this project when you want to:
@@ -25,8 +41,7 @@ Use this project when you want to:
 - V2.x workflow extensions are implemented for AI docs only starters, database migration planning, security review, release preparation, OpenAPI generation, and GitHub Actions dry-run automation.
 - Ready-to-use project generation is implemented: `aios init`, `starter`, and `adopt` install a local `.aios/` workflow kit by default.
 - V3-lite setup is implemented for interactive CLI setup, configurable docs location, native agent skill install, and optional RTK/Caveman integration rules.
-- The CLI is designed for publishing as `@donihadimas/aios`.
-- Productized V3 platform capabilities remain intentionally deferred, including dashboard, remote skill marketplace, GitHub Issues integration, and multi-agent orchestration.
+- The CLI is published as `@donihadimas/aios`.
 
 ## 📦 What Is Included
 
@@ -41,27 +56,23 @@ Use this project when you want to:
 - `cli/` - the `aios` helper CLI for skeleton and starter creation, adoption, document generation, numbering, and validation.
 - `.github/` - manual issue and pull request templates plus lightweight CI, smoke test, and release dry-run workflows.
 - `validation/` - validation reports and smoke-test evidence.
-- `RELEASE.md` - GitHub release and npm publish procedure.
 
-## 🚀 Quickstart: Manual Use
+## 📥 Install
 
-Use the manual flow when you want full control and do not need the CLI.
-
-1. Copy `project-skeleton/` into a new project directory.
-2. Open the new project with Codex or another coding agent.
-3. Fill `docs/product/vision.md` with the product idea.
-4. Use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md` to create `docs/product/prd.md`.
-5. Generate architecture, ADRs, and task breakdowns before coding.
-6. Implement one small task at a time.
-7. Save review evidence in `docs/reviews/`, run tests, and summarize before marking work done.
-
-## ⚡ Quickstart: CLI Assisted Use
-
-After publishing, install the CLI globally:
+After the package is published, install the CLI globally:
 
 ```bash
 npm install -g @donihadimas/aios
+aios --help
 ```
+
+Requirements:
+- Node.js 20 or newer.
+- npm for global install.
+
+## ⏱️ Quickstart
+
+### CLI Assisted Use
 
 Create and validate a new project:
 
@@ -72,7 +83,7 @@ aios next demo-project
 cd demo-project
 ```
 
-`aios init` installs a local `.aios/` workflow kit by default, so the generated project is self-contained for Codex. Use `--lite` only when you want the old minimal skeleton behavior. Run `aios` without arguments for the guided setup wizard; it can create or adopt a project, choose full or lite setup, choose project shape and docs location, install native agent skill sets, show a setup summary before writing files, and offer optional RTK/Caveman integration setup after the project kit is installed.
+`aios init` installs a local `.aios/` workflow kit by default. Use `--lite` only when you want the old minimal skeleton behavior. Run `aios` without arguments for the guided setup wizard.
 
 Native agent skill install keeps `.aios/` compact and installs selected skills into agent-specific folders:
 
@@ -81,19 +92,12 @@ aios init demo-native --agents codex,qwen --skills core --skill-delivery native
 aios agent install demo-native --agents opencode,antigravity --skills testing
 ```
 
-Use `--docs-root .aios/project-docs` when you want project docs under `.aios/` instead of the default `docs/`.
-Use `--shape frontend|backend|mobile|library|docs` when a project should not create both `frontend/` and `backend/`.
-
-Optional RTK/Caveman integrations are project-local by default:
+Start from a lightweight V2.x starter:
 
 ```bash
-aios integration status
-aios integration add rtk . --dry-run
-aios integration add caveman . --mode lite --agents codex
-aios integration doctor
+aios starter fullstack-saas demo-saas
+aios validate demo-saas
 ```
-
-AIOS writes local rules and config first. External install/uninstall actions are opt-in and require explicit confirmation via `--yes`. Caveman install is targeted to selected agents instead of using all-agent auto-detection.
 
 Adopt an existing project without overwriting existing files:
 
@@ -116,17 +120,94 @@ aios create review "Habit API"
 aios create release "0.3.0"
 ```
 
-Start from a lightweight V2.x starter:
+### Manual Use
 
-```bash
-aios starter fullstack-saas demo-saas
-aios validate demo-saas
-```
+Use the manual flow when you want full control and do not need the CLI.
 
-## 📂 Generated Project Shape
+1. Copy `project-skeleton/` into a new project directory.
+2. Open the new project with Codex or another coding agent.
+3. Fill `docs/product/vision.md` with the product idea.
+4. Use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md` to create `docs/product/prd.md`.
+5. Generate architecture, ADRs, and task breakdowns before coding.
+6. Implement one small task at a time.
+7. Save review evidence in `docs/reviews/`, run tests, and summarize before marking work done.
+
+## 🔄 Recommended Workflow
 
 ```text
-📁 project/
+aios init <project-name>
+↓
+aios next <project-name>
+↓
+Fill docs/product/vision.md
+↓
+Use Codex with the prompts from .aios/prompts/
+↓
+aios create adr <decision-name>
+↓
+aios create task <task-name>
+↓
+Codex plans and implements one task
+↓
+aios create review <name>
+↓
+Codex reviews the diff against acceptance criteria
+↓
+aios validate
+```
+
+For an existing project, replace the first step with `aios adopt`.
+
+## 🤖 How To Use With Codex
+
+The CLI prepares files. Codex should still follow the AI Dev OS workflow.
+
+For PRD generation:
+
+```text
+Read AGENTS.md, docs/product/vision.md, and .aios/prompts/01-generate-prd.md. Generate docs/product/prd.md using .aios/templates/prd.template.md and keep acceptance criteria testable.
+```
+
+For task implementation:
+
+```text
+Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and the active task in docs/tasks/. Use native agent skills when installed, otherwise use .aios/skills. Create a short implementation plan before editing files. Do not modify unrelated files.
+```
+
+For review:
+
+```text
+Review the diff against the active task acceptance criteria. Findings first, then test evidence, risks, and approval or revision required.
+```
+
+## 🛠️ CLI Commands
+
+- `aios init <project-name> [--lite] [--shape <shape>] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`: Copies the bundled AI-ready project skeleton into a new directory and installs the local workflow kit.
+- `aios validate [project-path] [--lite]`: Checks whether a project has the expected AI-ready structure.
+- `aios starter <starter-name> <project-name>`: Copies a bundled AI docs only starter into a new directory.
+- `aios adopt [project-path]`: Adds the AI Dev OS structure and local `.aios/` workflow kit to an existing project without overwriting existing files.
+- `aios kit install [project-path]`: Installs or repairs the local `.aios/` workflow kit.
+- `aios agent list`: Lists supported native agent targets and available AIOS skills.
+- `aios agent install [project-path]`: Installs selected AIOS skills into native agent skill folders.
+- `aios integration list / status / add / remove / doctor / repair`: Manages optional external integrations like `rtk` and `caveman`.
+- `aios config [project-path]`: Prints the resolved AIOS project config.
+- `aios prompt list / show`: Lists or prints portable AIOS command prompts.
+- `aios next [project-path]`: Prints the next recommended development step without changing files.
+- `aios create feature <name>`: Creates a feature PRD stub from the PRD template.
+- `aios create adr <name>`: Creates the next numbered ADR.
+- `aios create task <name>`: Creates the next numbered implementation task.
+- `aios create review <name>`: Creates a review report stub.
+- `aios create openapi <name>`: Creates an OpenAPI contract stub.
+- `aios create migration <name>`: Creates the next numbered database migration plan.
+- `aios create security <name>`: Creates a security review report stub.
+- `aios create release <name>`: Creates a release note and changelog draft.
+
+## 📂 Generated Project Structure
+
+A project created with `aios init` looks like this:
+
+```text
+📁 my-project/
 ├── 📄 AGENTS.md
 ├── 📄 CLAUDE.md
 ├── 📄 README.md
@@ -149,7 +230,7 @@ aios validate demo-saas
 │   ├── 📄 skill-router.md
 │   ├── 📁 commands/
 │   ├── 📁 integrations/
-│   ├── 📁 skills/        # present in portable or both skill delivery mode
+│   ├── 📁 skills/        # portable or both skill delivery mode
 │   ├── 📁 prompts/
 │   ├── 📁 references/
 │   ├── 📁 templates/
@@ -161,22 +242,6 @@ aios validate demo-saas
 ├── 📁 frontend/
 └── 📁 backend/
 ```
-
-## 🚢 Publishing The CLI
-
-The CLI lives in `cli/` and is packaged separately from the repository root.
-
-Before publishing:
-
-```bash
-cd cli
-npm test
-npm pack --dry-run
-```
-
-The package build creates bundled `assets/aios-kit/` from the root workflow assets (`skill-router.md`, `commands/`, `integrations/`, `skills/`, `prompts/`, `references/`, `templates/`, and `workflows/`), then copies `project-skeleton/`, `templates/`, and `starters/` through `cli/scripts/sync-assets.mjs`. See `validation/npm-publish-readiness-report.md` for the latest publish-readiness evidence.
-
-For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`.
 
 ## ⚖️ Operating Principles
 
@@ -193,6 +258,18 @@ For the full release process, including versioning, npm publish, Git tags, GitHu
 The CLI only creates, copies, numbers, renders, recommends next steps, validates files, and optionally manages AIOS integration rules. It does not generate application code, run Codex, install app dependencies, apply database migrations, or publish releases.
 
 The included starters are AI docs only shells. GitHub Actions are intentionally limited to tests, smoke checks, and npm package dry-runs.
+
+## 🚢 Publishing The CLI
+
+The CLI lives in `cli/` and is packaged separately from the repository root. Before publishing:
+
+```bash
+cd cli
+npm test
+npm pack --dry-run
+```
+
+For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`.
 
 ## 📜 License
 
