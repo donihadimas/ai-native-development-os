@@ -1310,6 +1310,12 @@ aios prompt list [project-path]
 aios prompt show <name> [project-path]
 aios agent list
 aios agent install [project-path]
+aios integration list
+aios integration status [project-path]
+aios integration add <rtk|caveman|all> [project-path]
+aios integration remove <rtk|caveman|all> [project-path]
+aios integration doctor [project-path]
+aios integration repair [project-path]
 aios config [project-path]
 aios create feature <feature-name>
 aios create adr <decision-name>
@@ -1332,6 +1338,7 @@ CLI responsibilities:
 - support configurable docs location through `.aios/config.json`,
 - support configurable project shape so generated projects do not always require both `frontend/` and `backend/`,
 - install selected AIOS skills into native agent skill folders for Codex, Qwen Code, OpenCode, Antigravity, and generic Agent Skills,
+- configure optional RTK/Caveman integration rules with explicit consent before external install or uninstall, targeted Caveman agent install, and doctor/repair checks,
 - copy AI docs only starters,
 - adopt AIOS docs and `.aios/` into existing projects without overwriting files,
 - list and print portable command prompts for agents without slash command support,
@@ -1356,6 +1363,7 @@ Implemented from root workflow assets:
 Root AIOS workflow assets
 ├── skill-router.md
 ├── commands/
+├── integrations/
 ├── skills/
 ├── prompts/
 ├── references/
@@ -1372,6 +1380,7 @@ project/
 ├── .aios/
 │   ├── skill-router.md
 │   ├── commands/
+│   ├── integrations/
 │   ├── skills/
 │   ├── prompts/
 │   ├── references/
@@ -1583,16 +1592,17 @@ V3 is optional and should only begin after V2 proves useful.
 
 Potential features:
 
-1. Interactive CLI. Status: V3-lite implemented for setup/adopt/agent skill install.
+1. Interactive CLI. Status: V3-lite implemented for setup/adopt/agent skill install and optional RTK/Caveman integration setup.
 2. Skill installer. Status: V3-lite implemented for selected local AIOS skills and native agent folders.
-3. Project health checker.
-4. Context health checker.
-5. Documentation freshness checker.
-6. Task complexity analyzer.
-7. AI review score.
-8. GitHub Issues integration.
-9. Multi-repo orchestration.
-10. Web dashboard.
+3. Optional external integration manager. Status: V3-lite implemented for RTK and Caveman project rules, detection, and consent-based install/uninstall helpers.
+4. Project health checker.
+5. Context health checker.
+6. Documentation freshness checker.
+7. Task complexity analyzer.
+8. AI review score.
+9. GitHub Issues integration.
+10. Multi-repo orchestration.
+11. Web dashboard.
 
 V3 should not be started until V1 and V2 are validated.
 

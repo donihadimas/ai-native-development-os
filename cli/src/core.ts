@@ -13,6 +13,21 @@ export type SkillDelivery = "portable" | "native" | "both";
 export type AgentTarget = "codex" | "qwen" | "opencode" | "antigravity" | "generic";
 export type AgentScope = "repo" | "user";
 export type ProjectShape = "fullstack" | "frontend" | "backend" | "mobile" | "library" | "docs";
+export type IntegrationName = "rtk" | "caveman";
+export type CavemanMode = "lite" | "full" | "ultra";
+
+export interface IntegrationConfig {
+  rtk: {
+    enabled: boolean;
+    commandPolicy: "prefer-for-noisy-output";
+  };
+  caveman: {
+    enabled: boolean;
+    mode: CavemanMode;
+    responsePolicy: "concise-for-status-only";
+    targetAgents: AgentTarget[];
+  };
+}
 
 export interface ProjectConfig {
   version: number;
@@ -24,6 +39,7 @@ export interface ProjectConfig {
   selectedSkills: string[];
   agentScope: AgentScope;
   projectShape: ProjectShape;
+  integrations: IntegrationConfig;
   starter?: string;
 }
 
@@ -62,6 +78,8 @@ export const DELIVERY_SKILLS = ["testing", "code-review", "security-review", "re
 
 export const AGENT_TARGETS: AgentTarget[] = ["codex", "qwen", "opencode", "antigravity", "generic"];
 export const PROJECT_SHAPES: ProjectShape[] = ["fullstack", "frontend", "backend", "mobile", "library", "docs"];
+export const INTEGRATIONS: IntegrationName[] = ["rtk", "caveman"];
+export const CAVEMAN_MODES: CavemanMode[] = ["lite", "full", "ultra"];
 
 export const REQUIRED_PROJECT_PATHS = ["AGENTS.md"];
 
@@ -106,6 +124,7 @@ export const REQUIRED_AIOS_KIT_PATHS = [
 export const AIOS_KIT_ENTRIES = [
   "skill-router.md",
   "commands",
+  "integrations",
   "skills",
   "prompts",
   "references",
@@ -128,6 +147,7 @@ export function getRuntimePaths(): RuntimePaths {
     fs.existsSync(path.join(packageAssetsRoot, "project-skeleton")) &&
     fs.existsSync(path.join(packageAssetsRoot, "aios-kit")) &&
     fs.existsSync(path.join(packageAssetsRoot, "aios-kit", "skill-router.md")) &&
+    fs.existsSync(path.join(packageAssetsRoot, "aios-kit", "integrations")) &&
     fs.existsSync(path.join(packageAssetsRoot, "templates")) &&
     fs.existsSync(path.join(packageAssetsRoot, "starters"))
   ) {
@@ -171,6 +191,19 @@ export function titleize(input: string): string {
 }
 
 export function defaultProjectConfig(overrides: Partial<ProjectConfig> = {}): ProjectConfig {
+  const defaultIntegrations: IntegrationConfig = {
+    rtk: {
+      enabled: false,
+      commandPolicy: "prefer-for-noisy-output"
+    },
+    caveman: {
+      enabled: false,
+      mode: "lite",
+      responsePolicy: "concise-for-status-only",
+      targetAgents: []
+    }
+  };
+
   return {
     version: 1,
     mode: "full",
@@ -181,6 +214,7 @@ export function defaultProjectConfig(overrides: Partial<ProjectConfig> = {}): Pr
     selectedSkills: CORE_SKILLS,
     agentScope: "repo",
     projectShape: "fullstack",
+    integrations: defaultIntegrations,
     ...overrides
   };
 }
@@ -196,7 +230,20 @@ export function readProjectConfig(projectPath: string): ProjectConfig {
   }
 
   const parsed = JSON.parse(fs.readFileSync(target, "utf8")) as Partial<ProjectConfig>;
-  return defaultProjectConfig(parsed);
+  const base = defaultProjectConfig(parsed);
+  return {
+    ...base,
+    integrations: {
+      rtk: {
+        ...base.integrations.rtk,
+        ...parsed.integrations?.rtk
+      },
+      caveman: {
+        ...base.integrations.caveman,
+        ...parsed.integrations?.caveman
+      }
+    }
+  };
 }
 
 export function writeProjectConfig(projectPath: string, config: ProjectConfig): void {

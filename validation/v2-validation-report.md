@@ -9,7 +9,7 @@ V2 has been implemented as a focused assisted workflow upgrade: a small Node.js 
 | Area | Status | Evidence |
 | --- | --- | --- |
 | CLI | Pass | `cli/src/` implements `aios init`, `starter`, `adopt`, `kit install`, `prompt list`, `prompt show`, `agent list`, `agent install`, `config`, `create feature`, `create adr`, `create task`, `create review`, `create openapi`, `create migration`, `create security`, `create release`, `validate`, and `next`. |
-| CLI tests | Pass | `npm test` passes 35 Node test-runner tests. |
+| CLI tests | Pass | `npm test` passes 40 Node test-runner tests. |
 | Ready-to-use setup | Pass | Generated projects include `.aios/` workflow kit by default, with `--lite` available for minimal output. |
 | OpenAPI support | Pass | `templates/openapi.template.yaml`, `skills/api-contract-design`, `workflows/api-contract.workflow.md`, and `prompts/09-design-api-contract.md` exist. |
 | Backend API adapter | Pass | `skills/backend-api-development/SKILL.md` and `references/backend-api-standards.md` exist. |
@@ -30,7 +30,7 @@ npm test
 
 Result:
 
-- 35 tests passed.
+- 41 tests passed.
 - 0 tests failed.
 
 Covered behavior:
@@ -46,7 +46,7 @@ Covered behavior:
 - validation coverage for feature PRD and review report directories,
 - local `.aios/` kit installation and validation,
 - V2.x optional validation warnings,
-- `init`, `starter`, `adopt`, `kit install`, `prompt list`, `prompt show`, `agent list`, `agent install`, `config`, `create feature`, `create adr`, `create task`, `create review`, `create openapi`, `create migration`, `create security`, `create release`, `validate`, and `next` command behavior,
+- `init`, `starter`, `adopt`, `kit install`, `prompt list`, `prompt show`, `agent list`, `agent install`, `integration list`, `integration status`, `integration add`, `integration remove`, `integration doctor`, `integration repair`, `config`, `create feature`, `create adr`, `create task`, `create review`, `create openapi`, `create migration`, `create security`, `create release`, `validate`, and `next` command behavior,
 - configurable docs root behavior,
 - configurable project shape behavior,
 - compact native agent skill installation behavior,

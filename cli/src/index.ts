@@ -1,15 +1,21 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import { execFileSync, execSync } from "node:child_process";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import {
   AGENT_TARGETS,
+  CAVEMAN_MODES,
   CORE_SKILLS,
+  INTEGRATIONS,
   PROJECT_SHAPES,
   PROJECT_SHAPE_PATHS,
   type AgentScope,
   type AgentTarget,
+  type CavemanMode,
+  type IntegrationName,
   adoptSkeleton,
   availableSkills,
   defaultProjectConfig,
@@ -96,6 +102,26 @@ Usage:
   aios agent list
     List supported agent targets and available AIOS skills.
 
+  aios integration list
+    List optional external integrations supported by AIOS.
+
+  aios integration status [project-path]
+    Show project config, local rules, and detected external tool status.
+
+  aios integration add <rtk|caveman|all> [project-path] [--install] [--mode lite|full|ultra] [--dry-run]
+    Enable optional RTK/Caveman rules in the local .aios kit.
+    With --install --yes, also runs the external installer when supported.
+
+  aios integration remove <rtk|caveman|all> [project-path] [--scope project|user|both] [--dry-run]
+    Disable local rules, offer user-computer uninstall, or both.
+    External uninstall only runs with --yes.
+
+  aios integration doctor [project-path]
+    Check integration config, local rules, external detection, and recommended fixes.
+
+  aios integration repair [project-path]
+    Repair missing local integration rules for enabled integrations.
+
   aios config [project-path]
     Print resolved AIOS project configuration.
 
@@ -151,6 +177,8 @@ Typical workflow:
   aios create task "Implement habit API"
   aios create review "Habit API"
   aios create release "0.3.0"
+  aios integration status
+  aios integration add rtk . --dry-run
 
 Starter workflow:
   aios starter fullstack-saas demo-saas
@@ -177,8 +205,10 @@ interface ParsedArgs {
   skillDelivery?: SkillDelivery;
   agents?: AgentTarget[];
   skills?: string;
-  scope?: AgentScope;
+  scope?: string;
   projectShape?: ProjectShape;
+  install: boolean;
+  mode?: string;
 }
 
 function requireName(value: string | undefined, command: string): string {
@@ -201,7 +231,7 @@ function parseCsv<T extends string>(value: string | undefined): T[] | undefined 
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
-  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope", "--shape"]);
+  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope", "--shape", "--mode"]);
   const commandFlags = new Set(["--version", "--help"]);
   const args: string[] = [];
 
@@ -223,12 +253,14 @@ function parseArgs(argv: string[]): ParsedArgs {
     yes: argv.includes("--yes") || argv.includes("-y"),
     dryRun: argv.includes("--dry-run"),
     overwrite: argv.includes("--overwrite"),
+    install: argv.includes("--install"),
     docsRoot: readFlagValue(argv, "--docs-root"),
     skillDelivery: readFlagValue(argv, "--skill-delivery") as SkillDelivery | undefined,
     agents: parseCsv<AgentTarget>(readFlagValue(argv, "--agents")),
     skills: readFlagValue(argv, "--skills"),
-    scope: readFlagValue(argv, "--scope") as AgentScope | undefined,
-    projectShape: readFlagValue(argv, "--shape") as ProjectShape | undefined
+    scope: readFlagValue(argv, "--scope"),
+    projectShape: readFlagValue(argv, "--shape") as ProjectShape | undefined,
+    mode: readFlagValue(argv, "--mode")
   };
 }
 
@@ -253,6 +285,7 @@ function normalizeProjectSetup(ctx: CommandContext, options: ParsedArgs, starter
   const selectedAgents = options.agents ?? [];
   const skillDelivery = options.skillDelivery ?? (selectedAgents.length > 0 ? "native" : "portable");
   const projectShape = options.projectShape ?? inferStarterShape(starter);
+  const agentScope = options.scope === "user" ? "user" : "repo";
   if ((skillDelivery === "native" || skillDelivery === "both") && selectedAgents.length === 0) {
     throw new Error("Native skill delivery requires --agents <agent-list>.");
   }
@@ -267,7 +300,7 @@ function normalizeProjectSetup(ctx: CommandContext, options: ParsedArgs, starter
     skillDelivery,
     selectedAgents,
     selectedSkills,
-    agentScope: options.scope ?? "repo",
+    agentScope,
     projectShape,
     starter
   });
@@ -503,12 +536,13 @@ function commandAgentInstall(ctx: CommandContext, projectPathArg: string | undef
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
   const agents = options.agents ?? ["codex"];
   const skills = expandSkillSelection(ctx.runtimePaths.aiosKitSource, options.skills ?? "core");
+  const scope = options.scope === "user" ? "user" : "repo";
   const result = installAgentSkills({
     sourceRoot: ctx.runtimePaths.aiosKitSource,
     projectPath,
     agents,
     skills,
-    scope: options.scope ?? "repo",
+    scope,
     overwrite: options.overwrite,
     dryRun: options.dryRun
   });
@@ -522,7 +556,7 @@ function commandAgentInstall(ctx: CommandContext, projectPathArg: string | undef
         skillDelivery: current.skillDelivery === "portable" ? "both" : current.skillDelivery,
         selectedAgents: [...new Set([...current.selectedAgents, ...agents])],
         selectedSkills: [...new Set([...current.selectedSkills, ...skills])].sort(),
-        agentScope: options.scope ?? current.agentScope
+        agentScope: scope ?? current.agentScope
       })
     );
   }
@@ -531,7 +565,7 @@ function commandAgentInstall(ctx: CommandContext, projectPathArg: string | undef
     options.dryRun ? "Planned native agent skill install:" : `Installed native agent skills in ${projectPath}`,
     `Agents: ${agents.join(", ")}`,
     `Skills: ${skills.join(", ")}`,
-    `Scope: ${options.scope ?? "repo"}`,
+    `Scope: ${scope}`,
     options.dryRun ? `Planned: ${result.planned.length}` : `Created: ${result.created.length}`,
     `Skipped existing: ${result.skipped.length}`,
     ...((options.dryRun ? result.planned : result.created).slice(0, 20).map((item) => `- ${item}`))
@@ -556,6 +590,496 @@ function commandKit(ctx: CommandContext, action: string | undefined, projectPath
       return commandInstallKit(ctx, projectPathArg);
     default:
       throw new Error("Missing kit action. Usage: aios kit install [project-path]");
+  }
+}
+
+type IntegrationScope = "project" | "user" | "both";
+
+function expandIntegrationSelection(name: string | undefined): IntegrationName[] {
+  const value = requireName(name, "integration <add|remove>");
+  if (value === "all") {
+    return [...INTEGRATIONS];
+  }
+  if (INTEGRATIONS.includes(value as IntegrationName)) {
+    return [value as IntegrationName];
+  }
+  throw new Error(`Unknown integration: ${value}`);
+}
+
+function integrationScope(value: string | undefined): IntegrationScope {
+  if (!value) {
+    return "project";
+  }
+  if (value === "project" || value === "user" || value === "both") {
+    return value;
+  }
+  throw new Error(`Unknown integration remove scope: ${value}`);
+}
+
+function cavemanMode(value: string | undefined): CavemanMode {
+  if (!value) {
+    return "lite";
+  }
+  if (CAVEMAN_MODES.includes(value as CavemanMode)) {
+    return value as CavemanMode;
+  }
+  throw new Error(`Unknown Caveman mode: ${value}`);
+}
+
+function normalizeCavemanTargetAgents(config = defaultProjectConfig(), options: ParsedArgs = parseArgs([])): AgentTarget[] {
+  const requested = options.agents ?? config.integrations.caveman.targetAgents ?? config.selectedAgents;
+  const targets: AgentTarget[] = requested.length > 0 ? requested : ["codex"];
+  return [...new Set(targets)].filter((agent) => AGENT_TARGETS.includes(agent));
+}
+
+function skillsCliAgentName(agent: AgentTarget): string {
+  switch (agent) {
+    case "qwen":
+      return "qwen-code";
+    case "opencode":
+      return "opencode";
+    case "antigravity":
+      return "antigravity";
+    case "codex":
+    case "generic":
+      return "codex";
+  }
+}
+
+function runQuiet(command: string): string | undefined {
+  try {
+    return execSync(command, {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      shell: os.platform() === "win32" ? undefined : "/bin/bash"
+    }).trim();
+  } catch {
+    return undefined;
+  }
+}
+
+function commandExists(command: string): boolean {
+  if (os.platform() === "win32") {
+    return Boolean(runQuiet(`where ${command}`));
+  }
+  return Boolean(runQuiet(`command -v ${command}`));
+}
+
+function commandVersion(command: string, args: string[] = ["--version"]): string | undefined {
+  try {
+    return execFileSync(command, args, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+  } catch {
+    return undefined;
+  }
+}
+
+function cavemanLocations(projectPath: string, homeDir = process.env.HOME ?? ""): string[] {
+  return [
+    path.join(projectPath, ".agents", "skills", "caveman"),
+    path.join(projectPath, ".codex", "skills", "caveman"),
+    path.join(projectPath, ".claude", "skills", "caveman"),
+    path.join(projectPath, ".qwen", "skills", "caveman"),
+    path.join(projectPath, ".opencode", "skills", "caveman"),
+    path.join(homeDir, ".agents", "skills", "caveman"),
+    path.join(homeDir, ".codex", "skills", "caveman"),
+    path.join(homeDir, ".claude", "skills", "caveman"),
+    path.join(homeDir, ".qwen", "skills", "caveman"),
+    path.join(homeDir, ".config", "opencode", "skills", "caveman")
+  ].filter(Boolean);
+}
+
+function detectIntegration(projectPath: string, integration: IntegrationName): { detected: boolean; detail: string; locations?: string[] } {
+  if (integration === "rtk") {
+    if (!commandExists("rtk")) {
+      return { detected: false, detail: "rtk not found on PATH" };
+    }
+    return { detected: true, detail: commandVersion("rtk") ?? "rtk found" };
+  }
+
+  const locations = cavemanLocations(projectPath).filter((location) => fs.existsSync(location));
+  if (locations.length === 0) {
+    return { detected: false, detail: "caveman skill/plugin not found in common locations", locations: [] };
+  }
+  return { detected: true, detail: `${locations.length} caveman location(s) found`, locations };
+}
+
+function integrationRulePath(projectPath: string, integration: IntegrationName): string {
+  return path.join(projectPath, ".aios", "integrations", `${integration}.md`);
+}
+
+function disabledIntegrationRulePath(projectPath: string, integration: IntegrationName): string {
+  return path.join(projectPath, ".aios", "integrations", `${integration}.md.disabled`);
+}
+
+function ensureIntegrationRule(ctx: CommandContext, projectPath: string, integration: IntegrationName): string {
+  const source = path.join(ctx.runtimePaths.aiosKitSource, "integrations", `${integration}.md`);
+  const target = integrationRulePath(projectPath, integration);
+  if (!fs.existsSync(source)) {
+    throw new Error(`Missing AIOS integration rule source: ${source}`);
+  }
+  if (!fs.existsSync(target)) {
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.copyFileSync(source, target);
+  }
+  return target;
+}
+
+function disableIntegrationRule(projectPath: string, integration: IntegrationName): string | undefined {
+  const target = integrationRulePath(projectPath, integration);
+  if (!fs.existsSync(target)) {
+    return undefined;
+  }
+  const disabled = disabledIntegrationRulePath(projectPath, integration);
+  if (fs.existsSync(disabled)) {
+    fs.rmSync(disabled, { force: true });
+  }
+  fs.renameSync(target, disabled);
+  return disabled;
+}
+
+function installCommand(
+  integration: IntegrationName,
+  targetAgents: AgentTarget[] = ["codex"]
+): { command: string; runnable: boolean; note: string } {
+  if (integration === "rtk") {
+    if (os.platform() === "win32") {
+      return {
+        command: "Download rtk.exe from the official RTK releases and add it to PATH.",
+        runnable: false,
+        note: "Windows auto-install is not supported by AIOS."
+      };
+    }
+    if (commandExists("brew")) {
+      return { command: "brew install rtk", runnable: true, note: "Homebrew detected." };
+    }
+    return {
+      command: "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh",
+      runnable: true,
+      note: "Official RTK install script."
+    };
+  }
+
+  const agentFlags = targetAgents.map((agent) => `-a ${skillsCliAgentName(agent)}`).join(" ");
+  const targetedCommands = targetAgents
+    .map((agent) => `npx -y skills add JuliusBrussee/caveman -a ${skillsCliAgentName(agent)} --yes`)
+    .join(" && ");
+  if (os.platform() === "win32") {
+    return {
+      command: targetedCommands || `npx -y skills add JuliusBrussee/caveman ${agentFlags} --yes`,
+      runnable: false,
+      note: "Windows auto-install is not run by AIOS; run this manually in PowerShell if trusted."
+    };
+  }
+  return {
+    command: targetedCommands || `npx -y skills add JuliusBrussee/caveman ${agentFlags} --yes`,
+    runnable: true,
+    note: `Targeted Caveman install for: ${targetAgents.join(", ")}. Requires Node >= 18.`
+  };
+}
+
+function uninstallCommand(integration: IntegrationName, projectPath: string): { command: string; runnable: boolean; note: string; paths?: string[] } {
+  if (integration === "rtk") {
+    if (!commandExists("rtk")) {
+      return { command: "rtk init -g --uninstall", runnable: false, note: "RTK was not detected on PATH." };
+    }
+    return {
+      command: "rtk init -g --uninstall",
+      runnable: true,
+      note: "Removes RTK agent hooks. Remove the RTK binary separately via your package manager if desired."
+    };
+  }
+
+  const paths = cavemanLocations(projectPath).filter((location) => fs.existsSync(location));
+  return {
+    command: paths.length > 0 ? `rm -rf ${paths.map((item) => JSON.stringify(item)).join(" ")}` : "No caveman paths detected",
+    runnable: paths.length > 0,
+    note: paths.length > 0 ? "Removes detected Caveman skill/plugin folders only." : "Caveman was not detected in common locations.",
+    paths
+  };
+}
+
+function executeExternal(command: string, cwd: string): void {
+  execSync(command, {
+    cwd,
+    stdio: "inherit",
+    shell: os.platform() === "win32" ? undefined : "/bin/bash"
+  });
+}
+
+function integrationStateLabel(enabled: boolean, detected: boolean): string {
+  if (!enabled) {
+    return "disabled";
+  }
+  return detected ? "ready" : "rules-only";
+}
+
+function integrationNextAction(integration: IntegrationName, enabled: boolean, detected: boolean): string {
+  if (!enabled) {
+    return `run aios integration add ${integration}`;
+  }
+  if (detected) {
+    return "ready";
+  }
+  return "rules are active; install external tool when native integration is needed";
+}
+
+function integrationSummary(projectPath: string, integrations: IntegrationName[], title = "AIOS integration status after update:"): string[] {
+  const config = readProjectConfig(projectPath);
+  const output = ["", title];
+  for (const integration of integrations) {
+    const detection = detectIntegration(projectPath, integration);
+    const rule = integrationRulePath(projectPath, integration);
+    const enabled = config.integrations[integration].enabled;
+    const state = integrationStateLabel(enabled, detection.detected);
+    output.push(
+      `- ${integration}: ${state}, external ${detection.detected ? "detected" : "not detected"} (${detection.detail}), rules ${fs.existsSync(rule) ? "present" : "missing"}`
+    );
+  }
+  return output;
+}
+
+function commandIntegrationList(): string {
+  return [
+    "Optional AIOS integrations:",
+    "- rtk: compact noisy terminal command output before it reaches AI context (optional external)",
+    "- caveman: concise agent response style for status/debug loops (optional external)"
+  ].join("\n");
+}
+
+function commandIntegrationStatus(projectPathArg: string | undefined, ctx: CommandContext): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const config = readProjectConfig(projectPath);
+  const output = [`AIOS integration status for ${projectPath}:`];
+
+  for (const integration of INTEGRATIONS) {
+    const detection = detectIntegration(projectPath, integration);
+    const rule = integrationRulePath(projectPath, integration);
+    const disabledRule = disabledIntegrationRulePath(projectPath, integration);
+    const enabled = config.integrations[integration].enabled;
+    const state = integrationStateLabel(enabled, detection.detected);
+    output.push(
+      "",
+      `${integration}:`,
+      `- state: ${state}`,
+      `- external: ${detection.detected ? "detected" : "not detected"} (${detection.detail})`,
+      `- rules: ${fs.existsSync(rule) ? "present" : fs.existsSync(disabledRule) ? "disabled" : "missing"}`,
+      `- next: ${integrationNextAction(integration, enabled, detection.detected)}`
+    );
+  }
+
+  return output.join("\n");
+}
+
+function commandIntegrationAdd(
+  ctx: CommandContext,
+  integrationArg: string | undefined,
+  projectPathArg: string | undefined,
+  options: ParsedArgs
+): string {
+  const integrations = expandIntegrationSelection(integrationArg);
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const mode = cavemanMode(options.mode);
+  const output = [options.dryRun ? "Planned AIOS integration add:" : `Updated AIOS integrations in ${projectPath}`];
+  const config = readProjectConfig(projectPath);
+  const cavemanTargets = normalizeCavemanTargetAgents(config, options);
+  const executedInstallers: IntegrationName[] = [];
+
+  for (const integration of integrations) {
+    const detection = detectIntegration(projectPath, integration);
+    const installer = installCommand(integration, cavemanTargets);
+    output.push("", `${integration}:`, `- external: ${detection.detected ? "detected" : "not detected"} (${detection.detail})`);
+
+    if (!options.dryRun) {
+      ensureIntegrationRule(ctx, projectPath, integration);
+      config.integrations[integration].enabled = true;
+      if (integration === "caveman") {
+        config.integrations.caveman.mode = mode;
+        config.integrations.caveman.targetAgents = cavemanTargets;
+      }
+    }
+
+    output.push(`- rules: ${options.dryRun ? "would create/update" : "created/updated"}`);
+
+    if (options.install && !detection.detected) {
+      output.push(`- installer: ${installer.command}`, `- install note: ${installer.note}`);
+      if (integration === "caveman") {
+        output.push(`- target agents: ${cavemanTargets.join(", ")}`);
+        output.push("- install scope: targeted agents only; AIOS does not use Caveman all-agent auto-detection");
+      }
+      if (installer.runnable && options.yes && !options.dryRun) {
+        try {
+          executeExternal(installer.command, projectPath);
+          executedInstallers.push(integration);
+          output.push("- install: executed");
+        } catch (error) {
+          output.push(`- install: failed (${error instanceof Error ? error.message : String(error)})`);
+        }
+      } else if (installer.runnable) {
+        output.push("- install: not executed; re-run with --yes after reviewing the installer command");
+      } else {
+        output.push("- install: manual only on this platform");
+      }
+    } else if (!detection.detected) {
+      output.push(`- manual install: ${installer.command}`);
+    }
+  }
+
+  if (!options.dryRun) {
+    writeProjectConfig(projectPath, config);
+  }
+
+  if (!options.dryRun) {
+    output.push(...integrationSummary(projectPath, integrations));
+    if (executedInstallers.length > 0) {
+      output.push(...integrationSummary(projectPath, executedInstallers, "External install verification:"));
+    }
+  }
+
+  return output.join("\n");
+}
+
+function commandIntegrationRemove(
+  ctx: CommandContext,
+  integrationArg: string | undefined,
+  projectPathArg: string | undefined,
+  options: ParsedArgs
+): string {
+  const integrations = expandIntegrationSelection(integrationArg);
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const scope = integrationScope(options.scope);
+  const config = readProjectConfig(projectPath);
+  const output = [options.dryRun ? "Planned AIOS integration remove:" : `Removed AIOS integrations in ${projectPath}`, `Scope: ${scope}`];
+
+  for (const integration of integrations) {
+    output.push("", `${integration}:`);
+    if (scope === "project" || scope === "both") {
+      output.push("- project config: would disable");
+      if (!options.dryRun) {
+        config.integrations[integration].enabled = false;
+        const disabled = disableIntegrationRule(projectPath, integration);
+        output.push(disabled ? `- project rules: disabled at ${disabled}` : "- project rules: already missing");
+      } else {
+        output.push(`- project rules: would disable ${integrationRulePath(projectPath, integration)}`);
+      }
+    }
+
+    if (scope === "user" || scope === "both") {
+      const uninstall = uninstallCommand(integration, projectPath);
+      output.push(`- user uninstall: ${uninstall.command}`, `- uninstall note: ${uninstall.note}`);
+      if (uninstall.runnable && options.yes && !options.dryRun) {
+        if (integration === "caveman" && uninstall.paths) {
+          for (const target of uninstall.paths) {
+            fs.rmSync(target, { recursive: true, force: true });
+          }
+        } else {
+          executeExternal(uninstall.command, projectPath);
+        }
+        output.push("- uninstall: executed");
+      } else if (uninstall.runnable) {
+        output.push("- uninstall: not executed; re-run with --yes after reviewing the uninstall action");
+      } else {
+        output.push("- uninstall: manual or unavailable");
+      }
+    }
+  }
+
+  if (!options.dryRun && (scope === "project" || scope === "both")) {
+    writeProjectConfig(projectPath, config);
+  }
+
+  return output.join("\n");
+}
+
+function integrationIssues(projectPath: string): string[] {
+  const config = readProjectConfig(projectPath);
+  const issues: string[] = [];
+
+  for (const integration of INTEGRATIONS) {
+    const enabled = config.integrations[integration].enabled;
+    const detection = detectIntegration(projectPath, integration);
+    const ruleExists = fs.existsSync(integrationRulePath(projectPath, integration));
+    if (enabled && !ruleExists) {
+      issues.push(`${integration}: enabled but local rule is missing`);
+    }
+    if (enabled && !detection.detected) {
+      issues.push(`${integration}: enabled but external tool/skill is not detected`);
+    }
+  }
+
+  if (config.integrations.caveman.enabled && config.integrations.caveman.targetAgents.length === 0) {
+    issues.push("caveman: enabled without targetAgents; repair will default to selectedAgents or codex");
+  }
+
+  return issues;
+}
+
+function commandIntegrationDoctor(ctx: CommandContext, projectPathArg: string | undefined): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const issues = integrationIssues(projectPath);
+  return [
+    commandIntegrationStatus(projectPath, ctx),
+    "",
+    "Doctor:",
+    ...(issues.length > 0 ? issues.map((issue) => `- ${issue}`) : ["- no integration issues found"]),
+    "",
+    "Recommended fixes:",
+    issues.length > 0 ? "- run `aios integration repair` to restore local rules" : "- no action needed",
+    "- use `aios integration add <name> --install` to review external install commands",
+    "- use `aios integration remove <name> --scope project` to disable stale project rules"
+  ].join("\n");
+}
+
+function commandIntegrationRepair(ctx: CommandContext, projectPathArg: string | undefined, options: ParsedArgs): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const config = readProjectConfig(projectPath);
+  const output = [options.dryRun ? "Planned AIOS integration repair:" : `Repaired AIOS integrations in ${projectPath}`];
+
+  for (const integration of INTEGRATIONS) {
+    if (!config.integrations[integration].enabled) {
+      output.push(`- ${integration}: skipped, disabled`);
+      continue;
+    }
+
+    if (options.dryRun) {
+      output.push(`- ${integration}: would ensure ${integrationRulePath(projectPath, integration)}`);
+      continue;
+    }
+
+    const rule = ensureIntegrationRule(ctx, projectPath, integration);
+    output.push(`- ${integration}: ensured ${rule}`);
+  }
+
+  if (config.integrations.caveman.enabled && config.integrations.caveman.targetAgents.length === 0 && !options.dryRun) {
+    config.integrations.caveman.targetAgents = normalizeCavemanTargetAgents(config, options);
+    writeProjectConfig(projectPath, config);
+    output.push(`- caveman: targetAgents set to ${config.integrations.caveman.targetAgents.join(", ")}`);
+  }
+
+  return output.join("\n");
+}
+
+function commandIntegration(
+  ctx: CommandContext,
+  action: string | undefined,
+  integrationArg: string | undefined,
+  projectPathArg: string | undefined,
+  options: ParsedArgs
+): string {
+  switch (action) {
+    case "list":
+      return commandIntegrationList();
+    case "status":
+      return commandIntegrationStatus(integrationArg, ctx);
+    case "add":
+      return commandIntegrationAdd(ctx, integrationArg, projectPathArg, options);
+    case "remove":
+      return commandIntegrationRemove(ctx, integrationArg, projectPathArg, options);
+    case "doctor":
+      return commandIntegrationDoctor(ctx, integrationArg);
+    case "repair":
+      return commandIntegrationRepair(ctx, integrationArg, options);
+    default:
+      throw new Error("Missing integration action. Usage: aios integration <list|status|add|remove|doctor|repair> [name] [project-path]");
   }
 }
 
@@ -944,17 +1468,93 @@ async function interactiveCreate(ctx: CommandContext): Promise<string> {
     return "Cancelled.";
   }
 
-  if (projectType === "generic") {
-    return commandInit(ctx, projectName, setup);
+  const projectPath = path.resolve(ctx.cwd, projectName);
+  const output =
+    projectType === "generic"
+      ? commandInit(ctx, projectName, setup)
+      : commandStarter(ctx, projectType, projectName, setup);
+  const integrationOutput = setup.lite ? "" : await promptOptionalIntegrationSetup(ctx, projectPath);
+  return [output, integrationOutput].filter(Boolean).join("\n\n");
+}
+
+async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: string): Promise<string> {
+  const selected = await checkbox<IntegrationName>({
+    message: "Set up optional external integrations now?",
+    choices: [
+      { name: "RTK: compact noisy terminal output", value: "rtk" },
+      { name: "Caveman: concise status/debug responses", value: "caveman" }
+    ],
+    required: false
+  });
+
+  if (selected.length === 0) {
+    return "";
   }
-  return commandStarter(ctx, projectType, projectName, setup);
+
+  const integrationArg = selected.length === INTEGRATIONS.length ? "all" : selected.join(",");
+  const mode = selected.includes("caveman")
+    ? await select<CavemanMode>({
+        message: "Caveman response mode:",
+        choices: [
+          { name: "Lite", value: "lite" },
+          { name: "Full", value: "full" },
+          { name: "Ultra", value: "ultra" }
+        ]
+      })
+    : "lite";
+  const install = await confirm({ message: "Offer external install if missing?", default: false });
+  if (install) {
+    console.log(
+      commandIntegrationAdd(ctx, integrationArg, projectPath, {
+        ...parseArgs([]),
+        install: true,
+        dryRun: true,
+        mode,
+        agents: readProjectConfig(projectPath).selectedAgents
+      })
+    );
+  }
+  const yes = install
+    ? await confirm({
+        message: `Run targeted installer commands after review? Caveman targets: ${normalizeCavemanTargetAgents(readProjectConfig(projectPath), { ...parseArgs([]), agents: readProjectConfig(projectPath).selectedAgents }).join(", ")}`,
+        default: false
+      })
+    : false;
+
+  return commandIntegrationAdd(ctx, integrationArg, projectPath, {
+    ...parseArgs([]),
+    install,
+    yes,
+    mode
+  });
 }
 
 async function interactiveAdopt(ctx: CommandContext): Promise<string> {
   const projectPath = await input({ message: "Existing project path:", default: "." });
   const setup = await promptSetupOptions(ctx);
   const shouldAdopt = await confirm({ message: "Adopt AIOS into this project now?", default: true });
-  return shouldAdopt ? commandAdopt(ctx, projectPath, setup) : "Cancelled.";
+  if (!shouldAdopt) {
+    return "Cancelled.";
+  }
+
+  const resolvedProjectPath = path.resolve(ctx.cwd, projectPath);
+  const output = commandAdopt(ctx, projectPath, setup);
+  const integrationOutput = setup.lite ? "" : await promptOptionalIntegrationSetup(ctx, resolvedProjectPath);
+  return [output, integrationOutput].filter(Boolean).join("\n\n");
+}
+
+async function interactiveInit(ctx: CommandContext, projectName: string, setup: ParsedArgs): Promise<string> {
+  const projectPath = path.resolve(ctx.cwd, projectName);
+  const output = commandInit(ctx, projectName, setup);
+  const integrationOutput = setup.lite ? "" : await promptOptionalIntegrationSetup(ctx, projectPath);
+  return [output, integrationOutput].filter(Boolean).join("\n\n");
+}
+
+async function interactiveStarter(ctx: CommandContext, starter: string, projectName: string, setup: ParsedArgs): Promise<string> {
+  const projectPath = path.resolve(ctx.cwd, projectName);
+  const output = commandStarter(ctx, starter, projectName, setup);
+  const integrationOutput = setup.lite ? "" : await promptOptionalIntegrationSetup(ctx, projectPath);
+  return [output, integrationOutput].filter(Boolean).join("\n\n");
 }
 
 async function interactiveAgentInstall(ctx: CommandContext): Promise<string> {
@@ -993,20 +1593,105 @@ async function interactiveAgentInstall(ctx: CommandContext): Promise<string> {
   });
 }
 
+async function interactiveIntegration(ctx: CommandContext): Promise<string> {
+  const action = await select({
+    message: "Integration action:",
+    choices: [
+      { name: "Show status", value: "status" },
+      { name: "Add integrations", value: "add" },
+      { name: "Remove integrations", value: "remove" },
+      { name: "Run integration doctor", value: "doctor" },
+      { name: "Repair local integration rules", value: "repair" }
+    ]
+  });
+  const projectPath = await input({ message: "Project path:", default: "." });
+
+  if (action === "status") {
+    return commandIntegrationStatus(projectPath, ctx);
+  }
+  if (action === "doctor") {
+    return commandIntegrationDoctor(ctx, projectPath);
+  }
+  if (action === "repair") {
+    const dryRun = await confirm({ message: "Dry-run only?", default: false });
+    return commandIntegrationRepair(ctx, projectPath, { ...parseArgs([]), dryRun });
+  }
+
+  const selected = await checkbox<IntegrationName>({
+    message: action === "add" ? "Enable which integrations?" : "Remove which integrations?",
+    choices: [
+      { name: "RTK", value: "rtk" },
+      { name: "Caveman", value: "caveman" }
+    ],
+    required: true
+  });
+  const integrationArg = selected.length === INTEGRATIONS.length ? "all" : selected.join(",");
+
+  if (action === "add") {
+    const mode = selected.includes("caveman")
+      ? await select<CavemanMode>({
+          message: "Caveman response mode:",
+          choices: [
+            { name: "Lite", value: "lite" },
+            { name: "Full", value: "full" },
+            { name: "Ultra", value: "ultra" }
+          ]
+        })
+      : "lite";
+    const install = await confirm({ message: "Offer external install if missing?", default: false });
+    if (install) {
+      console.log(
+        commandIntegrationAdd(ctx, integrationArg, projectPath, {
+          ...parseArgs([]),
+          install: true,
+          dryRun: true,
+          mode,
+          agents: readProjectConfig(path.resolve(ctx.cwd, projectPath)).selectedAgents
+        })
+      );
+    }
+    const yes = install ? await confirm({ message: "Run installer automatically after showing it?", default: false }) : false;
+    return commandIntegrationAdd(ctx, integrationArg, projectPath, {
+      ...parseArgs([]),
+      install,
+      yes,
+      mode
+    });
+  }
+
+  const scope = await select<IntegrationScope>({
+    message: "Remove scope:",
+    choices: [
+      { name: "Project rules only", value: "project" },
+      { name: "User computer only", value: "user" },
+      { name: "Both project and user computer", value: "both" }
+    ]
+  });
+  const yes =
+    scope === "user" || scope === "both"
+      ? await confirm({ message: "Run user-computer uninstall actions after showing them?", default: false })
+      : false;
+  return commandIntegrationRemove(ctx, integrationArg, projectPath, {
+    ...parseArgs([]),
+    scope,
+    yes
+  });
+}
+
 async function runInteractive(argv: string[], ctx: CommandContext = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }): Promise<string> {
   const [command, name, secondName] = parseArgs(argv).args;
 
   if (command === "init" && !name) {
     const projectName = await input({ message: "Project name:", required: true });
     const setup = await promptSetupOptions(ctx);
-    return commandInit(ctx, projectName, setup);
+    return interactiveInit(ctx, projectName, setup);
   }
 
   if (command === "starter" && (!name || !secondName)) {
     const starter = name ?? (await select({ message: "Starter:", choices: starterChoices(ctx).map((value) => ({ name: value, value })) }));
     const projectName = secondName ?? (await input({ message: "Project name:", required: true }));
     const setup = await promptSetupOptions(ctx);
-    return commandStarter(ctx, starter, projectName, setup);
+    return interactiveStarter(ctx, starter, projectName, setup);
   }
 
   const action = await select({
@@ -1015,6 +1700,7 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       { name: "Create new project", value: "create" },
       { name: "Adopt existing project", value: "adopt" },
       { name: "Install native agent skills", value: "agent install" },
+      { name: "Set up external integrations", value: "integration" },
       { name: "Validate project", value: "validate" },
       { name: "Show next recommended step", value: "next" },
       { name: "Print AIOS command prompt", value: "command" },
@@ -1029,6 +1715,8 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       return interactiveAdopt(ctx);
     case "agent install":
       return interactiveAgentInstall(ctx);
+    case "integration":
+      return interactiveIntegration(ctx);
     case "validate":
       return commandValidate(ctx, await input({ message: "Project path:", default: "." }));
     case "next":
@@ -1075,6 +1763,8 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return commandPromptGroup(ctx, name, secondName, thirdName);
     case "agent":
       return commandAgent(ctx, name, secondName, parsed);
+    case "integration":
+      return commandIntegration(ctx, name, secondName, thirdName, parsed);
     case "config":
       return commandConfig(ctx, name);
     case "create":

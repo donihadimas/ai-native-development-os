@@ -21,7 +21,7 @@ Use this project when you want to:
 - V2 assisted workflow is implemented as a focused Node.js CLI in `cli/`.
 - V2.x workflow extensions are implemented for AI docs only starters, database migration planning, security review, release preparation, OpenAPI generation, and GitHub Actions dry-run automation.
 - Ready-to-use project generation is implemented: `aios init`, `starter`, and `adopt` install a local `.aios/` workflow kit by default.
-- V3-lite setup is implemented for interactive CLI setup, configurable docs location, and native agent skill install for Codex, Qwen Code, OpenCode, Antigravity, and generic Agent Skills.
+- V3-lite setup is implemented for interactive CLI setup, configurable docs location, native agent skill install, and optional RTK/Caveman integration rules.
 - The CLI is designed for publishing as `@donihadimas/aios`.
 - V3 remains intentionally deferred for productized platform capabilities such as an interactive CLI, skill installer, health checker, dashboard, and GitHub Issues integration.
 
@@ -32,7 +32,7 @@ Use this project when you want to:
 - `references/` - stable engineering principles and standards.
 - `workflows/` - end-to-end development flows.
 - `prompts/` - thin prompt wrappers that route agents to the right artifacts.
-- `skill-router.md` and `commands/` - routing rules and portable command prompts for local AI workflows.
+- `skill-router.md`, `commands/`, and `integrations/` - routing rules, portable command prompts, and optional external-tool rules for local AI workflows.
 - `project-skeleton/` - a copy-ready AI-ready project structure.
 - `starters/` - AI docs only starter shells for V2.x stack-oriented project setup.
 - `cli/` - the `aios` helper CLI for skeleton and starter creation, adoption, document generation, numbering, and validation.
@@ -69,7 +69,7 @@ aios next demo-project
 cd demo-project
 ```
 
-`aios init` installs a local `.aios/` workflow kit by default, so the generated project is self-contained for Codex. Use `--lite` only when you want the old minimal skeleton behavior. Run `aios` without arguments for the interactive wizard.
+`aios init` installs a local `.aios/` workflow kit by default, so the generated project is self-contained for Codex. Use `--lite` only when you want the old minimal skeleton behavior. Run `aios` without arguments for the interactive wizard; the guided create/adopt flow can also offer optional RTK/Caveman integration setup after the project kit is installed.
 
 Native agent skill install keeps `.aios/` compact and installs selected skills into agent-specific folders:
 
@@ -80,6 +80,17 @@ aios agent install demo-native --agents opencode,antigravity --skills testing
 
 Use `--docs-root .aios/project-docs` when you want project docs under `.aios/` instead of the default `docs/`.
 Use `--shape frontend|backend|mobile|library|docs` when a project should not create both `frontend/` and `backend/`.
+
+Optional RTK/Caveman integrations are project-local by default:
+
+```bash
+aios integration status
+aios integration add rtk . --dry-run
+aios integration add caveman . --mode lite --agents codex
+aios integration doctor
+```
+
+AIOS writes local rules and config first. External install/uninstall actions are opt-in and require explicit confirmation via `--yes`. Caveman install is targeted to selected agents instead of using all-agent auto-detection.
 
 Adopt an existing project without overwriting existing files:
 
@@ -134,6 +145,7 @@ project/
 │   ├── config.json
 │   ├── skill-router.md
 │   ├── commands/
+│   ├── integrations/
 │   ├── skills/        # present in portable or both skill delivery mode
 │   ├── prompts/
 │   ├── references/
@@ -159,7 +171,7 @@ npm test
 npm pack --dry-run
 ```
 
-The package build creates bundled `assets/aios-kit/` from the root workflow assets (`skill-router.md`, `commands/`, `skills/`, `prompts/`, `references/`, `templates/`, and `workflows/`), then copies `project-skeleton/`, `templates/`, and `starters/` through `cli/scripts/sync-assets.mjs`. See `validation/npm-publish-readiness-report.md` for the latest publish-readiness evidence.
+The package build creates bundled `assets/aios-kit/` from the root workflow assets (`skill-router.md`, `commands/`, `integrations/`, `skills/`, `prompts/`, `references/`, `templates/`, and `workflows/`), then copies `project-skeleton/`, `templates/`, and `starters/` through `cli/scripts/sync-assets.mjs`. See `validation/npm-publish-readiness-report.md` for the latest publish-readiness evidence.
 
 For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`.
 
@@ -175,6 +187,6 @@ For the full release process, including versioning, npm publish, Git tags, GitHu
 
 ## Boundaries
 
-The CLI only creates, copies, numbers, renders, recommends next steps, and validates files. It does not generate application code, run Codex, install app dependencies, apply database migrations, or publish releases.
+The CLI only creates, copies, numbers, renders, recommends next steps, validates files, and optionally manages AIOS integration rules. It does not generate application code, run Codex, install app dependencies, apply database migrations, or publish releases.
 
 The included starters are AI docs only shells. GitHub Actions are intentionally limited to tests, smoke checks, and npm package dry-runs.

@@ -7,7 +7,7 @@ The V2 CLI is now technically ready to publish to npm as `@donihadimas/aios` aft
 ## Package Improvements
 
 - Runtime assets are bundled under `cli/assets/`.
-- `project-skeleton/` and `templates/` are copied into package assets via `cli/scripts/sync-assets.mjs`.
+- `project-skeleton/`, `templates/`, starters, and `.aios` kit assets are copied into package assets via `cli/scripts/sync-assets.mjs`.
 - CLI runtime resolves bundled assets first and falls back to repo assets for development.
 - Package tarball is restricted with a `files` whitelist.
 - `src/`, `test/`, and `dist/test/` are excluded from the published package.
@@ -44,8 +44,8 @@ cd demo-project
 
 ## Results
 
-- `npm test`: 35 passed, 0 failed.
-- `npm pack --dry-run`: tarball includes only runtime files and assets, including feature PRD and review report directories.
+- `npm test`: 41 passed, 0 failed.
+- `npm pack --dry-run`: tarball includes only runtime files and assets, including `.aios` integration rules, feature PRD, and review report directories.
 - Installed tarball smoke test: passed.
 - Generated project can be initialized and validated from installed package binary.
 - Existing project can be adopted and validated without overwriting its README.

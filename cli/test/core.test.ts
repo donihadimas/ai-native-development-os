@@ -31,6 +31,7 @@ test("getRuntimePaths resolves bundled package assets when available", () => {
   assert.ok(fs.existsSync(runtimePaths.aiosKitSource));
   assert.ok(fs.existsSync(path.join(runtimePaths.aiosKitSource, "skill-router.md")));
   assert.ok(fs.existsSync(path.join(runtimePaths.aiosKitSource, "commands")));
+  assert.ok(fs.existsSync(path.join(runtimePaths.aiosKitSource, "integrations")));
   assert.ok(fs.existsSync(runtimePaths.projectSkeleton));
   assert.ok(fs.existsSync(runtimePaths.templates));
   assert.ok(fs.existsSync(runtimePaths.starters));

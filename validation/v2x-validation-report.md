@@ -6,6 +6,8 @@ V2.x has been implemented as lightweight workflow extensions on top of the exist
 
 V3-lite setup improvements are also validated: interactive setup entrypoints, configurable docs location, and native agent skill installation while keeping `.aios/` compact when native skills are selected.
 
+Optional external integration setup is validated for RTK and Caveman: AIOS can generate local rules, update `.aios/config.json`, report detection status, keep install/uninstall actions explicit and opt-in, target Caveman installs to selected agents, and repair local rule drift.
+
 Instruction-layer cleanup has also been validated: generated `AGENTS.md`, command prompts, workflow prompts, context maps, starter guides, references, and workflows now resolve `.aios/config.json` before choosing document paths or skill access mode. Generator skills now include Clarification Gates so agents ask focused questions before writing final artifacts when input is too vague.
 
 ## Acceptance Criteria Status
@@ -33,6 +35,7 @@ Instruction-layer cleanup has also been validated: generated `AGENTS.md`, comman
 | GitHub Actions | Pass | CI, manual smoke test, and release dry-run workflows exist. |
 | Config-aware generated instructions | Pass | AGENTS, skill router, commands, prompts, context maps, references, and workflows use `docsRoot`, `projectShape`, and skill delivery mode. |
 | Clarification Gates | Pass | Generator skills, prompts, commands, and onboarding docs instruct agents to ask focused questions before generating final files from vague input. |
+| Optional integrations | Pass | `aios integration list/status/add/remove/doctor/repair` supports RTK and Caveman rules, targeted Caveman install planning, dry-run, project remove, user uninstall planning, mocked RTK detection, and mocked Caveman detection. |
 
 ## Automated Test Evidence
 
@@ -45,7 +48,7 @@ npm pack --dry-run
 
 Result:
 
-- 35 tests passed.
+- 41 tests passed.
 - 0 tests failed.
 - Package dry-run succeeded and included `assets/aios-kit/`, `assets/project-skeleton/`, `assets/starters/`, and `assets/templates/`.
 - `git diff --check` passed with no whitespace errors.
@@ -64,6 +67,13 @@ Covered by CLI tests and manual workflow definition:
 - `aios prompt show generate-prd`
 - `aios agent list`
 - `aios agent install --agents codex,qwen --skills core`
+- `aios integration list`
+- `aios integration status`
+- `aios integration add rtk --dry-run`
+- `aios integration add caveman --mode lite --agents codex`
+- `aios integration doctor`
+- `aios integration repair --dry-run`
+- `aios integration remove caveman --scope project --dry-run`
 - `aios init --docs-root .aios/project-docs`
 - `aios init --shape frontend`
 - `aios create openapi "Habit API"`

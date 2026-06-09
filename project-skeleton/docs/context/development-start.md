@@ -27,6 +27,9 @@ aios prompt list
 aios prompt show generate-prd
 aios agent list
 aios agent install . --agents codex --skills core
+aios integration status
+aios integration add rtk . --dry-run
+aios integration add caveman . --mode lite
 aios create feature "Feature name"
 aios create adr "Decision name"
 aios create task "Task name"
@@ -43,5 +46,6 @@ aios create release "Release name"
 Read AGENTS.md and .aios/config.json.
 Resolve docsRoot, then read <docsRoot>/context/context-map.md and <docsRoot>/product/vision.md.
 Then read .aios/skill-router.md and use .aios/commands/generate-prd.md to generate <docsRoot>/product/prd.md.
+If integrations are enabled, use RTK only for noisy command output and Caveman-style brevity only for operational updates.
 If the PRD inputs are incomplete, ask me focused clarification questions before writing the final file.
 ```

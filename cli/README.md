@@ -31,7 +31,7 @@ cd demo-project
 
 By default, generated projects include `.aios/` with skills, prompts, references, templates, and workflows. Use `--lite` only when you want a minimal structure without the local workflow kit.
 
-Run `aios` without arguments to use the interactive wizard. The wizard can create a new project, adopt an existing project, choose docs location, and install selected skills into native agent folders.
+Run `aios` without arguments to use the interactive wizard. The wizard can create a new project, adopt an existing project, choose docs location, install selected skills into native agent folders, and offer optional RTK/Caveman integration setup after the local `.aios/` kit is installed.
 
 For a compact `.aios/` with native skills:
 
@@ -41,6 +41,17 @@ aios agent install demo-native --agents opencode,antigravity --skills testing
 aios init demo-web --shape frontend
 aios init demo-api --shape backend
 ```
+
+Optional external integrations are managed separately:
+
+```bash
+aios integration status
+aios integration add rtk . --dry-run
+aios integration add caveman . --mode lite --agents codex
+aios integration doctor
+```
+
+AIOS generates local rules first. External install/uninstall actions only run when explicitly requested and confirmed with `--yes`. Caveman install targets selected agents instead of running all-agent auto-detection.
 
 Or start from a lightweight V2.x starter:
 
@@ -284,6 +295,99 @@ Behavior:
 - Uses `--dry-run` to preview target files without writing.
 - Updates `.aios/config.json` after a real install.
 
+### `aios integration list`
+
+Lists optional external integrations supported by AIOS.
+
+```bash
+aios integration list
+```
+
+Supported integrations:
+
+- `rtk` - compact noisy terminal command output before it enters AI context.
+- `caveman` - concise agent response style for status and debug loops.
+
+### `aios integration status [project-path]`
+
+Shows project integration config, local rules status, and detected external tool status.
+
+```bash
+aios integration status
+aios integration status my-saas
+```
+
+Status checks are live:
+
+- RTK detection checks `rtk` on `PATH` and `rtk --version`.
+- Caveman detection checks common project and user skill/plugin locations.
+- Detection results are not stored as permanent truth.
+- `rules-only` means AIOS local rules are enabled, but the external tool or native skill is not detected.
+
+### `aios integration add <rtk|caveman|all> [project-path]`
+
+Enables local integration rules in `.aios/` and updates `.aios/config.json`.
+
+```bash
+aios integration add rtk .
+aios integration add caveman . --mode lite
+aios integration add caveman . --mode lite --agents codex,qwen
+aios integration add all my-saas --dry-run
+aios integration add rtk . --install
+aios integration add caveman . --install --agents codex --yes
+```
+
+Behavior:
+
+- Without `--install`, AIOS writes local rules and prints manual install guidance when the external tool is missing.
+- With `--install`, AIOS prints the installer command.
+- Installer execution requires `--yes`; otherwise AIOS does not run external commands.
+- `--dry-run` previews config/rule changes without writing files or running installers.
+- Caveman `--mode` accepts `lite`, `full`, or `ultra`; default is `lite`.
+- Caveman `--agents` accepts the same agent names as native skills and installs only those targeted agents.
+- External installers run from the target project path, so repo-scoped skills are installed into that project.
+
+### `aios integration remove <rtk|caveman|all> [project-path]`
+
+Disables local integration rules, offers user-computer uninstall actions, or both.
+
+```bash
+aios integration remove rtk .
+aios integration remove caveman . --scope project
+aios integration remove rtk . --scope user --dry-run
+aios integration remove all . --scope both --yes
+```
+
+Behavior:
+
+- Default `--scope project` disables config and renames local rules to `*.md.disabled`.
+- `--scope user` does not modify project config; it only plans or runs user-computer uninstall actions.
+- `--scope both` does both.
+- User-computer uninstall requires `--yes` before any external command or detected Caveman path removal runs.
+- AIOS does not remove RTK binaries directly; RTK uninstall removes agent hooks and prints package-manager follow-up guidance.
+
+### `aios integration doctor [project-path]`
+
+Checks integration config, local rule files, external detection, and recommended fixes.
+
+```bash
+aios integration doctor
+aios integration doctor my-saas
+```
+
+Use this after external installers fail, after manual edits to `.aios/config.json`, or when `status` reports a mismatch.
+
+### `aios integration repair [project-path]`
+
+Restores missing local integration rule files for enabled integrations.
+
+```bash
+aios integration repair
+aios integration repair my-saas --dry-run
+```
+
+Repair does not install external tools. It only restores local AIOS integration rules and missing Caveman target-agent config.
+
 ### `aios config [project-path]`
 
 Prints the resolved AIOS project config.
@@ -479,6 +583,7 @@ my-project/
 │   ├── config.json
 │   ├── skill-router.md
 │   ├── commands/
+│   ├── integrations/
 │   ├── skills/        # portable or both skill delivery mode
 │   ├── prompts/
 │   ├── references/
@@ -522,6 +627,7 @@ Review the diff against the active task acceptance criteria. Findings first, the
 - run Codex or any AI agent,
 - choose a frontend/backend framework,
 - install dependencies for your app,
+- install or uninstall optional external integrations unless you explicitly request it with `--yes`,
 - apply database migrations,
 - publish releases,
 - bypass human review,

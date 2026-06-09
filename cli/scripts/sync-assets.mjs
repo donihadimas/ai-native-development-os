@@ -15,6 +15,7 @@ const copies = [
 const kitEntries = [
   "skill-router.md",
   "commands",
+  "integrations",
   "skills",
   "prompts",
   "references",
