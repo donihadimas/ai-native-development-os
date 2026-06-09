@@ -1,4 +1,4 @@
-# Changelog
+# 📝 Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -12,7 +12,7 @@ This project loosely follows Semantic Versioning. While the project is still pre
 
 Feature release for ready-to-use AI-native project setup.
 
-### Added
+### ✨ Added
 
 - Added guided `aios` setup for creating or adopting projects with clearer prompts, setup summaries, full/lite mode selection, project shape selection, docs-root selection, native agent skill selection, and optional integration setup.
 - Added local `.aios/` workflow kit generation with command prompts, skill router, prompts, references, templates, workflows, integrations, and config.
@@ -24,25 +24,25 @@ Feature release for ready-to-use AI-native project setup.
 - Added optional RTK and Caveman integration manager commands with project-local rules, detection status, dry-run support, targeted Caveman install planning, and safe remove scopes.
 - Added GitHub Actions for CI, manual smoke tests, and release dry-run validation.
 
-### Changed
+### 🔄 Changed
 
 - Updated generated `AGENTS.md`, starter docs, command prompts, workflows, references, and skill router to read `.aios/config.json`.
 - Updated generator skills and prompts with Clarification Gates so agents ask focused questions before writing final PRDs, architecture docs, ADRs, tasks, tests, API contracts, migration plans, security reviews, and release notes.
 - Improved `aios --help` with a clearer beginner path, grouped commands, and important flags such as `--agents`, `--skills`, `--yes`, and `--dry-run`.
 - Updated package metadata and bundled assets so npm dry-run includes `assets/aios-kit/`, project skeleton, starters, templates, and integration rules.
 
-### Breaking Changes
+### ⚠️ Breaking Changes
 
 - Removed legacy flat document commands such as `aios task`, `aios adr`, `aios review`, and `aios feature`.
 - Use grouped replacements instead: `aios create task`, `aios create adr`, `aios create review`, and `aios create feature`.
 - Removed legacy flat helper aliases such as `aios agent-install` and `aios command-list`; use `aios agent install` and `aios prompt list`.
 
-### Fixed
+### 🐛 Fixed
 
 - Fixed external integration installers so commands run from the target project path, preventing repo-scoped native skills from being installed into the AIOS CLI directory.
 - Fixed generated setup guidance so native skill mode can keep `.aios/` compact without duplicating `.aios/skills`.
 
-### Validation
+### ✅ Validation
 
 - `npm test`: 41 passed, 0 failed.
 - `npm pack --dry-run`: passed.
@@ -52,12 +52,12 @@ Feature release for ready-to-use AI-native project setup.
 
 Patch release focused on CLI help text clarity.
 
-### Changed
+### 🔄 Changed
 
 - Expanded `aios --help` with a clearer explanation of AI-Native Development OS CLI.
 - Added beginner-friendly command descriptions and example workflows for new and existing projects.
 
-### Validation
+### ✅ Validation
 
 - CLI automated tests pass with 18 tests.
 
@@ -65,7 +65,7 @@ Patch release focused on CLI help text clarity.
 
 Initial npm-ready AIOS CLI release.
 
-### Added
+### ✨ Added
 
 - Added `aios init` for new AI-ready projects.
 - Added `aios adopt` for existing projects.
@@ -75,7 +75,7 @@ Initial npm-ready AIOS CLI release.
 - Added OpenAPI contract template and workflow.
 - Added generic backend API skill and standards.
 
-### Validation
+### ✅ Validation
 
 - CLI automated tests pass.
 - npm tarball dry-run passes.
