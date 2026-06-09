@@ -23,7 +23,7 @@ Use this project when you want to:
 - Ready-to-use project generation is implemented: `aios init`, `starter`, and `adopt` install a local `.aios/` workflow kit by default.
 - V3-lite setup is implemented for interactive CLI setup, configurable docs location, native agent skill install, and optional RTK/Caveman integration rules.
 - The CLI is designed for publishing as `@donihadimas/aios`.
-- V3 remains intentionally deferred for productized platform capabilities such as an interactive CLI, skill installer, health checker, dashboard, and GitHub Issues integration.
+- Productized V3 platform capabilities remain intentionally deferred, including dashboard, remote skill marketplace, GitHub Issues integration, and multi-agent orchestration.
 
 ## What Is Included
 
