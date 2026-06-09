@@ -11,7 +11,8 @@ It does not replace Codex or another coding agent. The CLI only creates, copies,
 ## 📑 Table of Contents
 
 - [📥 Install](#-install)
-- [⏱️ 10-Minute Quickstart](#️-10-minute-quickstart)
+- [🧭 Guided Setup](#-guided-setup)
+- [⚡ Command Quickstart](#-command-quickstart)
 - [🔄 Recommended Workflow](#-recommended-workflow)
 - [🛠️ Commands](#️-commands)
 - [📂 Generated Project Structure](#-generated-project-structure)
@@ -36,7 +37,58 @@ Requirements:
 - Node.js 20 or newer.
 - npm for global install.
 
-## ⏱️ 10-Minute Quickstart
+## 🧭 Guided Setup
+
+For most users, start with the guided setup wizard:
+
+```bash
+aios
+```
+
+The main menu can:
+
+- create a new project,
+- adopt an existing project,
+- install native agent skills,
+- set up optional external integrations,
+- validate a project,
+- show the next recommended step,
+- browse reusable AIOS prompts.
+
+When creating or adopting a project, the wizard asks for:
+
+- project type: blank AIOS project or one of the bundled starters,
+- project name or existing project path,
+- project shape: fullstack, frontend, backend, mobile, library, or docs-only,
+- setup mode: full AIOS setup or lite project docs only,
+- docs root: `docs/`, `.aios/project-docs/`, or custom path,
+- native agent targets: Codex, Qwen Code, OpenCode, Antigravity, or generic agent skills,
+- skill set: core, planning, delivery, all, or a custom checkbox selection,
+- skill delivery: native agent folders, portable `.aios/skills`, or both,
+- optional RTK/Caveman integration rules.
+
+Before writing files, AIOS prints a setup summary so you can confirm the target path, project shape, docs root, selected agents, selected skills, and skill delivery mode.
+
+Choose **Full AIOS setup** for normal AI-native development. It installs the local `.aios/` kit with commands, prompts, references, templates, workflows, integrations, config, and optionally portable skills.
+
+Choose **Lite setup** only when you want the base project docs without the local `.aios/` workflow kit.
+
+Choose **Native agent folders only** when you selected one or more AI agents and want skills installed directly into agent-readable folders:
+
+```text
+.agents/skills/      # Codex or generic
+.qwen/skills/        # Qwen Code
+.opencode/skills/    # OpenCode
+.agent/skills/       # Antigravity
+```
+
+Choose **Portable `.aios/skills` only** when you want all skill instructions to stay inside the generated `.aios/` kit.
+
+Optional integrations are safe by default. AIOS writes project-local rules first. External install or uninstall commands run only after you explicitly approve them.
+
+## ⚡ Command Quickstart
+
+Use the command quickstart when you already know the setup you want or need a non-interactive flow.
 
 Create a new AI-ready project:
 
@@ -49,8 +101,6 @@ cd demo-project
 
 By default, generated projects include `.aios/` with skills, prompts, references, templates, and workflows. Use `--lite` only when you want a minimal structure without the local workflow kit.
 
-Run `aios` without arguments to use the guided setup wizard. The wizard can create a blank AIOS project, start from a starter, adopt an existing project, choose the project shape, choose full or lite setup, choose docs location, install selected skill sets into native agent folders, show a setup summary before writing files, and offer optional RTK/Caveman integration setup after the local `.aios/` kit is installed.
-
 For a compact `.aios/` with native skills:
 
 ```bash
@@ -59,17 +109,6 @@ aios agent install demo-native --agents opencode,antigravity --skills testing
 aios init demo-web --shape frontend
 aios init demo-api --shape backend
 ```
-
-Optional external integrations are managed separately:
-
-```bash
-aios integration status
-aios integration add rtk . --dry-run
-aios integration add caveman . --mode lite --agents codex
-aios integration doctor
-```
-
-AIOS generates local rules first. External install/uninstall actions only run when explicitly requested and confirmed with `--yes`. Caveman install targets selected agents instead of running all-agent auto-detection.
 
 Or start from a lightweight V2.x starter:
 
@@ -90,7 +129,7 @@ aios create security "Habit API"
 aios create adr "Use server date for habit completion"
 aios create task "Implement habit API"
 aios create review "Habit API"
-aios create release "0.3.0"
+aios create release "0.3.1"
 ```
 
 Or adopt an existing project:
@@ -566,7 +605,7 @@ docs/security/login-api-security-review.md
 Creates a release note and creates a changelog draft when one does not already exist.
 
 ```bash
-aios create release "0.3.0"
+aios create release "0.3.1"
 ```
 
 Output:

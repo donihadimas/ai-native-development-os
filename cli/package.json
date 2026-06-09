@@ -1,9 +1,22 @@
 {
   "name": "@donihadimas/aios",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Small CLI for AI-Native Development OS.",
   "type": "module",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/donihadimas/ai-native-development-os#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/donihadimas/ai-native-development-os.git",
+    "directory": "cli"
+  },
+  "bugs": {
+    "url": "https://github.com/donihadimas/ai-native-development-os/issues"
+  },
+  "author": {
+    "name": "Doni Hadimas",
+    "url": "https://github.com/donihadimas"
+  },
   "keywords": [
     "ai",
     "codex",

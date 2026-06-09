@@ -82,7 +82,7 @@ Covered by CLI tests and manual workflow definition:
 - `aios create openapi "Habit API"`
 - `aios create migration "Create habits table"`
 - `aios create security "Habit API"`
-- `aios create release "0.3.0"`
+- `aios create release "0.3.1"`
 - `aios validate`
 - generated `.aios/commands/*` route through `.aios/skill-router.md`
 - generated context maps use the configured `docsRoot`
@@ -90,4 +90,4 @@ Covered by CLI tests and manual workflow definition:
 
 ## Result
 
-V2.x is ready for real-project validation and npm/GitHub release preparation as `0.3.0`.
+V2.x is ready for real-project validation and npm/GitHub release preparation as `0.3.1`.

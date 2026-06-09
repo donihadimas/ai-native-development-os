@@ -8,6 +8,22 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.3.1
+
+Patch release focused on npm package metadata and README onboarding clarity.
+
+### 🔄 Changed
+
+- Added npm metadata for homepage, repository, issue tracker, and author.
+- Updated root and CLI README onboarding so guided setup is the primary path after install.
+- Reframed command examples as a non-interactive command quickstart.
+
+### ✅ Validation
+
+- `npm test`: 41 passed, 0 failed.
+- `npm pack --dry-run`: passed.
+- `git diff --check`: passed.
+
 ## 0.3.0
 
 Feature release for ready-to-use AI-native project setup.

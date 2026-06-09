@@ -13,7 +13,8 @@ This repository is not an application framework, SaaS starter, dashboard, or AI 
 - [📊 Current Status](#-current-status)
 - [📦 What Is Included](#-what-is-included)
 - [📥 Install](#-install)
-- [⏱️ Quickstart](#️-quickstart)
+- [🧭 Guided Setup](#-guided-setup)
+- [⚡ Command Quickstart](#-command-quickstart)
 - [🔄 Recommended Workflow](#-recommended-workflow)
 - [🤖 How To Use With Codex](#-how-to-use-with-codex)
 - [🛠️ CLI Commands](#️-cli-commands)
@@ -70,9 +71,35 @@ Requirements:
 - Node.js 20 or newer.
 - npm for global install.
 
-## ⏱️ Quickstart
+## 🧭 Guided Setup
 
-### CLI Assisted Use
+For most users, start with the guided setup wizard:
+
+```bash
+aios
+```
+
+The wizard can help you:
+
+- create a blank AIOS project or start from a starter,
+- adopt an existing project without overwriting existing files,
+- choose the project shape: fullstack, frontend, backend, mobile, library, or docs-only,
+- choose full setup or lite setup,
+- choose where project docs should live: `docs/`, `.aios/project-docs/`, or a custom path,
+- install selected AIOS skills into native agent folders for Codex, Qwen Code, OpenCode, Antigravity, or generic agents,
+- choose skill delivery: native agent folders, portable `.aios/skills`, or both,
+- optionally generate RTK/Caveman integration rules,
+- review a setup summary before files are written.
+
+Use **Full AIOS setup** for most projects. It creates `.aios/` with prompts, references, templates, workflows, commands, integrations, config, and optionally skills. Use **Lite setup** only when you want project docs without the local workflow kit.
+
+Use **native skills** when your coding agent can read project skill folders, such as `.agents/skills`, `.qwen/skills`, `.opencode/skills`, or `.agent/skills`. Native delivery keeps `.aios/` compact. Use portable delivery when you want all skills to live inside `.aios/skills`.
+
+Optional integrations are rules-first. AIOS can generate local RTK/Caveman guidance without installing external tools. External installers only run after explicit confirmation.
+
+## ⚡ Command Quickstart
+
+Use the command quickstart when you already know the setup you want or need a non-interactive flow.
 
 Create and validate a new project:
 
@@ -83,13 +110,26 @@ aios next demo-project
 cd demo-project
 ```
 
-`aios init` installs a local `.aios/` workflow kit by default. Use `--lite` only when you want the old minimal skeleton behavior. Run `aios` without arguments for the guided setup wizard.
+`aios init` installs a local `.aios/` workflow kit by default. Use `--lite` only when you want the old minimal skeleton behavior.
 
 Native agent skill install keeps `.aios/` compact and installs selected skills into agent-specific folders:
 
 ```bash
 aios init demo-native --agents codex,qwen --skills core --skill-delivery native
 aios agent install demo-native --agents opencode,antigravity --skills testing
+```
+
+Create planning and review documents:
+
+```bash
+aios create feature "Habit reminders"
+aios create openapi "Habit API"
+aios create migration "Create habits table"
+aios create security "Habit API"
+aios create adr "Use server date for completion"
+aios create task "Implement habit API"
+aios create review "Habit API"
+aios create release "0.3.1"
 ```
 
 Start from a lightweight V2.x starter:
@@ -107,22 +147,7 @@ aios adopt
 aios validate
 ```
 
-Create planning and review documents:
-
-```bash
-aios create feature "Habit reminders"
-aios create openapi "Habit API"
-aios create migration "Create habits table"
-aios create security "Habit API"
-aios create adr "Use server date for completion"
-aios create task "Implement habit API"
-aios create review "Habit API"
-aios create release "0.3.0"
-```
-
-### Manual Use
-
-Use the manual flow when you want full control and do not need the CLI.
+### Manual Setup
 
 1. Copy `project-skeleton/` into a new project directory.
 2. Open the new project with Codex or another coding agent.
