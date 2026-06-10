@@ -1,0 +1,143 @@
+---
+import TerminalPreview from './TerminalPreview.astro';
+---
+
+<section class="hero-section">
+  <div class="hero-content">
+    <div class="badge">AI-Native Development OS</div>
+    <h1 class="hero-title">AI-Native Development OS</h1>
+    <p class="hero-subtitle">
+      A reusable workflow foundation for building software with AI coding agents. Move from idea to product docs, architecture, tasks, and implementation with explicit context.
+    </p>
+    <div class="install-command" aria-label="Install AIOS CLI">
+      <span class="prompt">$</span>
+      <code>npm install -g @donihadimas/aios</code>
+    </div>
+    <div class="hero-actions">
+      <a href="/getting-started" class="btn btn-primary">Get Started</a>
+      <a href="/reference/cli" class="btn btn-secondary">CLI Reference</a>
+      <a href="https://github.com/donihadimas/ai-native-development-os" class="btn btn-secondary">GitHub</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <TerminalPreview />
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 3rem;
+    align-items: center;
+    padding: 3rem 0 4rem;
+    min-width: 0;
+  }
+  .hero-content,
+  .hero-visual {
+    min-width: 0;
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-2);
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-border);
+  }
+  .hero-title {
+    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    color: var(--color-text);
+    text-wrap: balance;
+  }
+  .hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+    max-width: 600px;
+    text-wrap: pretty;
+  }
+  .install-command {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    background: var(--color-code-bg);
+    color: var(--color-text-soft);
+    box-shadow: 0 14px 30px var(--color-shadow);
+  }
+  .install-command code {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.925rem;
+  }
+  .prompt {
+    color: var(--color-accent-2);
+    font-weight: 700;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-hover);
+    color: var(--color-accent-contrast);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  @media (max-width: 768px) {
+    .hero-section {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 2rem;
+      padding: 2rem 0 3rem;
+    }
+    .hero-subtitle {
+      font-size: 1rem;
+    }
+    .hero-actions {
+      justify-content: center;
+    }
+    .install-command {
+      width: 100%;
+      justify-content: flex-start;
+      text-align: left;
+    }
+  }
+</style>
