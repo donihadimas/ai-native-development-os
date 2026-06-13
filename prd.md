@@ -298,8 +298,7 @@ ai-native-dev-os/
 │   ├── bugfix.workflow.md
 │   ├── refactor.workflow.md
 │   ├── review.workflow.md
-│   ├── release.workflow.md
-│   └── v2-roadmap.workflow.md
+│   └── release.workflow.md
 │
 ├── prompts/
 │   ├── 01-generate-prd.md
@@ -1021,7 +1020,6 @@ Acceptance Criteria:
 - Refactor workflow exists.
 - Review workflow exists.
 - Release workflow exists.
-- V2 roadmap workflow exists.
 - Each workflow has input, process, output, and done criteria.
 
 ---
@@ -1698,7 +1696,6 @@ Deliverables:
 - refactor workflow,
 - review workflow,
 - release workflow,
-- v2-roadmap workflow.
 
 Done Criteria:
 

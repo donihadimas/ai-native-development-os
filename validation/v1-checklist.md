@@ -43,7 +43,6 @@
 - [ ] Refactor workflow exists.
 - [ ] Review workflow exists.
 - [ ] Release workflow exists.
-- [ ] V2 roadmap workflow exists.
 - [ ] Each workflow has input, process, output, and done criteria.
 
 ## FR-006 Project Skeleton
