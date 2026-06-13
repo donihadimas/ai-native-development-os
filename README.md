@@ -5,7 +5,7 @@
 
 AI-Native Development OS is a reusable workflow foundation for building software with AI coding agents. It gives a solo fullstack developer a consistent way to move from idea to product docs, architecture, ADRs, small tasks, implementation, review, testing, and release.
 
-This repository is not an application framework, SaaS starter, dashboard, or AI agent. It is a portable operating system for AI-assisted development: reusable skills, templates, references, workflows, project skeletons, and a small helper CLI.
+This repository is not an application framework, SaaS starter, dashboard, or AI agent. It is a portable operating system for AI-assisted development: reusable skills, templates, references, workflows, project skeletons, and a small helper CLI. The CLI is only for setup, validation, and generating AIOS template files; AI-native development happens through Codex or another AI agent inside the project.
 
 ## 📑 Table of Contents
 
@@ -83,7 +83,7 @@ aios next demo-project
 cd demo-project
 ```
 
-`aios init` installs a local `.aios/` workflow kit by default. Use `--lite` only when you want the old minimal skeleton behavior. Run `aios` without arguments for the guided setup wizard.
+`aios init` installs a local `.aios/` workflow kit by default. Use `--lite` when you want minimal project docs without the local workflow kit; lite still writes `.aios/config.json` so agents can resolve `mode`, `docsRoot`, and `projectShape`. Run `aios` without arguments for the guided setup wizard.
 
 Native agent skill install keeps `.aios/` compact and installs selected skills into agent-specific folders:
 

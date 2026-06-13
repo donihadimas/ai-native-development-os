@@ -25,6 +25,18 @@ Explain the context, current problem, and why this matters.
 
 - As a {{user}}, I want {{capability}} so that {{benefit}}.
 
+## Product Flow
+
+```mermaid
+flowchart TD
+    A[User problem] --> B[User goal]
+    B --> C[MVP capability]
+    C --> D[User outcome]
+    D --> E[Success signal]
+```
+
+Update this chart so it shows the real user journey or product workflow. Keep it product-level; do not turn it into implementation architecture.
+
 ## Functional Requirements
 
 | ID | Requirement | Priority |
@@ -50,3 +62,15 @@ Explain the context, current problem, and why this matters.
 ## Open Questions
 
 - 
+
+## Review Checklist
+
+- [ ] Scope matches the current product vision.
+- [ ] MVP is small enough for the next development cycle.
+- [ ] Non-goals are explicit.
+- [ ] Acceptance criteria are testable.
+- [ ] Open questions are acceptable or assigned for follow-up.
+
+## Next Step
+
+After the user reviews and accepts this PRD, generate or update `<docsRoot>/architecture/architecture.md` using the architecture-design skill. Do not break work into implementation tasks until the architecture and important ADRs are reviewed.

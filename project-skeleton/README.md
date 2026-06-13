@@ -23,7 +23,7 @@ This skeleton is a generic AI-native project shell. `aios init` can keep it full
 
 1. Run `aios config` and confirm `docsRoot`.
 2. Fill `<docsRoot>/product/vision.md`.
-3. Ask Codex to read `AGENTS.md` and `.aios/prompts/01-generate-prd.md`.
+3. In full mode, ask Codex to read `AGENTS.md` and `.aios/prompts/01-generate-prd.md`. In lite mode, ask Codex to read `AGENTS.md`, `<docsRoot>/context/context-map.md`, and `<docsRoot>/product/vision.md`, then follow the PRD workflow manually.
 4. Generate or write `<docsRoot>/product/prd.md`.
 5. Generate or write `<docsRoot>/architecture/architecture.md`.
 6. Record important technical decisions in `<docsRoot>/adr/`.

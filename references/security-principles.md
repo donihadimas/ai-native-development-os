@@ -16,6 +16,6 @@ Frontend checks improve UX, but backend authorization must protect data and acti
 
 Use least privilege for users, services, tokens, databases, and third-party integrations.
 
-## Security in V1
+## Production Defaults
 
-V1 includes security principles and review checklist coverage. A dedicated security-review skill and workflow are deferred to V2.
+Use secure defaults for authentication, authorization, input validation, secret handling, logging, dependency updates, and operational access. Security-sensitive changes need explicit review evidence before release.

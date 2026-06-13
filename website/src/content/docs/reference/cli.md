@@ -3,7 +3,7 @@ title: CLI Commands
 description: Reference for the aios helper CLI.
 ---
 
-The `aios` CLI prepares AI-ready files and workflow artifacts. It does not generate application code or run the coding agent.
+The `aios` CLI is only for setup, validation, and generating AIOS template files. It prepares AI-ready files and workflow artifacts. It does not generate application code or run the coding agent; use Codex or another AI agent directly for AI-native development.
 
 Run help at any time:
 
@@ -86,7 +86,7 @@ Project shapes:
 ## Common Options
 
 - `--lite`
-  Creates or validates only base project docs without the local `.aios` kit.
+  Creates or validates base project docs without the local `.aios` workflow kit. Lite still writes `.aios/config.json` with `mode: "lite"` for routing.
 - `--docs-root <path>`
   Puts generated docs somewhere other than `docs/`.
 - `--agents codex,qwen,opencode,antigravity,generic`

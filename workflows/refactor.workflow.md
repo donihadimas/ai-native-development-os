@@ -4,6 +4,14 @@
 
 - Refactor goal, affected area, and reason for change.
 
+## Mode Routing
+
+- Resolve `.aios/config.json` when it exists.
+- Full mode: use `.aios/skill-router.md`, implementation planning, testing, and review guidance.
+- Lite mode or missing config: use `AGENTS.md`, `<docsRoot>/context/context-map.md`, affected files, and existing tests. Keep scope and non-goals explicit.
+- If RTK is enabled, use it for noisy test output and large diffs unless exact full output is required.
+- If Caveman is enabled, use concise style for progress updates only; keep review evidence complete.
+
 ## Process
 
 1. Define safe scope and non-goals.
@@ -30,3 +38,7 @@
 - Intended behavior did not change unless explicitly approved.
 - Tests or manual checks show no regression.
 - No unrelated cleanup was mixed in.
+
+## Next Action
+
+If scope or behavior impact is unclear, get user approval before editing. If refactor is complete, review the diff for accidental behavior change, then run relevant tests and record evidence.

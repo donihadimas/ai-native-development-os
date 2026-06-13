@@ -8,6 +8,8 @@ Prefer small, reviewable changes with explicit acceptance criteria. A task is no
 
 Default to clear structure, explicit names, and boring solutions. Add abstraction only after repeated behavior proves the need.
 
+Simple should still be production-aware: validate inputs, handle failures, preserve data, avoid hidden coupling, and make behavior observable where it matters.
+
 ## Preserve Local Context
 
 Search existing code and docs before adding new patterns. Work with the current architecture instead of bypassing it.

@@ -5,7 +5,7 @@ description: Install AIOS, create or adopt a project, and understand the first w
 
 AI-Native Development OS (AIOS) gives a project a repeatable AI-ready workflow: product context, architecture notes, ADRs, small implementation tasks, reusable skills, templates, references, reviews, and validation.
 
-The CLI helps create and maintain those files. It does not generate application code, run Codex for you, install your app dependencies, apply database migrations, or publish releases.
+The CLI helps create and maintain those files. It is only for setup, validation, and generating AIOS template files. It does not generate application code, run Codex for you, install your app dependencies, apply database migrations, or publish releases. Use Codex or another AI agent directly for AI-native development.
 
 ## Installation
 
@@ -38,7 +38,7 @@ The wizard will guide you through:
 - Creating a blank AIOS project or starting from a starter.
 - Adopting an existing project without overwriting existing files.
 - Choosing the project shape: fullstack, frontend, backend, mobile, library, or docs-only.
-- Choosing full setup with `.aios/` workflow kit or lite setup with docs only.
+- Choosing full setup with `.aios/` workflow kit or lite setup with docs plus `.aios/config.json` only.
 - Choosing where project docs should live (e.g. `docs/`, `.aios/project-docs/`).
 - Installing AIOS skills into native agent folders (for Codex, Qwen Code, OpenCode, Antigravity) or keeping them portable.
 - Optionally generating RTK/Caveman integration rules.

@@ -4,6 +4,9 @@ Use this file to choose the smallest useful context set for each task.
 
 Before routing, read `.aios/config.json` if it exists:
 
+- Use `mode` to decide workflow access:
+  - `full`: use `.aios/skill-router.md`, `.aios/prompts/`, `.aios/templates/`, `.aios/references/`, and `.aios/workflows/`.
+  - `lite`: use project docs, `AGENTS.md`, and root or agent-provided AIOS instructions when available. Do not assume `.aios/` exists.
 - Use `docsRoot` as the documentation root. If missing, use `docs`.
 - Use `projectShape` to decide code areas:
   - `fullstack`: `frontend/` and `backend/`
@@ -22,14 +25,14 @@ Before routing, read `.aios/config.json` if it exists:
 - Active work: `<docsRoot>/tasks/`.
 - Review evidence: `<docsRoot>/reviews/`.
 - API contracts and integration notes: `<docsRoot>/api/`.
-- Local AIOS workflow kit: `.aios/`.
+- Local AIOS workflow kit: `.aios/` in full mode only.
 - Code context: affected files and nearby tests in the code areas implied by `projectShape`.
 
 ## Task Routing
 
 ### New Feature
 
-Read the active task, relevant PRD section, related ADRs, API docs if app integration is involved, `.aios/workflows/new-feature.workflow.md`, and affected modules.
+Read the active task, relevant PRD section, related ADRs, API docs if app integration is involved, the new-feature workflow when available, and affected modules.
 
 ### Bugfix
 
@@ -41,7 +44,11 @@ Read the refactor task, architecture document, related ADRs, affected modules, a
 
 ### Review
 
-Read the diff, active task acceptance criteria, relevant ADRs, testing evidence, `.aios/skill-router.md`, and changed files.
+Read the diff, active task acceptance criteria, relevant ADRs, testing evidence, the skill router when available, and changed files.
+
+## Next Step Rule
+
+Every agent response at the end of a workflow should say what the user should review, whether the current artifact is ready, and the next recommended action.
 
 ## Anti-Patterns
 

@@ -3,11 +3,12 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import packageJson from "../package.json" with { type: "json" };
 import { run } from "../src/index.js";
 import type { RuntimePaths } from "../src/core.js";
 
-const osRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../..");
+const osRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const runtimePaths: RuntimePaths = {
   root: osRoot,
   aiosKitSource: osRoot,
@@ -23,7 +24,9 @@ function tempCwd(): string {
 test("help explains the CLI purpose and available commands", () => {
   const output = run(["help"], { runtimePaths, cwd: tempCwd() });
 
-  assert.match(output, /AIOS creates an AI-ready project setup/);
+  assert.match(output, /The CLI is only for setup, validation, and generating AIOS template files/);
+  assert.match(output, /For AI-native development, use Codex or another AI/);
+  assert.match(output, /The CLI does not\s+run the agent or generate application code/);
   assert.match(output, /aios\n    Open the guided setup wizard/);
   assert.match(output, /Start here:/);
   assert.match(output, /Common commands:/);
@@ -75,15 +78,17 @@ test("init copies the project skeleton", () => {
   assert.ok(fs.existsSync(path.join(project, "docs", "reviews")));
 });
 
-test("init --lite skips the local AIOS kit", () => {
+test("init --lite writes lite config and skips the local AIOS workflow kit", () => {
   const cwd = tempCwd();
   run(["init", "demo-project", "--lite"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
-  assert.equal(fs.existsSync(path.join(project, ".aios")), false);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "config.json")));
+  assert.equal(JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8")).mode, "lite");
+  assert.equal(fs.existsSync(path.join(project, ".aios", "skill-router.md")), false);
 
-  const output = run(["validate", "demo-project", "--lite"], { runtimePaths, cwd });
+  const output = run(["validate", "demo-project"], { runtimePaths, cwd });
   assert.match(output, /AI-ready structure validated/);
 });
 
@@ -132,12 +137,17 @@ test("adopt adds missing AI Dev OS files without overwriting existing files", ()
   const project = path.join(cwd, "existing-project");
   fs.mkdirSync(project, { recursive: true });
   fs.writeFileSync(path.join(project, "README.md"), "# Existing Project\n");
+  fs.writeFileSync(path.join(project, "AGENTS.md"), "# Existing Agent Rules\n\nKeep user rules.\n");
+  fs.writeFileSync(path.join(project, "CLAUDE.md"), "# Existing Claude Rules\n\nKeep Claude rules.\n");
 
   const output = run(["adopt", "existing-project"], { runtimePaths, cwd });
 
   assert.match(output, /Adopted AI Dev OS structure/);
   assert.equal(fs.readFileSync(path.join(project, "README.md"), "utf8"), "# Existing Project\n");
-  assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
+  assert.match(fs.readFileSync(path.join(project, "AGENTS.md"), "utf8"), /^<!-- AIOS:BEGIN -->/);
+  assert.match(fs.readFileSync(path.join(project, "AGENTS.md"), "utf8"), /# Existing Agent Rules/);
+  assert.match(fs.readFileSync(path.join(project, "CLAUDE.md"), "utf8"), /^<!-- AIOS:BEGIN -->/);
+  assert.match(fs.readFileSync(path.join(project, "CLAUDE.md"), "utf8"), /# Existing Claude Rules/);
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
@@ -380,9 +390,13 @@ test("integration install runs external commands from the target project path", 
       runtimePaths,
       cwd
     });
-    assert.match(output, /install: executed/);
-    assert.match(output, /caveman: ready/);
-    assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "caveman", "SKILL.md")));
+    if (os.platform() === "win32") {
+      assert.match(output, /install: manual only on this platform/);
+    } else {
+      assert.match(output, /install: executed/);
+      assert.match(output, /caveman: ready/);
+      assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "caveman", "SKILL.md")));
+    }
     assert.equal(fs.existsSync(path.join(cwd, ".agents", "skills", "caveman", "SKILL.md")), false);
   } finally {
     process.env.PATH = oldPath;
@@ -407,7 +421,7 @@ test("integration status detects mocked RTK and Caveman locations", () => {
   process.env.HOME = fakeHome;
   try {
     const status = run(["integration", "status", "demo-project"], { runtimePaths, cwd });
-    assert.match(status, /rtk 0\.0\.0-test/);
+    assert.match(status, os.platform() === "win32" ? /rtk found|rtk 0\.0\.0-test/ : /rtk 0\.0\.0-test/);
     assert.match(status, /caveman location\(s\) found/);
   } finally {
     process.env.PATH = oldPath;
@@ -463,14 +477,16 @@ test("starter creates an AI docs only stack starter and refuses overwrite", () =
   );
 });
 
-test("starter --lite skips the local AIOS kit", () => {
+test("starter --lite writes lite config and skips the local AIOS workflow kit", () => {
   const cwd = tempCwd();
 
   run(["starter", "fullstack-saas", "demo-saas", "--lite"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-saas");
 
   assert.ok(fs.existsSync(path.join(project, "frontend")));
-  assert.equal(fs.existsSync(path.join(project, ".aios")), false);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "config.json")));
+  assert.equal(JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8")).mode, "lite");
+  assert.equal(fs.existsSync(path.join(project, ".aios", "skill-router.md")), false);
 });
 
 test("fullstack starter creates frontend and backend placeholders", () => {
@@ -517,13 +533,17 @@ test("validate succeeds for generated skeleton", () => {
   assert.match(output, /Optional V2.x path not found: docs\/security/);
 });
 
-test("validate requires local AIOS kit unless lite mode is used", () => {
+test("validate follows lite config and requires kit only when not lite", () => {
   const cwd = tempCwd();
   run(["init", "demo-project", "--lite"], { runtimePaths, cwd });
 
   const output = run(["validate", "demo-project"], { runtimePaths, cwd });
-  assert.match(output, /AI-ready structure is incomplete/);
-  assert.match(output, /\.aios\/skills\/context-management\/SKILL.md/);
+  assert.match(output, /AI-ready structure validated/);
+
+  fs.rmSync(path.join(cwd, "demo-project", ".aios"), { recursive: true, force: true });
+  const fullOutput = run(["validate", "demo-project"], { runtimePaths, cwd });
+  assert.match(fullOutput, /AI-ready structure is incomplete/);
+  assert.match(fullOutput, /\.aios\/skills\/context-management\/SKILL.md/);
   process.exitCode = undefined;
 
   const liteOutput = run(["validate", "demo-project", "--lite"], { runtimePaths, cwd });

@@ -53,3 +53,14 @@ Link ADRs or list decisions that should become ADRs.
 ## Risks
 
 - 
+
+## Review Checklist
+
+- [ ] Architecture supports the accepted PRD scope.
+- [ ] Major boundaries and responsibilities are clear.
+- [ ] Security, testing, deployment, and data concerns are covered enough for the next tasks.
+- [ ] ADR candidates are listed for important decisions.
+
+## Next Step
+
+After the user reviews and accepts this architecture, create ADRs for important decisions. Then break the accepted PRD and architecture into small tasks using the task-breakdown skill.

@@ -1,13 +1,15 @@
 # Command: Create ADR
 
-Resolve `.aios/config.json` first. Use `.aios/prompts/03-generate-adr.md` and the `adr-generator` skill through `.aios/skill-router.md`.
+Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/03-generate-adr.md` and the `adr-generator` skill through `.aios/skill-router.md`. In lite mode, use available ADR instructions and templates without assuming `.aios/` exists.
 
 Read:
 
 - `AGENTS.md`
 - related PRD or architecture section under `<docsRoot>/`
-- `.aios/templates/adr.template.md`
+- `.aios/templates/adr.template.md` when available
 
 Before creating the ADR, apply the skill's Clarification Gate. If the decision, alternatives, or consequences are unclear, ask focused questions first.
 
 Create a focused ADR in `<docsRoot>/adr/`. Keep one decision per ADR.
+
+End with what the user should review and the next step: update architecture or task dependencies that rely on this decision.

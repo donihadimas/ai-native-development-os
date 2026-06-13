@@ -4,9 +4,9 @@
 ![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 ![Node Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)
 
-`aios` is the small CLI for AI-Native Development OS. It helps you create an AI-ready project with a local `.aios/` workflow kit, generate common planning documents from templates, and validate that a project has the expected AI workflow structure.
+`aios` is the small CLI for AI-Native Development OS. It is only for setup, validation, and generating AIOS template files. It helps you create an AI-ready project with a local `.aios/` workflow kit, generate common planning documents from templates, and validate that a project has the expected AI workflow structure.
 
-It does not replace Codex or another coding agent. The CLI only creates, copies, numbers, renders, and validates files. Your agent still does the product thinking, planning, implementation, testing, and review with the generated docs as context.
+It does not replace Codex or another coding agent. For AI-native development, use the AI agent directly inside the project. The CLI only creates, copies, numbers, renders, and validates files. Your agent still does the product thinking, planning, implementation, testing, and review with the generated docs as context.
 
 ## 📑 Table of Contents
 
@@ -47,7 +47,7 @@ aios next demo-project
 cd demo-project
 ```
 
-By default, generated projects include `.aios/` with skills, prompts, references, templates, and workflows. Use `--lite` only when you want a minimal structure without the local workflow kit.
+By default, generated projects include `.aios/` with skills, prompts, references, templates, and workflows. Use `--lite` only when you want a minimal structure without the local workflow kit. Lite still writes `.aios/config.json` so agents can resolve `mode`, `docsRoot`, and `projectShape`.
 
 Run `aios` without arguments to use the guided setup wizard. The wizard can create a blank AIOS project, start from a starter, adopt an existing project, choose the project shape, choose full or lite setup, choose docs location, install selected skill sets into native agent folders, show a setup summary before writing files, and offer optional RTK/Caveman integration setup after the local `.aios/` kit is installed.
 
@@ -170,7 +170,7 @@ Behavior:
 - Creates `my-saas/`.
 - Refuses to overwrite an existing non-empty directory.
 - Includes `AGENTS.md`, optional `CLAUDE.md`, shared docs, `frontend/`, `backend/`, and `.aios/` by default.
-- `--lite` skips `.aios/` and preserves the older minimal behavior.
+- `--lite` skips the local `.aios` workflow kit but still writes `.aios/config.json` with `mode: "lite"`.
 - `--shape` accepts `fullstack`, `frontend`, `backend`, `mobile`, `library`, or `docs`; default is `fullstack`.
 - `--docs-root` stores project docs somewhere other than `docs/`.
 - `--skill-delivery` accepts `portable`, `native`, or `both`.
@@ -239,7 +239,7 @@ Behavior:
 - Refuses to overwrite an existing non-empty directory.
 - Includes stack-oriented placeholders, AI-ready docs, and `.aios/` by default.
 - Does not include framework code or dependencies.
-- `--lite` skips `.aios/`.
+- `--lite` skips the local `.aios` workflow kit but still writes `.aios/config.json` with `mode: "lite"`.
 
 ### `aios adopt [project-path] [--lite] [--shape <shape>] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
 
@@ -265,7 +265,7 @@ Behavior:
 - Skips files that already exist.
 - Does not overwrite your existing `README.md`, source code, docs, frontend, or backend folders.
 - Adds `frontend/` and `backend/` placeholders if they are missing so the project validates against the generic AI-ready structure.
-- `--lite` skips `.aios/`.
+- `--lite` skips the local `.aios` workflow kit but still writes `.aios/config.json` with `mode: "lite"`.
 
 Use `adopt` when a project already exists and `init` would be too destructive.
 

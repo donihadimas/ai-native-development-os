@@ -1,6 +1,8 @@
 # Prompt: Implement Task
 
-Read `AGENTS.md` first. Resolve `.aios/config.json` if it exists, then use `.aios/prompts/05-plan-implementation.md` if no plan exists.
+Read `AGENTS.md` first. Resolve `.aios/config.json` if it exists, then use `.aios/prompts/05-plan-implementation.md` in full mode if no plan exists. In lite mode, create the implementation plan manually from the active task before coding.
+
+In full mode, use `.aios/skill-router.md`, `.aios/references/`, and `.aios/workflows/` when relevant. In lite mode or when `.aios/` is missing, use `AGENTS.md`, the context map, active task, affected code, and nearby tests.
 
 Before coding, apply the implementation-planner Clarification Gate. If acceptance criteria or expected behavior are unclear, ask focused questions first.
 

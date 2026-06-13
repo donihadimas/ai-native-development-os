@@ -16,6 +16,10 @@ Include happy path, error path, edge cases, and regression checks when relevant.
 
 Tests should be readable, deterministic, and focused. A test that is hard to trust creates drag instead of safety.
 
+## Production Confidence
+
+High-risk behavior should have tests or documented checks for failure modes, permissions, data integrity, compatibility, and regression risk. Manual checks are acceptable only when automation is not practical yet, and the reason should be recorded.
+
 ## Report Evidence
 
 Done summaries must include what tests were run and what was not run.

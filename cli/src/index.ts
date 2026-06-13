@@ -44,7 +44,7 @@ interface CommandContext {
 }
 
 function packageVersion(): string {
-  const compiledSourceDir = path.dirname(new URL(import.meta.url).pathname);
+  const compiledSourceDir = path.dirname(fileURLToPath(import.meta.url));
   const packageRoot = path.resolve(compiledSourceDir, "../..");
   const packageJsonPath = path.join(packageRoot, "package.json");
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8")) as { version?: string };
@@ -55,9 +55,12 @@ function packageVersion(): string {
 function usage(): string {
   return `AI-Native Development OS CLI
 
-AIOS creates an AI-ready project setup for Codex and other coding agents:
-docs, tasks, prompts, skills, workflow rules, validation, and optional
-RTK/Caveman integration rules. It does not generate application code.
+The CLI is only for setup, validation, and generating AIOS template files:
+docs, tasks, prompts, skills, workflow rules, and optional RTK/Caveman
+integration rules. For AI-native development, use Codex or another AI
+agent directly inside the project. The agent should read AGENTS.md,
+.aios/config.json, project docs, skills, and workflows. The CLI does not
+run the agent or generate application code.
 
 Start here:
   aios
@@ -412,6 +415,13 @@ function setupAiosForProject(
   };
 }
 
+function setupLiteConfig(projectPath: string, config: ReturnType<typeof normalizeProjectSetup>): void {
+  writeProjectConfig(projectPath, {
+    ...config,
+    mode: "lite"
+  });
+}
+
 function commandInit(ctx: CommandContext, name: string | undefined, options: ParsedArgs = parseArgs([])): string {
   const projectName = requireName(name, "init");
   const target = path.resolve(ctx.cwd, projectName);
@@ -423,6 +433,8 @@ function commandInit(ctx: CommandContext, name: string | undefined, options: Par
   relocateDocsRoot(target, config.docsRoot, path.join(ctx.runtimePaths.projectSkeleton, "docs"));
   if (!options.lite) {
     setupAiosForProject(ctx, target, options, config);
+  } else {
+    setupLiteConfig(target, config);
   }
   return `Created AI-ready project at ${target}`;
 }
@@ -448,6 +460,8 @@ function commandStarter(
   relocateDocsRoot(target, config.docsRoot, path.join(source, "docs"));
   if (!options.lite) {
     setupAiosForProject(ctx, target, options, config);
+  } else {
+    setupLiteConfig(target, config);
   }
   return `Created AI-ready ${starter} starter at ${target}`;
 }
@@ -466,6 +480,9 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
     }
   }
   const setupResult = options.lite ? { kit: [], agent: [], skipped: [] } : setupAiosForProject(ctx, projectPath, options, config);
+  if (options.lite) {
+    setupLiteConfig(projectPath, config);
+  }
 
   const output = [
     `Adopted AI Dev OS structure in ${projectPath}`,
@@ -483,7 +500,12 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
 
 function commandInstallKit(ctx: CommandContext, projectPathArg: string | undefined): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
-  const result = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, { config: readProjectConfig(projectPath) });
+  const result = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, {
+    config: {
+      ...readProjectConfig(projectPath),
+      mode: "full"
+    }
+  });
 
   return [
     `Installed AIOS workflow kit in ${path.join(projectPath, ".aios")}`,
@@ -1321,13 +1343,17 @@ function hasTaskFiles(projectPath: string): boolean {
   return fs.readdirSync(tasksDir).some((file) => file.startsWith("TASK-") && file.endsWith(".md"));
 }
 
+function relativeDisplayPath(...parts: string[]): string {
+  return path.join(...parts).replace(/\\/g, "/");
+}
+
 function commandNext(ctx: CommandContext, projectPathArg: string | undefined): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
   const config = readProjectConfig(projectPath);
-  const visionRelative = path.join(config.docsRoot, "product", "vision.md");
-  const prdRelative = path.join(config.docsRoot, "product", "prd.md");
-  const architectureRelative = path.join(config.docsRoot, "architecture", "architecture.md");
-  const tasksRelative = path.join(config.docsRoot, "tasks");
+  const visionRelative = relativeDisplayPath(config.docsRoot, "product", "vision.md");
+  const prdRelative = relativeDisplayPath(config.docsRoot, "product", "prd.md");
+  const architectureRelative = relativeDisplayPath(config.docsRoot, "architecture", "architecture.md");
+  const tasksRelative = relativeDisplayPath(config.docsRoot, "tasks");
   const visionPath = path.join(projectPath, visionRelative);
   const prdPath = path.join(projectPath, prdRelative);
   const architecturePath = path.join(projectPath, architectureRelative);
@@ -1373,7 +1399,7 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
   return [
     `Next recommended step for ${projectPath}:`,
     `Open the active task in \`${tasksRelative}/\` and implement one task at a time.`,
-    `Ask Codex to read \`AGENTS.md\`, \`${path.join(config.docsRoot, "context", "context-map.md")}\`, \`.aios/skill-router.md\`, and the active task before coding.`
+    `Ask Codex to read \`AGENTS.md\`, \`${relativeDisplayPath(config.docsRoot, "context", "context-map.md")}\`, \`.aios/skill-router.md\`, and the active task before coding.`
   ].join("\n");
 }
 

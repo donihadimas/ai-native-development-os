@@ -95,6 +95,29 @@ test("adoptSkeleton copies missing files and skips existing files", () => {
   assert.ok(result.skipped.includes("README.md"));
 });
 
+test("adoptSkeleton prepends AIOS sections to existing agent instruction files", () => {
+  const source = fs.mkdtempSync(path.join(os.tmpdir(), "aios-adopt-agent-source-"));
+  const target = fs.mkdtempSync(path.join(os.tmpdir(), "aios-adopt-agent-target-"));
+  fs.writeFileSync(
+    path.join(source, "AGENTS.md"),
+    "# AGENTS.md\n\n<!-- AIOS:BEGIN -->\n\n## AIOS Managed Section\n\nFollow AIOS.\n\n<!-- AIOS:END -->\n",
+    "utf8"
+  );
+  fs.writeFileSync(path.join(target, "AGENTS.md"), "# Existing Agent Rules\n\nKeep this.\n", "utf8");
+
+  const result = adoptSkeleton(source, target);
+  const adopted = fs.readFileSync(path.join(target, "AGENTS.md"), "utf8");
+
+  assert.match(adopted, /^<!-- AIOS:BEGIN -->/);
+  assert.match(adopted, /## Existing Agent Instructions/);
+  assert.match(adopted, /# Existing Agent Rules/);
+  assert.match(result.created.join("\n"), /AGENTS\.md \(AIOS section prepended\)/);
+
+  adoptSkeleton(source, target);
+  const adoptedAgain = fs.readFileSync(path.join(target, "AGENTS.md"), "utf8");
+  assert.equal(adoptedAgain.match(/<!-- AIOS:BEGIN -->/g)?.length, 1);
+});
+
 test("writeRenderedTemplate writes rendered content and refuses overwrite", () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "aios-template-"));
   const templatePath = path.join(directory, "template.md");

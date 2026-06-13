@@ -49,7 +49,8 @@ Expected outputs:
 - architecture document,
 - candidate ADR list,
 - key risks and constraints,
-- testing and deployment strategy.
+- testing and deployment strategy,
+- review checklist and next step guidance.
 
 ## Process
 
@@ -61,7 +62,9 @@ Step-by-step process:
 4. Define API, authentication, authorization, testing, deployment, and observability strategies at a high level.
 5. Identify decisions that deserve ADRs.
 6. Record constraints and risks.
-7. Use `templates/architecture.template.md` for structure.
+7. Add a review checklist for the user.
+8. End with the next workflow step: user reviews architecture, creates ADRs for important decisions, then uses `task-breakdown`.
+9. Use `templates/architecture.template.md` for structure.
 
 ## Rules
 
@@ -71,6 +74,7 @@ Hard rules:
 - Do not bury major trade-offs in prose; turn them into ADR candidates.
 - Do not design beyond the PRD's current scope.
 - Do not skip security and testing strategy.
+- Do not create implementation tasks before the user reviews the architecture and ADR candidates.
 
 ## Quality Checklist
 
@@ -81,6 +85,7 @@ Before finishing, verify:
 - [ ] Authentication and authorization are considered.
 - [ ] Testing and deployment strategy are present.
 - [ ] ADR candidates are listed.
+- [ ] Next step tells the user what to review and what to do after approval.
 
 ## Failure Modes
 
@@ -90,7 +95,8 @@ Watch out for:
 - framework-driven design without product need,
 - missing cross-cutting concerns,
 - vague component boundaries,
-- architecture that does not support the PRD.
+- architecture that does not support the PRD,
+- ending without a clear next step.
 
 ## Example Prompt
 

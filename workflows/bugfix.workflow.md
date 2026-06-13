@@ -4,6 +4,14 @@
 
 - Bug report, reproduction steps, failing test, or observed behavior.
 
+## Mode Routing
+
+- Resolve `.aios/config.json` when it exists.
+- Full mode: use `.aios/skill-router.md`, bugfix workflow guidance, testing skill, implementation planner, and code review skill.
+- Lite mode or missing config: use `AGENTS.md`, `<docsRoot>/context/context-map.md`, the bug report, affected files, and nearby tests. Keep the same sequence manually.
+- If RTK is enabled, use it for noisy logs, failing tests, diffs, and repeated debug output unless exact full output is required.
+- If Caveman is enabled, use concise style for debug-loop updates only; keep the final bugfix summary complete.
+
 ## Process
 
 1. Reproduce or clearly describe the bug.
@@ -31,3 +39,7 @@
 - Fix is limited to affected scope.
 - Regression risk is covered.
 - Tests or manual verification are reported.
+
+## Next Action
+
+If the bug is not reproduced, define a reproduction or failing check first. If fixed, ask the user to review the diff and regression evidence, then run code review. If review passes, prepare the change for release notes when user-visible behavior changed.

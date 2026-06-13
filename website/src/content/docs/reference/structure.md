@@ -92,7 +92,7 @@ These folders are optional and appear when native skill delivery is selected:
 
 ## Lite Setup
 
-Lite setup creates the base documentation structure without the full `.aios/` workflow kit. Use it only when a project already has its own workflow assets and you only need AI-ready docs.
+Lite setup creates the base documentation structure without the full `.aios/` workflow kit. It still writes `.aios/config.json` with `mode: "lite"` so agents can resolve docs root and project shape. Use it only when a project already has its own workflow assets and you only need AI-ready docs.
 
 ```bash
 aios init demo-docs --lite

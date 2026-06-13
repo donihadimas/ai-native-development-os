@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 export type TemplateValues = Record<string, string | number | undefined>;
 
@@ -133,13 +134,50 @@ export const AIOS_KIT_ENTRIES = [
 ];
 
 export const PORTABLE_SKILL_PATHS = CORE_SKILLS.map((skill) => `.aios/skills/${skill}/SKILL.md`);
+const AIOS_MANAGED_BEGIN = "<!-- AIOS:BEGIN -->";
+const AIOS_MANAGED_END = "<!-- AIOS:END -->";
+const AIOS_AGENT_FILES = new Set(["AGENTS.md", "CLAUDE.md"]);
+
+function relativePath(...parts: string[]): string {
+  return path.join(...parts).replace(/\\/g, "/");
+}
+
+function isAiosAgentInstructionFile(filePath: string): boolean {
+  return AIOS_AGENT_FILES.has(path.basename(filePath));
+}
+
+function extractAiosManagedSection(content: string): string {
+  const start = content.indexOf(AIOS_MANAGED_BEGIN);
+  const end = content.indexOf(AIOS_MANAGED_END);
+
+  if (start === -1 || end === -1 || end < start) {
+    return content.trim();
+  }
+
+  return content.slice(start, end + AIOS_MANAGED_END.length).trim();
+}
+
+function prependAiosManagedSection(source: string, target: string): boolean {
+  const targetContent = fs.readFileSync(target, "utf8");
+  if (targetContent.includes(AIOS_MANAGED_BEGIN)) {
+    return false;
+  }
+
+  const sourceContent = fs.readFileSync(source, "utf8");
+  const managedSection = extractAiosManagedSection(sourceContent);
+  const preservedContent = targetContent.trimStart();
+  const heading = path.basename(target) === "CLAUDE.md" ? "## Existing Claude Instructions" : "## Existing Agent Instructions";
+
+  fs.writeFileSync(target, `${managedSection}\n\n${heading}\n\n${preservedContent}`, "utf8");
+  return true;
+}
 
 export function getOsRoot(): string {
   return getRuntimePaths().root;
 }
 
 export function getRuntimePaths(): RuntimePaths {
-  const compiledSourceDir = path.dirname(new URL(import.meta.url).pathname);
+  const compiledSourceDir = path.dirname(fileURLToPath(import.meta.url));
   const packageRoot = path.resolve(compiledSourceDir, "../..");
   const packageAssetsRoot = path.join(packageRoot, "assets");
 
@@ -529,6 +567,10 @@ function copyMissingEntries(source: string, target: string, root: string, result
 
   if (sourceStat.isFile()) {
     if (fs.existsSync(target)) {
+      if (isAiosAgentInstructionFile(target) && prependAiosManagedSection(source, target)) {
+        result.created.push(`${relativeRootPath} (AIOS section prepended)`);
+        return;
+      }
       result.skipped.push(relativeRootPath);
       return;
     }
@@ -547,6 +589,10 @@ function copyMissingEntries(source: string, target: string, root: string, result
     const relativePath = path.relative(root, targetPath) || ".";
 
     if (fs.existsSync(targetPath)) {
+      if (entry.isFile() && isAiosAgentInstructionFile(targetPath) && prependAiosManagedSection(sourcePath, targetPath)) {
+        result.created.push(`${relativePath} (AIOS section prepended)`);
+        continue;
+      }
       result.skipped.push(relativePath);
       if (entry.isDirectory()) {
         copyMissingEntries(sourcePath, targetPath, root, result);
@@ -586,14 +632,15 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
     ...currentConfig,
     projectShape: options.projectShape ?? currentConfig.projectShape
   });
-  const docsRequired = REQUIRED_DOCS_PATHS.map((relativePath) => path.join(config.docsRoot, relativePath));
+  const effectiveLite = options.lite || config.mode === "lite";
+  const docsRequired = REQUIRED_DOCS_PATHS.map((item) => relativePath(config.docsRoot, item));
   const shapeRequired = PROJECT_SHAPE_PATHS[config.projectShape] ?? PROJECT_SHAPE_PATHS.fullstack;
   const kitRequired =
     config.skillDelivery === "native"
       ? REQUIRED_AIOS_KIT_PATHS
       : [...REQUIRED_AIOS_KIT_PATHS, ...PORTABLE_SKILL_PATHS];
   const nativeSkillRequired =
-    !options.lite && (config.skillDelivery === "native" || config.skillDelivery === "both") && config.agentScope === "repo"
+    !effectiveLite && (config.skillDelivery === "native" || config.skillDelivery === "both") && config.agentScope === "repo"
       ? config.selectedAgents.flatMap((agent) => {
           try {
             const root = agentSkillRoot(projectPath, agent, "repo", process.env.HOME ?? "");
@@ -603,7 +650,7 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
           }
         })
       : [];
-  const requiredPaths = options.lite
+  const requiredPaths = effectiveLite
     ? [...REQUIRED_PROJECT_PATHS, ...shapeRequired, ...docsRequired]
     : [...REQUIRED_PROJECT_PATHS, ...shapeRequired, ...docsRequired, ...kitRequired, ...nativeSkillRequired];
   const missing = requiredPaths.filter((relativePath) => {
@@ -612,7 +659,7 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
 
   const warnings = OPTIONAL_V2X_DOCS_PATHS.filter((relativePath) => {
     return !fs.existsSync(docsPath(projectPath, relativePath, config));
-  }).map((relativePath) => `Optional V2.x path not found: ${path.join(config.docsRoot, relativePath)}`);
+  }).map((item) => `Optional V2.x path not found: ${relativePath(config.docsRoot, item)}`);
 
   const apiDirectory = docsPath(projectPath, "api", config);
   const hasOpenApiContract =
@@ -620,7 +667,7 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
     fs.readdirSync(apiDirectory).some((file) => file.endsWith(".openapi.yaml") || file === "openapi.yaml");
 
   if (!hasOpenApiContract) {
-    warnings.push(`Optional V2.x OpenAPI contract not found in ${path.join(config.docsRoot, "api")}/`);
+    warnings.push(`Optional V2.x OpenAPI contract not found in ${relativePath(config.docsRoot, "api")}/`);
   }
 
   return {
