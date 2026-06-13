@@ -10,7 +10,7 @@ The active task should state objective, scope, acceptance criteria, affected mod
 
 ## Escalate Context Gradually
 
-Read PRD, architecture, ADRs, API docs, and code only when the task requires them.
+Read PRD, design docs, architecture, ADRs, API docs, and code only when the task requires them.
 
 ## Prefer Fresh Evidence
 

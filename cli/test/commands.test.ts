@@ -47,6 +47,7 @@ test("help explains the CLI purpose and available commands", () => {
   assert.match(output, /aios integration doctor \[project-path\]/);
   assert.match(output, /aios integration repair \[project-path\]/);
   assert.match(output, /aios config \[project-path\]/);
+  assert.match(output, /aios create design <name>/);
   assert.match(output, /aios create openapi <api-name>/);
   assert.match(output, /aios create migration <migration-name>/);
   assert.match(output, /aios create security <review-name>/);
@@ -75,6 +76,7 @@ test("init copies the project skeleton", () => {
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "development-start.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
+  assert.ok(fs.existsSync(path.join(project, "docs", "design", "design.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "reviews")));
 });
 
@@ -503,16 +505,18 @@ test("fullstack starter creates frontend and backend placeholders", () => {
   assert.match(validateOutput, /AI-ready structure validated/);
 });
 
-test("openapi, migration, security, and release create V2.x documents", () => {
+test("design, openapi, migration, security, and release create V2.x documents", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
+  run(["create", "design", "Habit UI"], { runtimePaths, cwd: project });
   run(["create", "openapi", "Habit API"], { runtimePaths, cwd: project });
   run(["create", "migration", "Create Habits Table"], { runtimePaths, cwd: project });
   run(["create", "security", "Habit API"], { runtimePaths, cwd: project });
   const releaseOutput = run(["create", "release", "0.3.0"], { runtimePaths, cwd: project });
 
+  assert.ok(fs.existsSync(path.join(project, "docs", "design", "habit-ui-design.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "api", "habit-api.openapi.yaml")));
   assert.ok(fs.existsSync(path.join(project, "docs", "database", "migrations", "MIGRATION-001-create-habits-table.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "security", "habit-api-security-review.md")));
@@ -550,7 +554,7 @@ test("validate follows lite config and requires kit only when not lite", () => {
   assert.match(liteOutput, /AI-ready structure validated/);
 });
 
-test("next reports vision, PRD, architecture, task creation, and task-ready states", () => {
+test("next reports vision, PRD, architecture, design/task creation, and task-ready states", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
@@ -564,7 +568,7 @@ test("next reports vision, PRD, architecture, task creation, and task-ready stat
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Generate `docs\/architecture\/architecture.md`/);
 
   fs.writeFileSync(path.join(project, "docs", "architecture", "architecture.md"), "# Architecture\n\nReal architecture.\n");
-  assert.match(run(["next"], { runtimePaths, cwd: project }), /Create the first implementation task/);
+  assert.match(run(["next"], { runtimePaths, cwd: project }), /create or update `docs\/design\/design.md` first/);
 
   run(["create", "task", "Implement habit API"], { runtimePaths, cwd: project });
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Open the active task/);

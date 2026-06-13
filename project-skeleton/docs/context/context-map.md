@@ -21,6 +21,7 @@ Before routing, read `.aios/config.json` if it exists:
 - Product intent: `<docsRoot>/product/vision.md` and `<docsRoot>/product/prd.md`.
 - Feature PRDs: `<docsRoot>/product/features/`.
 - System design: `<docsRoot>/architecture/architecture.md`.
+- UI/UX design: `<docsRoot>/design/design.md`.
 - Technical decisions: `<docsRoot>/adr/`.
 - Active work: `<docsRoot>/tasks/`.
 - Review evidence: `<docsRoot>/reviews/`.
@@ -32,11 +33,15 @@ Before routing, read `.aios/config.json` if it exists:
 
 ### New Feature
 
-Read the active task, relevant PRD section, related ADRs, API docs if app integration is involved, the new-feature workflow when available, and affected modules.
+Read the active task, relevant PRD section, design docs if the feature is user-facing, related ADRs, API docs if app integration is involved, the new-feature workflow when available, and affected modules.
 
 ### Bugfix
 
 Read the bugfix task, affected files, related tests, and related ADR only if the bug touches architecture or cross-cutting behavior.
+
+### UI/UX Design
+
+Read the relevant PRD or feature PRD, product vision if design intent is unclear, architecture/API notes when data dependencies matter, `<docsRoot>/design/design.md` if updating, and the UI/UX design workflow when available.
 
 ### Refactor
 

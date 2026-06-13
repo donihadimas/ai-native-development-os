@@ -17,22 +17,24 @@ If `.aios/config.json` is missing, treat the project as lite mode and use `docs`
 2. In full mode, ask Codex to use `.aios/prompts/01-generate-prd.md` to generate `<docsRoot>/product/prd.md`. In lite mode, ask Codex to use `AGENTS.md`, the context map, and the PRD workflow manually.
 3. Review the PRD yourself: scope, non-goals, acceptance criteria, open questions, and Mermaid product flow.
 4. After the PRD is accepted, ask Codex to use `.aios/prompts/02-generate-architecture.md` in full mode, or the architecture workflow manually in lite mode, to generate `<docsRoot>/architecture/architecture.md`.
-5. Review the architecture and create ADRs when technical decisions need a durable record.
-6. After architecture and ADRs are accepted, create implementation tasks in `<docsRoot>/tasks/`.
-7. Implement one task at a time.
-8. Review, test, and prepare release notes before marking work done.
+5. For user-facing UI, ask Codex to use `.aios/prompts/13-design-ui-ux.md` in full mode, or the UI/UX design workflow manually in lite mode, to generate `<docsRoot>/design/design.md`.
+6. Review the architecture and design, then create ADRs when technical decisions need a durable record.
+7. After architecture, design, and ADRs are accepted, create implementation tasks in `<docsRoot>/tasks/`.
+8. Implement one task at a time.
+9. Review, test, and prepare release notes before marking work done.
 
 ## Flow Checkpoints
 
 - Vision done: generate PRD next.
 - PRD done: user reviews and approves PRD, then generate architecture.
-- Architecture done: user reviews technical direction, then create ADRs for important decisions.
-- ADRs done: break work into small tasks.
+- Architecture done: user reviews technical direction, then create UI/UX design for user-facing work.
+- Design done: user reviews screens, states, accessibility, and data dependencies.
+- ADRs done: create design/API/migration plans when needed, then break work into small tasks.
 - Task ready: implement one task, then test and review.
 
 If native agent skills are installed, use the agent's skill system first. If portable mode is active in full mode, use `.aios/skill-router.md` to open the matching `.aios/skills/*/SKILL.md`. In lite mode, follow the same workflow sequence manually with the available project docs.
 
-Generator workflows may ask clarification questions before writing PRD, architecture, ADR, task, API, migration, security, test, or release documents. Answering those questions is part of the normal AIOS flow and helps avoid generic artifacts.
+Generator workflows may ask clarification questions before writing PRD, design, architecture, ADR, task, API, migration, security, test, or release documents. Answering those questions is part of the normal AIOS flow and helps avoid generic artifacts.
 
 ## Useful Commands
 
@@ -47,6 +49,7 @@ aios integration status
 aios integration add rtk . --dry-run
 aios integration add caveman . --mode lite
 aios create feature "Feature name"
+aios create design "Feature name"
 aios create adr "Decision name"
 aios create task "Task name"
 aios create review "Review name"

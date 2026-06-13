@@ -144,6 +144,9 @@ Document commands:
   aios create review <name>
     Create a review report stub in the configured docsRoot reviews folder.
 
+  aios create design <name>
+    Create a UI/UX design document stub in the configured docsRoot design folder.
+
   aios create openapi <api-name>
     Create an OpenAPI contract stub in the configured docsRoot api folder.
 
@@ -198,6 +201,7 @@ Typical workflow:
   aios next demo-project
   cd demo-project
   aios create feature "Habit reminders"
+  aios create design "Habit reminders"
   aios create openapi "Habit API"
   aios create migration "Create habits table"
   aios create security "Habit API"
@@ -1207,6 +1211,25 @@ function commandReview(ctx: CommandContext, name: string | undefined): string {
   return `Created review report at ${target}`;
 }
 
+function commandDesign(ctx: CommandContext, name: string | undefined): string {
+  const designName = requireName(name, "design");
+  const slug = slugify(designName);
+  const title = titleize(designName);
+  const target = docsPath(ctx.cwd, path.join("design", `${slug}-design.md`));
+
+  writeRenderedTemplate({
+    templatePath: path.join(ctx.runtimePaths.templates, "design.template.md"),
+    targetPath: target,
+    values: {
+      feature_or_product_name: title,
+      title,
+      slug
+    }
+  });
+
+  return `Created design document at ${target}`;
+}
+
 function commandOpenApi(ctx: CommandContext, name: string | undefined): string {
   const apiName = requireName(name, "openapi");
   const slug = slugify(apiName);
@@ -1292,6 +1315,8 @@ function commandCreate(ctx: CommandContext, type: string | undefined, name: stri
       return commandTask(ctx, name);
     case "review":
       return commandReview(ctx, name);
+    case "design":
+      return commandDesign(ctx, name);
     case "openapi":
       return commandOpenApi(ctx, name);
     case "migration":
@@ -1301,7 +1326,7 @@ function commandCreate(ctx: CommandContext, type: string | undefined, name: stri
     case "release":
       return commandRelease(ctx, name);
     default:
-      throw new Error("Missing artifact type. Usage: aios create <feature|adr|task|review|openapi|migration|security|release> <name>");
+      throw new Error("Missing artifact type. Usage: aios create <feature|adr|task|review|design|openapi|migration|security|release> <name>");
   }
 }
 
@@ -1353,6 +1378,7 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
   const visionRelative = relativeDisplayPath(config.docsRoot, "product", "vision.md");
   const prdRelative = relativeDisplayPath(config.docsRoot, "product", "prd.md");
   const architectureRelative = relativeDisplayPath(config.docsRoot, "architecture", "architecture.md");
+  const designRelative = relativeDisplayPath(config.docsRoot, "design", "design.md");
   const tasksRelative = relativeDisplayPath(config.docsRoot, "tasks");
   const visionPath = path.join(projectPath, visionRelative);
   const prdPath = path.join(projectPath, prdRelative);
@@ -1391,8 +1417,9 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
   if (!hasTaskFiles(projectPath)) {
     return [
       `Next recommended step for ${projectPath}:`,
-      `Create the first implementation task in \`${tasksRelative}/\`.`,
-      "Use `aios create task \"Task name\"` or ask Codex to use `.aios/prompts/04-generate-tasks.md`."
+      `If the work has user-facing UI or product-facing interactions, create or update \`${designRelative}\` first.`,
+      "Use `aios create design \"Feature name\"` or ask Codex to use `.aios/prompts/13-design-ui-ux.md`.",
+      `When the design is reviewed, create the first implementation task in \`${tasksRelative}/\` with \`aios create task "Task name"\` or \`.aios/prompts/04-generate-tasks.md\`.`
     ].join("\n");
   }
 

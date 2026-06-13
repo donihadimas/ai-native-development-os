@@ -157,6 +157,7 @@ test("validateProject can ignore local AIOS kit in lite mode", () => {
     "docs/context",
     "docs/product/features",
     "docs/architecture",
+    "docs/design",
     "docs/adr",
     "docs/tasks",
     "docs/reviews",
@@ -172,6 +173,7 @@ test("validateProject can ignore local AIOS kit in lite mode", () => {
   fs.writeFileSync(path.join(project, "docs", "product", "vision.md"), "");
   fs.writeFileSync(path.join(project, "docs", "product", "prd.md"), "");
   fs.writeFileSync(path.join(project, "docs", "architecture", "architecture.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "design", "design.md"), "");
 
   const result = validateProject(project, { lite: true });
 

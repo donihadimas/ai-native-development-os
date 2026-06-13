@@ -74,7 +74,7 @@ Hard rules:
 - Do not bury major trade-offs in prose; turn them into ADR candidates.
 - Do not design beyond the PRD's current scope.
 - Do not skip security and testing strategy.
-- Do not create implementation tasks before the user reviews the architecture and ADR candidates.
+- Do not create implementation tasks before the user reviews the architecture, ADR candidates, and any needed UI/API/data planning artifacts.
 
 ## Quality Checklist
 

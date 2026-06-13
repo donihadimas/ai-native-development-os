@@ -71,6 +71,7 @@ export const PLANNING_SKILLS = [
   "product-discovery",
   "prd-generator",
   "architecture-design",
+  "ui-ux-design",
   "adr-generator",
   "task-breakdown",
   "implementation-planner"
@@ -100,6 +101,7 @@ export const REQUIRED_DOCS_PATHS = [
   "product/vision.md",
   "product/prd.md",
   "product/features",
+  "design/design.md",
   "architecture/architecture.md",
   "adr",
   "tasks",

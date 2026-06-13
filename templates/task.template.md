@@ -29,6 +29,7 @@ Briefly explain why this task exists.
 ## Dependencies
 
 - Related PRD:
+- Related design:
 - Related ADR:
 - Related architecture section:
 - Blocking tasks:

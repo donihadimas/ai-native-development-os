@@ -72,6 +72,7 @@ Create planning and review documents:
 
 ```bash
 aios create feature "Habit reminders"
+aios create design "Habit reminders"
 aios create openapi "Habit API"
 aios create migration "Create habits table"
 aios create security "Habit API"
@@ -95,7 +96,7 @@ You can still use AIOS without the CLI:
 1. Copy `project-skeleton/` into a new project.
 2. Fill `docs/product/vision.md` with the product idea.
 3. Ask your agent to use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md`.
-4. Generate architecture, ADRs, tasks, and review docs before coding.
+4. Generate architecture, design notes for user-facing UI, ADRs, tasks, and review docs before coding.
 5. Implement one small task at a time.
 6. Save review evidence in `docs/reviews/` and run validation before marking the task done.
 

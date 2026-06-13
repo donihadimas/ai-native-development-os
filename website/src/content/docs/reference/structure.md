@@ -22,6 +22,8 @@ my-project/
 │   │   └── features/
 │   ├── architecture/
 │   │   └── architecture.md
+│   ├── design/
+│   │   └── design.md
 │   ├── adr/
 │   ├── tasks/
 │   ├── reviews/
@@ -60,7 +62,7 @@ This is the local workflow kit. It tells agents **how** to work.
 | `.aios/skills/` | Portable skill files when skill delivery is portable or both. |
 | `.aios/prompts/` | Thin prompts that route the agent to docs, skills, and templates. |
 | `.aios/references/` | Stable engineering principles and standards. |
-| `.aios/templates/` | Document templates for product, architecture, tasks, reviews, and releases. |
+| `.aios/templates/` | Document templates for product, design, architecture, tasks, reviews, and releases. |
 | `.aios/workflows/` | Multi-step development workflows. |
 
 ## The `docs` Directory
@@ -72,6 +74,7 @@ This is the project context. It tells agents **what** to build.
 | `docs/product/vision.md` | The raw product idea and high-level goal. |
 | `docs/product/prd.md` | Structured requirements, scope, non-goals, users, and acceptance criteria. |
 | `docs/product/features/` | Feature-level requirements. |
+| `docs/design/` | UI/UX design notes for user flows, screens, states, accessibility, and data dependencies. |
 | `docs/architecture/` | Architecture overview and component decisions. |
 | `docs/adr/` | Architecture Decision Records. |
 | `docs/tasks/` | Small implementation tasks for agents to execute one at a time. |

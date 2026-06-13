@@ -22,18 +22,21 @@
 5. Generate `<docsRoot>/architecture/architecture.md` using `architecture-design` only after PRD review.
 6. User reviews architecture and identifies decisions that need ADRs.
 7. Create initial ADRs for important decisions using `adr-generator`.
-8. Break the reviewed PRD and architecture into small tasks using `task-breakdown`.
-9. Initialize app code with the chosen stack outside the AIOS core when needed.
-10. Implement one task at a time using `implementation-planner` before coding.
-11. Add or update tests using `testing`.
-12. Review each change using `code-review`.
+8. Create or update `<docsRoot>/design/design.md` with `ui-ux-design` when the project has user-facing UI or product-facing interactions.
+9. User reviews design before frontend or product-facing implementation tasks are treated as ready.
+10. Break the reviewed PRD, architecture, ADRs, API contracts, and design into small tasks using `task-breakdown`.
+11. Initialize app code with the chosen stack outside the AIOS core when needed.
+12. Implement one task at a time using `implementation-planner` before coding.
+13. Add or update tests using `testing`.
+14. Review each change using `code-review`.
 
 ## Flow Checkpoints
 
 - After vision: generate PRD next.
 - After PRD: user reviews PRD, then generate architecture.
 - After architecture: user reviews technical direction, then create ADRs for important decisions.
-- After ADRs: generate small implementation tasks.
+- After ADRs: design UI/UX for user-facing work and create API contracts or migration plans when needed.
+- After design/API/migration planning: generate small implementation tasks.
 - After task generation: implement one task at a time.
 - After implementation: test and review before marking done.
 
@@ -42,6 +45,7 @@
 - Vision document.
 - PRD.
 - Architecture document.
+- Design document when user-facing UI is involved.
 - Initial ADRs.
 - Initial task list.
 - AI-ready project skeleton matching the selected project shape.
@@ -56,4 +60,4 @@
 
 ## Next Action
 
-If the PRD is not accepted yet, review and approve the PRD first. If PRD and architecture are accepted, create ADRs for important decisions, then generate small implementation tasks.
+If the PRD is not accepted yet, review and approve the PRD first. If PRD and architecture are accepted, create ADRs for important decisions, add design/API/migration planning when the project needs it, then generate small implementation tasks.

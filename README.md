@@ -46,7 +46,7 @@ Use this project when you want to:
 ## 📦 What Is Included
 
 - `skills/` - reusable operating procedures for AI agents.
-- `templates/` - document templates for PRD, architecture, ADR, task, review, testing, implementation plans, OpenAPI contracts, migration plans, security reviews, release notes, and changelog drafts.
+- `templates/` - document templates for PRD, design, architecture, ADR, task, review, testing, implementation plans, OpenAPI contracts, migration plans, security reviews, release notes, and changelog drafts.
 - `references/` - stable engineering principles and standards.
 - `workflows/` - end-to-end development flows.
 - `prompts/` - thin prompt wrappers that route agents to the right artifacts.
@@ -111,6 +111,7 @@ Create planning and review documents:
 
 ```bash
 aios create feature "Habit reminders"
+aios create design "Habit reminders"
 aios create openapi "Habit API"
 aios create migration "Create habits table"
 aios create security "Habit API"
@@ -128,7 +129,7 @@ Use the manual flow when you want full control and do not need the CLI.
 2. Open the new project with Codex or another coding agent.
 3. Fill `docs/product/vision.md` with the product idea.
 4. Use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md` to create `docs/product/prd.md`.
-5. Generate architecture, ADRs, and task breakdowns before coding.
+5. Generate architecture, design notes for user-facing UI, ADRs, and task breakdowns before coding.
 6. Implement one small task at a time.
 7. Save review evidence in `docs/reviews/`, run tests, and summarize before marking work done.
 
@@ -197,6 +198,7 @@ Review the diff against the active task acceptance criteria. Findings first, the
 - `aios create adr <name>`: Creates the next numbered ADR.
 - `aios create task <name>`: Creates the next numbered implementation task.
 - `aios create review <name>`: Creates a review report stub.
+- `aios create design <name>`: Creates a UI/UX design document stub.
 - `aios create openapi <name>`: Creates an OpenAPI contract stub.
 - `aios create migration <name>`: Creates the next numbered database migration plan.
 - `aios create security <name>`: Creates a security review report stub.
@@ -218,6 +220,8 @@ A project created with `aios init` looks like this:
 │   │   └── 📁 features/
 │   ├── 📁 architecture/
 │   │   └── 📄 architecture.md
+│   ├── 📁 design/
+│   │   └── 📄 design.md
 │   ├── 📁 adr/
 │   ├── 📁 tasks/
 │   ├── 📁 reviews/

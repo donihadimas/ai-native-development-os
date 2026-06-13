@@ -86,7 +86,7 @@ Covered by CLI tests and manual workflow definition:
 - `aios validate`
 - generated `.aios/commands/*` route through `.aios/skill-router.md`
 - generated context maps use the configured `docsRoot`
-- generator prompts apply Clarification Gates before final PRD, architecture, ADR, task, API, migration, security, test, and release documents
+- generator prompts apply Clarification Gates before final PRD, design, architecture, ADR, task, API, migration, security, test, and release documents
 
 ## Result
 

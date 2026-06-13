@@ -84,6 +84,7 @@ Create the first planning artifacts:
 
 ```bash
 aios create feature "Habit reminders"
+aios create design "Habit reminders"
 aios create openapi "Habit API"
 aios create migration "Create habits table"
 aios create security "Habit API"
@@ -134,6 +135,7 @@ aios validate
 For V2.x workflow docs, add only the pieces the project needs:
 
 ```text
+aios create design <feature-name>
 aios create openapi <api-name>
 aios create migration <migration-name>
 aios create security <review-name>
@@ -196,6 +198,7 @@ It checks for:
 - `docs/product/prd.md`
 - `docs/product/features/`
 - `docs/architecture/architecture.md`
+- `docs/design/design.md`
 - `docs/adr/`
 - `docs/tasks/`
 - `docs/reviews/`
@@ -455,7 +458,7 @@ aios next
 aios next my-saas
 ```
 
-It checks whether vision, PRD, architecture, and tasks are ready, then points the user to the next local prompt or command.
+It checks whether vision, PRD, architecture, design/task readiness, and tasks are ready, then points the user to the next local prompt or command.
 
 ### `aios create feature <feature-name>`
 
@@ -515,6 +518,20 @@ Output:
 
 ```text
 docs/reviews/login-endpoint-review.md
+```
+
+### `aios create design <name>`
+
+Creates a UI/UX design document stub.
+
+```bash
+aios create design "Login flow"
+```
+
+Output:
+
+```text
+docs/design/login-flow-design.md
 ```
 
 ### `aios create openapi <api-name>`
@@ -592,6 +609,8 @@ my-project/
 │   │   └── features/
 │   ├── architecture/
 │   │   └── architecture.md
+│   ├── design/
+│   │   └── design.md
 │   ├── adr/
 │   ├── tasks/
 │   ├── reviews/

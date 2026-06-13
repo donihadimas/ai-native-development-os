@@ -10,4 +10,4 @@ V1 prompts cover PRD, architecture, ADRs, tasks, implementation planning, implem
 
 V2 adds `09-design-api-contract.md` for OpenAPI-first app integration planning.
 
-V2.x adds prompts for database migration planning, security review, and release preparation.
+V2.x adds prompts for UI/UX design, database migration planning, security review, and release preparation.

@@ -11,4 +11,4 @@ Every workflow should end with a clear next recommended action.
 
 V2 adds API contract workflow so frontend and backend tasks can share an explicit contract before implementation.
 
-V2.x adds database migration and security review workflows, and expands release workflow for release notes, changelog drafts, rollback notes, and post-release checks.
+V2.x adds UI/UX design, database migration, and security review workflows, and expands release workflow for release notes, changelog drafts, rollback notes, and post-release checks.

@@ -57,12 +57,25 @@ Step-by-step process:
 
 1. Map acceptance criteria to observable behavior.
 2. Inspect existing tests and test conventions.
-3. Choose the smallest test level that proves each behavior.
+3. Choose the smallest test level that proves each behavior using the Test Level Decision Guide.
 4. Include happy path, error path, and edge cases when relevant.
 5. Add regression tests for bugfixes.
 6. Avoid assertions tied only to implementation details.
 7. Record commands run and gaps.
 8. Use `templates/test-plan.template.md` when writing a persistent plan.
+
+## Test Level Decision Guide
+
+Use the lowest level that proves the behavior with confidence:
+
+- Unit tests: pure logic, small domain rules, formatting, validation helpers, deterministic branching, and error mapping that can be isolated without crossing process or network boundaries.
+- Integration tests: behavior across modules, API handlers with services, database persistence, queues/jobs, auth boundaries, framework adapters, or any code where wiring can break correctness.
+- Contract tests: frontend/backend or provider/consumer compatibility, request/response schemas, error semantics, auth expectations, and backward compatibility for public or shared interfaces.
+- End-to-end tests: critical user journeys where confidence depends on multiple real layers working together, such as signup, checkout, onboarding, or role-sensitive workflows.
+- Regression tests: any reproduced bug, risky refactor, security fix, or previously broken behavior that should not return.
+- Manual checks: visual polish, exploratory UX, third-party systems, one-off operational checks, or flows where automation is not practical yet. Record why manual validation is enough for now.
+
+Prefer a small mix over a large brittle suite. Do not duplicate every unit test at integration or end-to-end level unless risk justifies it.
 
 ## Rules
 
@@ -73,6 +86,8 @@ Hard rules:
 - Do not claim unrun tests passed.
 - Do not ignore error paths for risky behavior.
 - Do not treat coverage percentage as proof of correctness.
+- Do not choose end-to-end tests when a unit, integration, or contract test proves the same behavior with less brittleness.
+- Do not rely on manual checks for repeated critical behavior without explaining why automation is deferred.
 
 ## Quality Checklist
 
@@ -83,6 +98,7 @@ Before finishing, verify:
 - [ ] Error path is covered when relevant.
 - [ ] Edge cases are considered.
 - [ ] Regression risk is addressed.
+- [ ] Test levels are justified.
 - [ ] Test commands and gaps are reported.
 
 ## Failure Modes

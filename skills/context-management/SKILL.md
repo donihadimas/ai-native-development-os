@@ -17,7 +17,7 @@ Use this skill when:
 - planning implementation,
 - reviewing a diff,
 - investigating a bug,
-- deciding whether PRD, architecture, ADR, API, or code context is needed.
+- deciding whether PRD, design, architecture, ADR, API, or code context is needed.
 
 ## Inputs
 
@@ -44,10 +44,11 @@ Step-by-step process:
 2. Read the active task first when one exists.
 3. Use `docs/context/context-map.md` to choose supporting docs.
 4. Read PRD only when user value or acceptance criteria are unclear.
-5. Read architecture or ADRs only when the task touches design decisions or cross-cutting behavior.
-6. Read API docs when frontend/backend integration is involved.
-7. Search affected code before proposing new abstractions.
-8. Stop reading once the plan can be made safely.
+5. Read design docs when the task changes user-facing flows, screens, states, or accessibility.
+6. Read architecture or ADRs only when the task touches design decisions or cross-cutting behavior.
+7. Read API docs when frontend/backend integration is involved.
+8. Search affected code before proposing new abstractions.
+9. Stop reading once the plan can be made safely.
 
 ## Rules
 

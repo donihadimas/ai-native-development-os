@@ -78,6 +78,7 @@ Project shapes:
 - `aios create adr <name>`: Creates the next numbered ADR.
 - `aios create task <name>`: Creates the next numbered implementation task.
 - `aios create review <name>`: Creates a review report stub.
+- `aios create design <name>`: Creates a UI/UX design document stub.
 - `aios create openapi <name>`: Creates an OpenAPI contract stub.
 - `aios create migration <name>`: Creates the next numbered database migration plan.
 - `aios create security <name>`: Creates a security review report stub.

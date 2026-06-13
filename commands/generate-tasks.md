@@ -7,6 +7,7 @@ Read:
 - `AGENTS.md`
 - `<docsRoot>/context/context-map.md`
 - relevant PRD or feature PRD
+- design notes in `<docsRoot>/design/` when UI or product-facing interaction is involved
 - related ADRs if mentioned
 - `.aios/templates/task.template.md` when available
 

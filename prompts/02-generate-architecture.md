@@ -14,4 +14,4 @@ Before generating the final architecture, apply the `architecture-design` Clarif
 
 List ADR candidates instead of hiding major decisions in the architecture doc.
 
-End with a review checklist and a clear next step: the user should review architecture and ADR candidates, create ADRs for important decisions, then generate tasks with `.aios/prompts/04-generate-tasks.md` when available or the task-breakdown workflow in lite mode.
+End with a review checklist and a clear next step: the user should review architecture and ADR candidates, create ADRs for important decisions, then create UI/UX design notes for user-facing work or API contracts for app integrations before generating tasks with `.aios/prompts/04-generate-tasks.md` when available or the task-breakdown workflow in lite mode.

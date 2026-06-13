@@ -30,7 +30,7 @@ In lite mode:
 - Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, and the active task or product document as the primary context.
 - Use the repository-level AIOS prompts, skills, templates, references, and workflows only if they are available to the agent.
 - If the workflow kit is not available, follow the same sequence manually:
-  vision -> PRD -> PRD review -> architecture -> ADRs -> tasks -> one task -> tests -> review -> release notes.
+  vision -> PRD -> PRD review -> architecture -> ADRs -> design/API planning when needed -> tasks -> one task -> tests -> review -> release notes.
 - Do not assume `.aios/skill-router.md`, `.aios/templates/`, or `.aios/references/` exist.
 - Keep outputs smaller than full mode, but preserve acceptance criteria, risks, tests, and next step guidance.
 

@@ -16,6 +16,7 @@ AIOS includes skills for the common development lifecycle:
 | `product-discovery` | Clarifying a raw product idea before writing formal requirements. |
 | `prd-generator` | Turning product context into a structured PRD with testable acceptance criteria. |
 | `architecture-design` | Producing architecture context and technical direction. |
+| `ui-ux-design` | Designing user flows, screens, interface states, and accessibility before frontend work. |
 | `adr-generator` | Recording one architecture decision, trade-off, and consequence. |
 | `task-breakdown` | Splitting large work into small implementation tasks. |
 | `implementation-planner` | Creating a short implementation plan before code changes. |

@@ -40,7 +40,7 @@ Open your AI coding agent in the IDE and route it to the PRD skill:
 
 Review the PRD manually. Make sure the target users, scope, non-goals, and acceptance criteria match what you actually want to build.
 
-## 4. Record Architecture Decisions
+## 4. Record Architecture And Interface Decisions
 
 Create architecture and ADR documents before implementation:
 
@@ -50,6 +50,21 @@ aios create adr "Use Next.js and Supabase"
 
 Instruct your AI:
 > "Fill out the new ADR in `docs/adr/` explaining why this stack fits the PRD. Include trade-offs, alternatives, and consequences."
+
+For user-facing UI, create a design document before frontend tasks:
+
+```bash
+aios create design "Habit reminders"
+```
+
+Instruct your AI:
+> "Use the `ui-ux-design` skill to fill the design document. Cover user flow, screens, interface states, accessibility, data dependencies, and frontend task guidance. Do not implement code yet."
+
+For app integrations, create the API contract before backend or client integration tasks:
+
+```bash
+aios create openapi "Habit API"
+```
 
 ## 5. Break Work Into Tasks
 
@@ -62,6 +77,8 @@ aios create task "Build Login UI"
 ```
 
 Each task should include scope, acceptance criteria, context links, risks, and validation steps.
+
+If the task is UI-facing, link the relevant design document. If it depends on backend integration, link the OpenAPI contract or API notes.
 
 ## 6. Implement One Task At A Time
 

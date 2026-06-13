@@ -8,4 +8,4 @@ V1 skills cover context management, product discovery, PRD generation, architect
 
 V2 adds focused extensions for API contract design and generic backend API development.
 
-V2.x adds database migration planning, security review, and release management skills.
+V2.x adds UI/UX design, database migration planning, security review, and release management skills.

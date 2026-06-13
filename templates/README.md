@@ -4,4 +4,4 @@ Templates define reusable document shapes for product and engineering artifacts.
 
 V2 adds `openapi.template.yaml` as a starter API contract for app integration work.
 
-V2.x adds migration plan, security review report, release note, and changelog templates.
+V2.x adds UI/UX design, migration plan, security review report, release note, and changelog templates.
