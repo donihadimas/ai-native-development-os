@@ -13,19 +13,21 @@ If `.aios/config.json` is missing, treat the project as lite mode and use `docs`
 
 ## First Steps
 
-1. Fill `<docsRoot>/product/vision.md` with the problem, target users, MVP scope, and success metrics.
-2. In full mode, ask Codex to use `.aios/prompts/01-generate-prd.md` to generate `<docsRoot>/product/prd.md`. In lite mode, ask Codex to use `AGENTS.md`, the context map, and the PRD workflow manually.
-3. Review the PRD yourself: scope, non-goals, acceptance criteria, open questions, and Mermaid product flow.
-4. After the PRD is accepted, ask Codex to use `.aios/prompts/02-generate-architecture.md` in full mode, or the architecture workflow manually in lite mode, to generate `<docsRoot>/architecture/architecture.md`.
-5. For user-facing UI, ask Codex to use `.aios/prompts/13-design-ui-ux.md` in full mode, or the UI/UX design workflow manually in lite mode, to generate `<docsRoot>/design/design.md`.
-6. Review the architecture and design, then create ADRs when technical decisions need a durable record.
-7. After architecture, design, and ADRs are accepted, create implementation tasks in `<docsRoot>/tasks/`.
-8. Implement one task at a time.
-9. Review, test, and prepare release notes before marking work done.
+1. Start with product discovery. In full mode, ask Codex to use `.aios/prompts/00-discover-product.md` to interview you and fill `<docsRoot>/product/vision.md`. In lite mode, ask Codex to use `AGENTS.md`, this context guide, and the product discovery workflow manually.
+2. Review the vision yourself: problem, target users, MVP scope, non-goals, success metrics, assumptions, constraints, and open questions.
+3. In full mode, ask Codex to use `.aios/prompts/01-generate-prd.md` to generate `<docsRoot>/product/prd.md`. In lite mode, ask Codex to use `AGENTS.md`, the context map, and the PRD workflow manually.
+4. Review the PRD yourself: scope, non-goals, acceptance criteria, open questions, and Mermaid product flow.
+5. After the PRD is accepted, ask Codex to use `.aios/prompts/02-generate-architecture.md` in full mode, or the architecture workflow manually in lite mode, to generate `<docsRoot>/architecture/architecture.md`.
+6. For user-facing UI, ask Codex to use `.aios/prompts/13-design-ui-ux.md` in full mode, or the UI/UX design workflow manually in lite mode, to generate `<docsRoot>/design/design.md`.
+7. Review the architecture and design, then create ADRs when technical decisions need a durable record.
+8. After architecture, design, and ADRs are accepted, create implementation tasks in `<docsRoot>/tasks/`.
+9. Implement one task at a time.
+10. Review, test, and prepare release notes before marking work done.
 
 ## Flow Checkpoints
 
-- Vision done: generate PRD next.
+- Raw idea: interview user with product discovery, then fill vision.
+- Vision done: user reviews vision, then generate PRD next.
 - PRD done: user reviews and approves PRD, then generate architecture.
 - Architecture done: user reviews technical direction, then create UI/UX design for user-facing work.
 - Design done: user reviews screens, states, accessibility, and data dependencies.
@@ -42,6 +44,7 @@ Generator workflows may ask clarification questions before writing PRD, design, 
 aios next
 aios config
 aios prompt list
+aios prompt show discover-product
 aios prompt show generate-prd
 aios agent list
 aios agent install . --agents codex --skills core
@@ -64,8 +67,9 @@ aios create release "Release name"
 ```text
 Read AGENTS.md and .aios/config.json.
 Resolve docsRoot, then read <docsRoot>/context/context-map.md and <docsRoot>/product/vision.md.
-If full mode is active, read .aios/skill-router.md and use .aios/commands/generate-prd.md to generate <docsRoot>/product/prd.md.
-If lite mode is active, follow the PRD workflow manually using the available project docs and do not assume .aios workflow files exist.
+If the vision is still placeholder or thin, use .aios/commands/discover-product.md to interview me and fill <docsRoot>/product/vision.md.
+If the vision is accepted and full mode is active, read .aios/skill-router.md and use .aios/commands/generate-prd.md to generate <docsRoot>/product/prd.md.
+If lite mode is active, follow the product discovery or PRD workflow manually using the available project docs and do not assume .aios workflow files exist.
 If integrations are enabled, use RTK only for noisy command output and Caveman-style brevity only for operational updates.
 If the PRD inputs are incomplete, ask me focused clarification questions before writing the final file.
 After generating the PRD, tell me exactly what I should review and what the next step is if I approve it.
@@ -77,6 +81,7 @@ Use these when `.aios/` is not installed:
 
 ```text
 Read AGENTS.md, docs/context/context-map.md, and docs/product/vision.md.
+If docs/product/vision.md is still thin, interview me with product discovery questions and fill it first.
 Generate docs/product/prd.md using the AIOS PRD structure if available.
 Include acceptance criteria, risks, open questions, a Mermaid product flow, a review checklist, and the next step after my approval.
 ```

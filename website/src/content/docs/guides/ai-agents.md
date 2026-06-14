@@ -29,25 +29,31 @@ Avoid saying "build the whole feature" without a task file. That gives the agent
 
 ## Prompting Examples For Codex
 
-### 1. Generating a Feature
+### 1. Discovering Product Vision
+
+When the project is new and the idea is still rough:
+
+> **Prompt:** "Read `AGENTS.md` and `.aios/prompts/00-discover-product.md`. Interview me with a few focused questions, then fill `docs/product/vision.md`. Do not generate the PRD until I review the vision."
+
+### 2. Generating a Feature
 
 Assuming you ran `aios create feature "Habit Reminders"`:
 
 > **Prompt:** "Read `AGENTS.md` and the PRD. Then read the feature stub in `docs/product/features/`. Please expand it using the feature template in `.aios/templates/`."
 
-### 2. Executing a Specific Skill
+### 3. Executing a Specific Skill
 
 If you want to run a code review using the built-in skill:
 
 > **Prompt:** "Please read the skill instructions at `.aios/skills/code-review/SKILL.md`. Execute this skill on the recent changes I made to `src/components/Button.tsx` and output the review in `docs/reviews/`."
 
-### 3. Implementing a Task
+### 4. Implementing a Task
 
 Assuming you ran `aios create task "Implement Login API"`:
 
 > **Prompt:** "Read `docs/tasks/003-implement-login-api.md`. Create a short implementation plan first. Then implement the code exactly as described. Do not modify unrelated files."
 
-### 4. Asking For Validation
+### 5. Asking For Validation
 
 After the agent makes changes:
 

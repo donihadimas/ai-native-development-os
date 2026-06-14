@@ -11,7 +11,7 @@ Goal: Confirm the project skeleton and V1 artifacts can support an end-to-end AI
 ## Steps
 
 1. Copy `project-skeleton/` into a temporary project.
-2. Fill `docs/product/vision.md` using `skills/product-discovery` and `templates/vision.template.md`.
+2. Interview the user and fill `docs/product/vision.md` using `skills/product-discovery` and `templates/vision.template.md`.
 3. Generate `docs/product/prd.md` using `skills/prd-generator` and `templates/prd.template.md`.
 4. Generate `docs/architecture/architecture.md` using `skills/architecture-design` and `templates/architecture.template.md`.
 5. Generate `docs/design/design.md` for user-facing UI using `skills/ui-ux-design` and `templates/design.template.md`.

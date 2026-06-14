@@ -9,7 +9,7 @@ Templates give every project the same documentation shape. They make agent outpu
 
 | Template | Output |
 | --- | --- |
-| `vision.template.md` | A starting point for raw product context. |
+| `vision.template.md` | Product vision captured from product discovery before PRD generation. |
 | `prd.template.md` | Product requirements, scope, non-goals, users, and acceptance criteria. |
 | `design.template.md` | UI/UX design for user flows, screens, interface states, and accessibility. |
 | `architecture.template.md` | Architecture overview, constraints, components, and risks. |

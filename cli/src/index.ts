@@ -201,6 +201,7 @@ Typical workflow:
   aios next demo-project
   cd demo-project
   aios create feature "Habit reminders"
+  aios prompt show discover-product
   aios create design "Habit reminders"
   aios create openapi "Habit API"
   aios create migration "Create habits table"
@@ -1393,8 +1394,9 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
   ) {
     return [
       `Next recommended step for ${projectPath}:`,
-      `Fill \`${visionRelative}\` with the product problem, users, MVP scope, and success metrics.`,
-      "Then ask Codex to read `AGENTS.md` and `.aios/prompts/01-generate-prd.md`."
+      `Use product discovery to interview the user and fill \`${visionRelative}\` with the problem, users, MVP scope, success metrics, assumptions, and constraints.`,
+      "Ask Codex to read `AGENTS.md` and `.aios/prompts/00-discover-product.md`.",
+      "After the user reviews the vision, generate the PRD with `.aios/prompts/01-generate-prd.md`."
     ].join("\n");
   }
 

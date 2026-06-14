@@ -6,7 +6,7 @@ When copied into a generated project, prompts should resolve `.aios/config.json`
 
 Generator prompts should apply the matched skill's Clarification Gate before writing final files. If the user's input is too vague for an accurate artifact, the agent should ask focused questions first.
 
-V1 prompts cover PRD, architecture, ADRs, tasks, implementation planning, implementation, review, and tests.
+V1 prompts cover product discovery, PRD, architecture, ADRs, tasks, implementation planning, implementation, review, and tests.
 
 V2 adds `09-design-api-contract.md` for OpenAPI-first app integration planning.
 

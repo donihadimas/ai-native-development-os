@@ -146,6 +146,7 @@ test("validateProject reports missing AI-ready paths", () => {
   assert.ok(result.missing.includes("docs/product/features"));
   assert.ok(result.missing.includes("docs/reviews"));
   assert.ok(result.missing.includes(".aios/skill-router.md"));
+  assert.ok(result.missing.includes(".aios/commands/discover-product.md"));
   assert.ok(result.missing.includes(".aios/commands/generate-prd.md"));
   assert.ok(result.missing.includes(".aios/skills/context-management/SKILL.md"));
   assert.ok(result.warnings.includes("Optional V2.x path not found: docs/security"));

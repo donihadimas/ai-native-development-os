@@ -71,7 +71,7 @@ This is the project context. It tells agents **what** to build.
 
 | Path | Purpose |
 | --- | --- |
-| `docs/product/vision.md` | The raw product idea and high-level goal. |
+| `docs/product/vision.md` | Product discovery output: problem, users, MVP scope, metrics, assumptions, constraints, and open questions. |
 | `docs/product/prd.md` | Structured requirements, scope, non-goals, users, and acceptance criteria. |
 | `docs/product/features/` | Feature-level requirements. |
 | `docs/design/` | UI/UX design notes for user flows, screens, states, accessibility, and data dependencies. |

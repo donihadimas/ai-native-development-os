@@ -114,9 +114,11 @@ export const OPTIONAL_V2X_DOCS_PATHS = ["security", "releases", "database/migrat
 export const REQUIRED_AIOS_KIT_PATHS = [
   ".aios/skill-router.md",
   ".aios/config.json",
+  ".aios/commands/discover-product.md",
   ".aios/commands/generate-prd.md",
   ".aios/commands/implement-task.md",
   ".aios/commands/review-code.md",
+  ".aios/prompts/00-discover-product.md",
   ".aios/prompts/01-generate-prd.md",
   ".aios/references/context-principles.md",
   ".aios/templates/task.template.md",

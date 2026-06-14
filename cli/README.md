@@ -115,7 +115,7 @@ aios init <project-name>
 ↓
 aios next <project-name>
 ↓
-Fill docs/product/vision.md
+Use product-discovery to interview user and fill docs/product/vision.md
 ↓
 Use Codex with the prompts from .aios/prompts/
 ↓
@@ -433,6 +433,7 @@ Output:
 
 ```text
 Available AIOS commands:
+- discover-product
 - generate-prd
 - implement-task
 - review-code
@@ -643,7 +644,7 @@ The CLI prepares files. Codex should still follow the AI Dev OS workflow.
 For PRD generation:
 
 ```text
-Read AGENTS.md, docs/product/vision.md, and .aios/prompts/01-generate-prd.md. Generate docs/product/prd.md using .aios/templates/prd.template.md and keep acceptance criteria testable.
+If docs/product/vision.md is still thin, read AGENTS.md and .aios/prompts/00-discover-product.md, interview me, and fill the vision first. Then read .aios/prompts/01-generate-prd.md and generate docs/product/prd.md using .aios/templates/prd.template.md.
 ```
 
 For task implementation:

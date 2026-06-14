@@ -26,17 +26,23 @@ aios validate
 
 ## 2. Define The Product Vision
 
-Open `docs/product/vision.md`. Write down your app idea in plain text. It doesn't have to be formal.
+Open your AI coding agent and route it to product discovery. The agent should interview you and fill `docs/product/vision.md`.
 
 Example:
 
 > "I want to build a habit tracker where users can log in, add habits, check them off daily, and see a streak counter. Use React and Tailwind."
 
+Prompt:
+
+> "Please use the `product-discovery` skill. Interview me if needed, then fill `docs/product/vision.md` with the problem, users, MVP scope, non-goals, success metrics, assumptions, constraints, and open questions."
+
+Review the vision before generating the PRD. Make sure the MVP is small enough and the target user is clear.
+
 ## 3. Generate Or Refine The PRD
 
 Open your AI coding agent in the IDE and route it to the PRD skill:
 
-> "Please read `docs/product/vision.md` and run the `prd-generator` skill to create `docs/product/prd.md`."
+> "Please read `docs/product/vision.md` and run the `prd-generator` skill to create `docs/product/prd.md`. Ask clarification questions first if the vision is still too thin."
 
 Review the PRD manually. Make sure the target users, scope, non-goals, and acceptance criteria match what you actually want to build.
 

@@ -13,7 +13,7 @@ AIOS includes skills for the common development lifecycle:
 
 | Skill | Use It For |
 | --- | --- |
-| `product-discovery` | Clarifying a raw product idea before writing formal requirements. |
+| `product-discovery` | Interviewing the user and clarifying a raw product idea before writing formal requirements. |
 | `prd-generator` | Turning product context into a structured PRD with testable acceptance criteria. |
 | `architecture-design` | Producing architecture context and technical direction. |
 | `ui-ux-design` | Designing user flows, screens, interface states, and accessibility before frontend work. |

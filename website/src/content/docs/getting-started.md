@@ -94,8 +94,8 @@ aios validate demo-saas
 You can still use AIOS without the CLI:
 
 1. Copy `project-skeleton/` into a new project.
-2. Fill `docs/product/vision.md` with the product idea.
-3. Ask your agent to use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md`.
+2. Ask your agent to use `prompts/00-discover-product.md` and `skills/product-discovery/SKILL.md` to interview you and fill `docs/product/vision.md`.
+3. Review the vision, then ask your agent to use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md`.
 4. Generate architecture, design notes for user-facing UI, ADRs, tasks, and review docs before coding.
 5. Implement one small task at a time.
 6. Save review evidence in `docs/reviews/` and run validation before marking the task done.

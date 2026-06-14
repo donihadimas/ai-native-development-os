@@ -16,23 +16,25 @@
 ## Process
 
 1. Resolve `.aios/config.json`; use `docsRoot`, `projectShape`, selected agents, and skill delivery mode.
-2. Create or fill `<docsRoot>/product/vision.md` using `product-discovery` through `.aios/skill-router.md` when available, or the same product discovery questions manually in lite mode.
-3. Generate `<docsRoot>/product/prd.md` using `prd-generator`, including a product-level Mermaid flow chart.
-4. User reviews the PRD scope, non-goals, acceptance criteria, open questions, and Mermaid flow.
-5. Generate `<docsRoot>/architecture/architecture.md` using `architecture-design` only after PRD review.
-6. User reviews architecture and identifies decisions that need ADRs.
-7. Create initial ADRs for important decisions using `adr-generator`.
-8. Create or update `<docsRoot>/design/design.md` with `ui-ux-design` when the project has user-facing UI or product-facing interactions.
-9. User reviews design before frontend or product-facing implementation tasks are treated as ready.
-10. Break the reviewed PRD, architecture, ADRs, API contracts, and design into small tasks using `task-breakdown`.
-11. Initialize app code with the chosen stack outside the AIOS core when needed.
-12. Implement one task at a time using `implementation-planner` before coding.
-13. Add or update tests using `testing`.
-14. Review each change using `code-review`.
+2. Interview the user with `product-discovery` when the idea is rough, then create or fill `<docsRoot>/product/vision.md` using `.aios/prompts/00-discover-product.md` when available, or the same product discovery questions manually in lite mode.
+3. User reviews the vision problem, target users, MVP scope, non-goals, success metrics, assumptions, constraints, and open questions.
+4. Generate `<docsRoot>/product/prd.md` using `prd-generator`, including a product-level Mermaid flow chart.
+5. User reviews the PRD scope, non-goals, acceptance criteria, open questions, and Mermaid flow.
+6. Generate `<docsRoot>/architecture/architecture.md` using `architecture-design` only after PRD review.
+7. User reviews architecture and identifies decisions that need ADRs.
+8. Create initial ADRs for important decisions using `adr-generator`.
+9. Create or update `<docsRoot>/design/design.md` with `ui-ux-design` when the project has user-facing UI or product-facing interactions.
+10. User reviews design before frontend or product-facing implementation tasks are treated as ready.
+11. Break the reviewed PRD, architecture, ADRs, API contracts, and design into small tasks using `task-breakdown`.
+12. Initialize app code with the chosen stack outside the AIOS core when needed.
+13. Implement one task at a time using `implementation-planner` before coding.
+14. Add or update tests using `testing`.
+15. Review each change using `code-review`.
 
 ## Flow Checkpoints
 
-- After vision: generate PRD next.
+- After raw idea: interview user and fill vision.
+- After vision: user reviews vision, then generate PRD next.
 - After PRD: user reviews PRD, then generate architecture.
 - After architecture: user reviews technical direction, then create ADRs for important decisions.
 - After ADRs: design UI/UX for user-facing work and create API contracts or migration plans when needed.

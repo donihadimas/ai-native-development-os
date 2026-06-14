@@ -70,8 +70,10 @@ test("init copies the project skeleton", () => {
   assert.match(output, /Created AI-ready project/);
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skill-router.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "generate-prd.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "prompts", "00-discover-product.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "prompts", "01-generate-prd.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "development-start.md")));
@@ -265,6 +267,7 @@ test("prompt list and prompt show expose local workflow command prompts", () => 
   const project = path.join(cwd, "demo-project");
 
   const listOutput = run(["prompt", "list"], { runtimePaths, cwd: project });
+  assert.match(listOutput, /discover-product/);
   assert.match(listOutput, /generate-prd/);
   assert.match(listOutput, /implement-task/);
   assert.match(listOutput, /review-code/);
@@ -273,6 +276,10 @@ test("prompt list and prompt show expose local workflow command prompts", () => 
   assert.match(commandOutput, /Command: Generate PRD/);
   assert.match(commandOutput, /\.aios\/skill-router\.md/);
   assert.match(commandOutput, /prd-generator/);
+
+  const discoveryOutput = run(["prompt", "show", "discover-product"], { runtimePaths, cwd: project });
+  assert.match(discoveryOutput, /Command: Discover Product Vision/);
+  assert.match(discoveryOutput, /product-discovery/);
 });
 
 test("integration list and status expose optional external integrations", () => {
@@ -559,7 +566,7 @@ test("next reports vision, PRD, architecture, design/task creation, and task-rea
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
-  assert.match(run(["next"], { runtimePaths, cwd: project }), /Fill `docs\/product\/vision.md`/);
+  assert.match(run(["next"], { runtimePaths, cwd: project }), /Use product discovery to interview the user/);
 
   fs.writeFileSync(path.join(project, "docs", "product", "vision.md"), "# Product Vision\n\nReal product vision.\n");
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Generate `docs\/product\/prd.md`/);

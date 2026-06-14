@@ -127,8 +127,8 @@ Use the manual flow when you want full control and do not need the CLI.
 
 1. Copy `project-skeleton/` into a new project directory.
 2. Open the new project with Codex or another coding agent.
-3. Fill `docs/product/vision.md` with the product idea.
-4. Use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md` to create `docs/product/prd.md`.
+3. Use `prompts/00-discover-product.md` and `skills/product-discovery/SKILL.md` to interview the user and fill `docs/product/vision.md`.
+4. Review the vision, then use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md` to create `docs/product/prd.md`.
 5. Generate architecture, design notes for user-facing UI, ADRs, and task breakdowns before coding.
 6. Implement one small task at a time.
 7. Save review evidence in `docs/reviews/`, run tests, and summarize before marking work done.
@@ -140,7 +140,7 @@ aios init <project-name>
 ↓
 aios next <project-name>
 ↓
-Fill docs/product/vision.md
+Use product-discovery to interview user and fill docs/product/vision.md
 ↓
 Use Codex with the prompts from .aios/prompts/
 ↓
@@ -166,7 +166,7 @@ The CLI prepares files. Codex should still follow the AI Dev OS workflow.
 For PRD generation:
 
 ```text
-Read AGENTS.md, docs/product/vision.md, and .aios/prompts/01-generate-prd.md. Generate docs/product/prd.md using .aios/templates/prd.template.md and keep acceptance criteria testable.
+If docs/product/vision.md is still thin, read AGENTS.md and .aios/prompts/00-discover-product.md, interview me, and fill the vision first. Then read .aios/prompts/01-generate-prd.md and generate docs/product/prd.md using .aios/templates/prd.template.md.
 ```
 
 For task implementation:

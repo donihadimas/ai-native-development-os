@@ -55,7 +55,7 @@ Project shapes:
 - `aios prompt list [project-path]`
   Lists available local AIOS command prompts.
 - `aios prompt show <name> [project-path]`
-  Prints a local AIOS command prompt.
+  Prints a local AIOS command prompt, such as `discover-product` or `generate-prd`.
 
 ## Integrations
 

@@ -23,7 +23,7 @@ Use this router before choosing a workflow. Match the user request to the smalle
 
 ## Routing Rules
 
-- Product idea, product vision, user/problem clarification: `product-discovery`.
+- Product idea, product vision, user interview, user/problem clarification: `product-discovery`.
 - Generate or improve PRD: `prd-generator`.
 - Generate architecture: `architecture-design`.
 - Design user flows, screens, UI states, or product-facing interactions before frontend work: `ui-ux-design`.

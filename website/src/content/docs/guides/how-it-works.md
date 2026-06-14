@@ -9,7 +9,7 @@ AIOS is a workflow layer for AI-assisted development. It gives your coding agent
 
 AI coding agents are strong at local implementation, but they can lose the larger picture when a project grows:
 
-- Product requirements are scattered across chat history.
+- Product ideas and requirements are scattered across chat history.
 - Architecture decisions are remembered informally.
 - Tasks are too large to verify.
 - Frontend, backend, API contracts, and test expectations drift apart.
@@ -23,7 +23,7 @@ AIOS has five reusable layers:
 
 | Layer | Purpose |
 | --- | --- |
-| Skills | Reusable operating procedures for agents, such as PRD generation, implementation planning, code review, testing, and release management. |
+| Skills | Reusable operating procedures for agents, such as product discovery, PRD generation, implementation planning, code review, testing, and release management. |
 | Templates | Standard formats for PRDs, design docs, ADRs, tasks, reviews, API contracts, migrations, test plans, and release notes. |
 | References | Stable engineering principles for context, frontend, backend, APIs, databases, testing, security, and response style. |
 | Workflows | Step-by-step flows for new projects, features, bugfixes, refactors, reviews, releases, security reviews, and migrations. |
@@ -58,7 +58,7 @@ Chat history is useful, but it is not a reliable project memory. AIOS turns impo
 
 The practical pattern is:
 
-1. Capture the product idea in `docs/product/vision.md`.
+1. Interview the user and capture the product vision in `docs/product/vision.md`.
 2. Generate or refine a PRD with acceptance criteria.
 3. Record architecture, user-facing design notes, and ADRs.
 4. Break work into small tasks.

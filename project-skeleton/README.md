@@ -23,8 +23,8 @@ This skeleton is a generic AI-native project shell. `aios init` can keep it full
 ## First Use
 
 1. Run `aios config` and confirm `docsRoot`.
-2. Fill `<docsRoot>/product/vision.md`.
-3. In full mode, ask Codex to read `AGENTS.md` and `.aios/prompts/01-generate-prd.md`. In lite mode, ask Codex to read `AGENTS.md`, `<docsRoot>/context/context-map.md`, and `<docsRoot>/product/vision.md`, then follow the PRD workflow manually.
+2. In full mode, ask Codex to read `AGENTS.md` and `.aios/prompts/00-discover-product.md`, interview you, and fill `<docsRoot>/product/vision.md`. In lite mode, ask Codex to use `AGENTS.md`, `<docsRoot>/context/context-map.md`, and the product discovery workflow manually.
+3. Review the vision, then generate the PRD with `.aios/prompts/01-generate-prd.md` in full mode or the PRD workflow manually in lite mode.
 4. Generate or write `<docsRoot>/product/prd.md`.
 5. Generate or write `<docsRoot>/architecture/architecture.md`.
 6. Generate or write `<docsRoot>/design/design.md` when the project has user-facing UI.
