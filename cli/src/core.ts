@@ -548,10 +548,13 @@ export function installAgentSkills(options: {
 
       if (fs.existsSync(target)) {
         if (!options.overwrite) {
-          result.skipped.push(relativeTarget);
-          continue;
+          if (fs.existsSync(path.join(target, "SKILL.md"))) {
+            result.skipped.push(relativeTarget);
+            continue;
+          }
+        } else {
+          fs.rmSync(target, { recursive: true, force: true });
         }
-        fs.rmSync(target, { recursive: true, force: true });
       }
 
       copyDirectory(source, target);

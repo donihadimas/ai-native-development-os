@@ -172,7 +172,13 @@ Options:
     Create or validate only the base project docs, without the local .aios kit.
 
   --shape fullstack|frontend|backend|mobile|library|docs
-    Choose which app placeholder folders should exist.
+    Choose placeholder folders and validation shape:
+    fullstack creates frontend/ and backend/.
+    frontend creates frontend/ only.
+    backend creates backend/ only.
+    mobile creates mobile/ only.
+    library creates src/ only.
+    docs creates no app placeholder folders.
 
   --docs-root <path>
     Put product, architecture, task, review, and API docs somewhere other than docs/.
@@ -388,6 +394,32 @@ function ensureProjectShape(projectPath: string, shape: ProjectShape): void {
   }
 }
 
+function removeAdoptedShapePlaceholders(projectPath: string, shape: ProjectShape, createdPaths: string[]): string[] {
+  const allShapeDirs = [...new Set(Object.values(PROJECT_SHAPE_PATHS).flat())];
+  const required = new Set(PROJECT_SHAPE_PATHS[shape]);
+  const created = new Set(createdPaths.map((item) => item.replace(/\\/g, "/").replace(/\/$/, "")));
+  const removed: string[] = [];
+
+  for (const directory of allShapeDirs) {
+    if (required.has(directory) || !created.has(directory)) {
+      continue;
+    }
+
+    const target = path.join(projectPath, directory);
+    if (!fs.existsSync(target) || !fs.statSync(target).isDirectory()) {
+      continue;
+    }
+
+    const entries = fs.readdirSync(target);
+    if (entries.length === 0 || (entries.length === 1 && entries[0] === ".gitkeep")) {
+      fs.rmSync(target, { recursive: true, force: true });
+      removed.push(directory);
+    }
+  }
+
+  return removed;
+}
+
 function setupAiosForProject(
   ctx: CommandContext,
   projectPath: string,
@@ -476,6 +508,7 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
   const config = normalizeProjectSetup(ctx, options);
   const hadDocs = fs.existsSync(path.join(projectPath, "docs"));
   const result = adoptSkeleton(ctx.runtimePaths.projectSkeleton, projectPath);
+  const removedShapePlaceholders = removeAdoptedShapePlaceholders(projectPath, config.projectShape, result.created);
   ensureProjectShape(projectPath, config.projectShape);
   if (config.docsRoot !== "docs") {
     if (hadDocs) {
@@ -497,6 +530,9 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
 
   if (!options.lite) {
     output.push(`AIOS kit created: ${setupResult.kit.length}`, `Native agent skills created: ${setupResult.agent.length}`);
+  }
+  if (removedShapePlaceholders.length > 0) {
+    output.push(`Shape placeholders removed: ${removedShapePlaceholders.join(", ")}`);
   }
 
   output.push("Next step: run `aios validate` from the project root.");
@@ -1523,12 +1559,12 @@ async function promptSetupOptions(ctx: CommandContext): Promise<ParsedArgs> {
   const projectShape = await select<ProjectShape>({
     message: "Project shape?",
     choices: [
-      { name: "Fullstack: frontend + backend", value: "fullstack" },
-      { name: "Frontend only", value: "frontend" },
-      { name: "Backend only", value: "backend" },
-      { name: "Mobile only", value: "mobile" },
-      { name: "Library/package", value: "library" },
-      { name: "Docs/planning only", value: "docs" }
+      { name: "Fullstack: create frontend/ + backend/", value: "fullstack" },
+      { name: "Frontend only: create frontend/", value: "frontend" },
+      { name: "Backend only: create backend/", value: "backend" },
+      { name: "Mobile only: create mobile/", value: "mobile" },
+      { name: "Library/package: create src/", value: "library" },
+      { name: "Docs/planning only: no app placeholder folders", value: "docs" }
     ]
   });
 

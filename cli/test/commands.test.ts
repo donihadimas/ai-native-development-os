@@ -163,6 +163,20 @@ test("adopt adds missing AI Dev OS files without overwriting existing files", ()
   assert.match(validateOutput, /AI-ready structure validated/);
 });
 
+test("adopt honors docs project shape without keeping app placeholders", () => {
+  const cwd = tempCwd();
+  const project = path.join(cwd, "docs-project");
+  fs.mkdirSync(project, { recursive: true });
+  fs.writeFileSync(path.join(project, "README.md"), "# Docs Project\n");
+
+  const output = run(["adopt", "docs-project", "--shape", "docs"], { runtimePaths, cwd });
+
+  assert.match(output, /Shape placeholders removed: frontend, backend/);
+  assert.equal(fs.existsSync(path.join(project, "frontend")), false);
+  assert.equal(fs.existsSync(path.join(project, "backend")), false);
+  assert.match(run(["validate", "docs-project"], { runtimePaths, cwd }), /AI-ready structure validated/);
+});
+
 test("adopt defaults to the current working directory", () => {
   const project = tempCwd();
   fs.writeFileSync(path.join(project, "README.md"), "# Existing Project\n");

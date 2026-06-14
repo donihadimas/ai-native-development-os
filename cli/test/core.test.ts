@@ -9,6 +9,7 @@ import {
   ensureEmptyOrMissingDirectory,
   getOsRoot,
   getRuntimePaths,
+  installAgentSkills,
   nextNumber,
   renderTemplate,
   slugify,
@@ -132,6 +133,30 @@ test("writeRenderedTemplate writes rendered content and refuses overwrite", () =
     () => writeRenderedTemplate({ templatePath, targetPath, values: { title: "Again" } }),
     /Refusing to overwrite existing file/
   );
+});
+
+test("installAgentSkills repairs incomplete existing native skill folders", () => {
+  const sourceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "aios-skill-source-"));
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-skill-target-"));
+  fs.mkdirSync(path.join(sourceRoot, "skills", "testing"), { recursive: true });
+  fs.writeFileSync(
+    path.join(sourceRoot, "skills", "testing", "SKILL.md"),
+    "---\nname: testing\ndescription: Test skill.\n---\n\n# Testing\n",
+    "utf8"
+  );
+  fs.mkdirSync(path.join(project, ".agents", "skills", "testing", "agents"), { recursive: true });
+
+  const result = installAgentSkills({
+    sourceRoot,
+    projectPath: project,
+    agents: ["codex"],
+    skills: ["testing"]
+  });
+
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "agents", "openai.yaml")));
+  assert.deepEqual(result.skipped, []);
+  assert.equal(result.created.length, 1);
 });
 
 test("validateProject reports missing AI-ready paths", () => {

@@ -174,6 +174,7 @@ Behavior:
 - Includes `AGENTS.md`, optional `CLAUDE.md`, shared docs, `frontend/`, `backend/`, and `.aios/` by default.
 - `--lite` skips the local `.aios` workflow kit but still writes `.aios/config.json` with `mode: "lite"`.
 - `--shape` accepts `fullstack`, `frontend`, `backend`, `mobile`, `library`, or `docs`; default is `fullstack`.
+- Shape controls placeholder folders and validation: `fullstack` creates `frontend/` and `backend/`, `frontend` creates `frontend/`, `backend` creates `backend/`, `mobile` creates `mobile/`, `library` creates `src/`, and `docs` creates no app placeholder folders.
 - `--docs-root` stores project docs somewhere other than `docs/`.
 - `--skill-delivery` accepts `portable`, `native`, or `both`.
 - `--agents` accepts `codex`, `qwen`, `opencode`, `antigravity`, and `generic`.
