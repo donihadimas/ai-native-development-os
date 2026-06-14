@@ -152,7 +152,7 @@ function isAiosAgentInstructionFile(filePath: string): boolean {
 
 function extractAiosManagedSection(content: string): string {
   const start = content.indexOf(AIOS_MANAGED_BEGIN);
-  const end = content.indexOf(AIOS_MANAGED_END);
+  const end = content.lastIndexOf(AIOS_MANAGED_END);
 
   if (start === -1 || end === -1 || end < start) {
     return content.trim();
