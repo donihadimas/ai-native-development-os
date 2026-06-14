@@ -1506,6 +1506,19 @@ function integrationReviewMessage(selected: IntegrationName[], projectPath: stri
   return lines.join(" ");
 }
 
+function hasRunnableInstallers(selected: IntegrationName[], projectPath: string): boolean {
+  const config = readProjectConfig(projectPath);
+  const targets = normalizeCavemanTargetAgents(config, { ...parseArgs([]), agents: config.selectedAgents });
+
+  return selected.some((integration) => {
+    const detection = detectIntegration(projectPath, integration);
+    if (detection.detected) {
+      return false;
+    }
+    return installCommand(integration, targets).runnable;
+  });
+}
+
 async function promptSetupOptions(ctx: CommandContext): Promise<ParsedArgs> {
   const projectShape = await select<ProjectShape>({
     message: "Project shape?",
@@ -1652,7 +1665,7 @@ async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: 
       })
     );
   }
-  const yes = install
+  const yes = install && hasRunnableInstallers(selected, projectPath)
     ? await confirm({
         message: integrationReviewMessage(selected, projectPath),
         default: false
@@ -1802,7 +1815,11 @@ async function interactiveIntegration(ctx: CommandContext): Promise<string> {
         })
       );
     }
-    const yes = install ? await confirm({ message: integrationReviewMessage(selected, path.resolve(ctx.cwd, projectPath)), default: false }) : false;
+    const resolvedProjectPath = path.resolve(ctx.cwd, projectPath);
+    const yes =
+      install && hasRunnableInstallers(selected, resolvedProjectPath)
+        ? await confirm({ message: integrationReviewMessage(selected, resolvedProjectPath), default: false })
+        : false;
     return commandIntegrationAdd(ctx, integrationArg, projectPath, {
       ...parseArgs([]),
       install,
