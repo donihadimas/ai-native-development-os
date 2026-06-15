@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prd Generator"
+  short_description: "Use the prd-generator AIOS workflow."
+  default_prompt: "Use $prd-generator for this AIOS workflow."

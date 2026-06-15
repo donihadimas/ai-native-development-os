@@ -1,0 +1,4 @@
+interface:
+  display_name: "Testing"
+  short_description: "Use the testing AIOS workflow."
+  default_prompt: "Use $testing for this AIOS workflow."

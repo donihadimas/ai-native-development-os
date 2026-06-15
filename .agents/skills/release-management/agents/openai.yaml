@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Management"
+  short_description: "Use the release-management AIOS workflow."
+  default_prompt: "Use $release-management for this AIOS workflow."

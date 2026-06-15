@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Breakdown"
+  short_description: "Use the task-breakdown AIOS workflow."
+  default_prompt: "Use $task-breakdown for this AIOS workflow."

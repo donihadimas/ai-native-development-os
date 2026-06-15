@@ -1,0 +1,4 @@
+interface:
+  display_name: "Context Management"
+  short_description: "Use the context-management AIOS workflow."
+  default_prompt: "Use $context-management for this AIOS workflow."

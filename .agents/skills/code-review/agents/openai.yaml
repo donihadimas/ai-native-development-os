@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Use the code-review AIOS workflow."
+  default_prompt: "Use $code-review for this AIOS workflow."

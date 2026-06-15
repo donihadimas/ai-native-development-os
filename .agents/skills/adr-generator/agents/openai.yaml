@@ -1,0 +1,4 @@
+interface:
+  display_name: "Adr Generator"
+  short_description: "Use the adr-generator AIOS workflow."
+  default_prompt: "Use $adr-generator for this AIOS workflow."

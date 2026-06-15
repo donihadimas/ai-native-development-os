@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Review"
+  short_description: "Use the security-review AIOS workflow."
+  default_prompt: "Use $security-review for this AIOS workflow."

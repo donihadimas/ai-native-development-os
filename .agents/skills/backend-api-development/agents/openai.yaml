@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backend Api Development"
+  short_description: "Use the backend-api-development AIOS workflow."
+  default_prompt: "Use $backend-api-development for this AIOS workflow."

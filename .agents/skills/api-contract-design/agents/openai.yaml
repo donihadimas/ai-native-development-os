@@ -1,0 +1,4 @@
+interface:
+  display_name: "Api Contract Design"
+  short_description: "Use the api-contract-design AIOS workflow."
+  default_prompt: "Use $api-contract-design for this AIOS workflow."
