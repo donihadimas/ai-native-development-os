@@ -20,6 +20,7 @@ AIOS includes skills for the common development lifecycle:
 | `adr-generator` | Recording one architecture decision, trade-off, and consequence. |
 | `task-breakdown` | Splitting large work into small implementation tasks. |
 | `implementation-planner` | Creating a short implementation plan before code changes. |
+| `task-implementation` | Implementing one active task, validating acceptance criteria, and updating task status. |
 | `backend-api-development` | Designing and implementing backend API work with contracts and validation. |
 | `api-contract-design` | Drafting API contracts before frontend/backend implementation. |
 | `database-migration` | Planning database migrations with safety checks and rollback notes. |

@@ -27,7 +27,7 @@
 10. User reviews design before frontend or product-facing implementation tasks are treated as ready.
 11. Break the reviewed PRD, architecture, ADRs, API contracts, and design into small tasks using `task-breakdown`.
 12. Initialize app code with the chosen stack outside the AIOS core when needed.
-13. Implement one task at a time using `implementation-planner` before coding.
+13. Plan one task at a time using `implementation-planner`, then implement and close status with `task-implementation`.
 14. Add or update tests using `testing`.
 15. Review each change using `code-review`.
 

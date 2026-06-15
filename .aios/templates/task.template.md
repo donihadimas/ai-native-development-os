@@ -1,5 +1,9 @@
 # TASK-{{number}}: {{title}}
 
+## Status
+
+Planned
+
 ## Objective
 
 State the single objective of this task.

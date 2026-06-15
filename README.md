@@ -172,7 +172,7 @@ If docs/product/vision.md is still thin, read AGENTS.md and .aios/prompts/00-dis
 For task implementation:
 
 ```text
-Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and the active task in docs/tasks/. Use native agent skills when installed, otherwise use .aios/skills. Create a short implementation plan before editing files. Do not modify unrelated files.
+Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and the active task in docs/tasks/. Use implementation-planner before editing, then task-implementation to implement, validate acceptance criteria, and update the task Done Summary when complete. Do not modify unrelated files.
 ```
 
 For review:

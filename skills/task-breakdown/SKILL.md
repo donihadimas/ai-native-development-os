@@ -65,7 +65,7 @@ Step-by-step process:
 5. Add testable acceptance criteria.
 6. Add testing expectations tied to behavior.
 7. Add review notes so the user can confirm the task list order and scope.
-8. End with the next workflow step: user chooses one task, then uses `implementation-planner` before coding.
+8. End with the next workflow step: user chooses one task, uses `implementation-planner` before coding, then uses `task-implementation` to execute and close status.
 9. Use `templates/task.template.md` for structure.
 10. Flag tasks that need ADR or API contract work first.
 

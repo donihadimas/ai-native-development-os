@@ -266,6 +266,8 @@ ai-native-dev-os/
 │   │   └── SKILL.md
 │   ├── implementation-planner/
 │   │   └── SKILL.md
+│   ├── task-implementation/
+│   │   └── SKILL.md
 │   ├── testing/
 │   │   └── SKILL.md
 │   └── code-review/
@@ -499,7 +501,31 @@ Rules:
 
 ---
 
-### 11.8 testing
+### 11.8 task-implementation
+
+Purpose:
+
+Menjalankan satu active task dari rencana implementasi sampai validasi selesai.
+
+Outputs:
+
+- scoped implementation
+- test or validation evidence
+- acceptance criteria status
+- updated task status or Done Summary
+- risks and next step
+
+Rules:
+
+- Harus membaca active task sebelum implementasi.
+- Harus mengikuti implementation plan atau membuat plan singkat lebih dulu.
+- Harus menjalankan validasi yang relevan.
+- Harus update task status atau Done Summary ketika acceptance criteria terpenuhi.
+- Tidak boleh menandai task selesai jika acceptance criteria belum terpenuhi.
+
+---
+
+### 11.9 testing
 
 Purpose:
 
@@ -522,7 +548,7 @@ Rules:
 
 ---
 
-### 11.9 code-review
+### 11.10 code-review
 
 Purpose:
 
@@ -1675,6 +1701,7 @@ Deliverables:
 - adr-generator,
 - task-breakdown,
 - implementation-planner,
+- task-implementation,
 - testing,
 - code-review.
 
@@ -1767,6 +1794,7 @@ The most important V1 deliverables are:
 - `skills/context-management`,
 - `skills/task-breakdown`,
 - `skills/implementation-planner`,
+- `skills/task-implementation`,
 - `skills/code-review`,
 - templates,
 - references,

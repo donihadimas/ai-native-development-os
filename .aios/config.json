@@ -16,6 +16,7 @@
     "context-management",
     "database-migration",
     "implementation-planner",
+    "task-implementation",
     "prd-generator",
     "product-discovery",
     "release-management",

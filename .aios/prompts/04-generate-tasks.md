@@ -16,4 +16,4 @@ Before creating task files, apply the `task-breakdown` Clarification Gate. If sc
 
 Keep tasks small, single-objective, testable, and scoped.
 
-End with a clear next step: the user should review the generated task list, pick one active task, then ask Codex to use `implementation-planner` before coding.
+End with a clear next step: the user should review the generated task list, pick one active task, then ask Codex to use `implementation-planner` before coding and `task-implementation` for execution.

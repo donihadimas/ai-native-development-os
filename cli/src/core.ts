@@ -66,7 +66,14 @@ export interface AgentInstallResult {
 export const DEFAULT_DOCS_ROOT = "docs";
 export const DEFAULT_KIT_ROOT = ".aios";
 
-export const CORE_SKILLS = ["context-management", "implementation-planner", "task-breakdown", "testing", "code-review"];
+export const CORE_SKILLS = [
+  "context-management",
+  "implementation-planner",
+  "task-implementation",
+  "task-breakdown",
+  "testing",
+  "code-review"
+];
 export const PLANNING_SKILLS = [
   "product-discovery",
   "prd-generator",
@@ -76,7 +83,7 @@ export const PLANNING_SKILLS = [
   "task-breakdown",
   "implementation-planner"
 ];
-export const DELIVERY_SKILLS = ["testing", "code-review", "security-review", "release-management"];
+export const DELIVERY_SKILLS = ["task-implementation", "testing", "code-review", "security-review", "release-management"];
 
 export const AGENT_TARGETS: AgentTarget[] = ["codex", "qwen", "opencode", "antigravity", "generic"];
 export const PROJECT_SHAPES: ProjectShape[] = ["fullstack", "frontend", "backend", "mobile", "library", "docs"];

@@ -19,4 +19,4 @@ End with:
 
 - the recommended first task,
 - what the user should review before implementation,
-- the next step after user approval: implement one selected task with `implementation-planner`.
+- the next step after user approval: plan one selected task with `implementation-planner`, then implement it with `task-implementation`.

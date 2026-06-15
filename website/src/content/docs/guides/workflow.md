@@ -90,7 +90,7 @@ If the task is UI-facing, link the relevant design document. If it depends on ba
 
 Open the first task file, then instruct the agent:
 
-> "Please implement task 001. Read the task file, check the PRD context if needed, and write the code."
+> "Please implement task 001. Read the task file, use implementation-planner before editing, then use task-implementation to make the change, validate acceptance criteria, and update the task Done Summary when complete."
 
 Keep the request narrow. If the agent needs more context, point it to a specific document instead of asking it to read the whole repo.
 

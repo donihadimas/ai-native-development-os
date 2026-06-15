@@ -30,7 +30,7 @@ Use this router before choosing a workflow. Match the user request to the smalle
 - Create or update ADR: `adr-generator`.
 - Break down feature or PRD into tasks: `task-breakdown`.
 - Plan implementation before coding: `implementation-planner`.
-- Implement code: `implementation-planner` first, then the active task and affected code.
+- Implement an active task: `implementation-planner` first when no usable plan exists, then `task-implementation`.
 - Generate or evaluate tests: `testing`.
 - Review code or diff: `code-review`.
 - Design or update API contract: `api-contract-design`.
