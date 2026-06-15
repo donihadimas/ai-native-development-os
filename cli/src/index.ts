@@ -52,6 +52,54 @@ function packageVersion(): string {
   return packageJson.version ?? "0.0.0";
 }
 
+const SUBPROJECT_SIGNALS = [
+  "package.json",
+  "pyproject.toml",
+  "Cargo.toml",
+  "go.mod",
+  "composer.json",
+  "pubspec.yaml",
+  "pom.xml"
+];
+
+const ROOT_SIGNALS = [
+  ".git",
+  "AGENTS.md",
+  ".aios",
+  "project-skeleton",
+  "skills",
+  "templates",
+  "workflows"
+];
+
+function detectSubprojectWarning(targetPath: string): { warn: boolean; targetName: string; parentPath: string } | undefined {
+  if (fs.existsSync(path.join(targetPath, ".aios", "config.json"))) {
+    return undefined;
+  }
+
+  const basename = path.basename(targetPath);
+  const hasSubprojectSignal = SUBPROJECT_SIGNALS.some((file) =>
+    fs.existsSync(path.join(targetPath, file))
+  );
+  if (!hasSubprojectSignal) {
+    return undefined;
+  }
+
+  const parentPath = path.dirname(targetPath);
+  if (parentPath === targetPath) {
+    return undefined;
+  }
+
+  const hasRootSignal = ROOT_SIGNALS.some((signal) =>
+    fs.existsSync(path.join(parentPath, signal))
+  );
+  if (!hasRootSignal) {
+    return undefined;
+  }
+
+  return { warn: true, targetName: basename, parentPath };
+}
+
 function usage(): string {
   return `AI-Native Development OS CLI
 
@@ -1721,6 +1769,19 @@ async function interactiveAdopt(ctx: CommandContext): Promise<string> {
   const setup = await promptSetupOptions(ctx);
   const resolvedProjectPath = path.resolve(ctx.cwd, projectPath);
   console.log(formatSetupSummary(resolvedProjectPath, setup, "adopt"));
+
+  const subprojectWarning = detectSubprojectWarning(resolvedProjectPath);
+  if (subprojectWarning) {
+    console.log(
+      `\nWarning: "${subprojectWarning.targetName}" looks like a subproject or package folder. ` +
+      `The parent directory "${subprojectWarning.parentPath}" appears to be the repository root.`
+    );
+    const continueAnyway = await confirm({ message: "Continue adopting into the subproject?", default: false });
+    if (!continueAnyway) {
+      return `Cancelled. Consider running adopt from the repository root instead:\n  aios adopt ${subprojectWarning.parentPath}`;
+    }
+  }
+
   const shouldAdopt = await confirm({ message: "Adopt AIOS into this project now?", default: true });
   if (!shouldAdopt) {
     return "Cancelled.";
@@ -1941,6 +2002,8 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       return usage();
   }
 }
+
+export { detectSubprojectWarning };
 
 export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }): string {
   const parsed = parseArgs(argv);

@@ -44,11 +44,11 @@ During local usage, running `aios` from `cli/` and choosing `Adopt existing proj
 
 ## Acceptance Criteria
 
-- [ ] Interactive adopt warns when the selected target has a parent containing AIOS root signals while the target itself looks like a subproject.
-- [ ] The warning names the selected target and the suggested parent target.
-- [ ] The user can continue with the selected target or cancel and rerun with a different path.
-- [ ] Non-interactive `aios adopt <path>` does not prompt or change behavior.
-- [ ] Tests cover likely subproject detection and at least one non-subproject case.
+- [x] Interactive adopt warns when the selected target has a parent containing AIOS root signals while the target itself looks like a subproject.
+- [x] The warning names the selected target and the suggested parent target.
+- [x] The user can continue with the selected target or cancel and rerun with a different path.
+- [x] Non-interactive `aios adopt <path>` does not prompt or change behavior.
+- [x] Tests cover likely subproject detection and at least one non-subproject case.
 
 ## Testing Expectations
 
@@ -65,7 +65,7 @@ During local usage, running `aios` from `cli/` and choosing `Adopt existing proj
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `cli/src/index.ts`, `cli/test/commands.test.ts`, `docs/tasks/TASK-001-add-adopt-subproject-safety-warning.md`
+- Tests run: `npm test` in `cli/` — 48 tests pass (4 new tests added)
+- Acceptance criteria status: All 5 criteria satisfied
+- Risks: Heuristic could warn for valid monorepo package adoption; kept conservative and non-blocking.

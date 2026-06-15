@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import packageJson from "../package.json" with { type: "json" };
-import { run } from "../src/index.js";
+import { run, detectSubprojectWarning } from "../src/index.js";
 import type { RuntimePaths } from "../src/core.js";
 
 const osRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -593,4 +593,53 @@ test("next reports vision, PRD, architecture, design/task creation, and task-rea
 
   run(["create", "task", "Implement habit API"], { runtimePaths, cwd: project });
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Open the active task/);
+});
+
+test("detectSubprojectWarning warns for nested package folders with parent root signals", () => {
+  const cwd = tempCwd();
+  const repoRoot = path.join(cwd, "repo");
+  const subProject = path.join(repoRoot, "cli");
+  fs.mkdirSync(subProject, { recursive: true });
+  fs.writeFileSync(path.join(subProject, "package.json"), "{}");
+  fs.mkdirSync(path.join(repoRoot, ".git"), { recursive: true });
+
+  const warning = detectSubprojectWarning(subProject);
+  assert.ok(warning);
+  assert.equal(warning.targetName, "cli");
+  assert.equal(warning.parentPath, repoRoot);
+});
+
+test("detectSubprojectWarning does not warn for repository root targets", () => {
+  const cwd = tempCwd();
+  const repoRoot = path.join(cwd, "repo");
+  fs.mkdirSync(repoRoot, { recursive: true });
+  fs.writeFileSync(path.join(repoRoot, "package.json"), "{}");
+  fs.mkdirSync(path.join(repoRoot, ".git"), { recursive: true });
+
+  const warning = detectSubprojectWarning(repoRoot);
+  assert.equal(warning, undefined);
+});
+
+test("detectSubprojectWarning does not warn for already adopted targets", () => {
+  const cwd = tempCwd();
+  const repoRoot = path.join(cwd, "repo");
+  const subProject = path.join(repoRoot, "cli");
+  fs.mkdirSync(path.join(subProject, ".aios"), { recursive: true });
+  fs.writeFileSync(path.join(subProject, ".aios", "config.json"), "{}");
+  fs.writeFileSync(path.join(subProject, "package.json"), "{}");
+  fs.mkdirSync(path.join(repoRoot, ".git"), { recursive: true });
+
+  const warning = detectSubprojectWarning(subProject);
+  assert.equal(warning, undefined);
+});
+
+test("detectSubprojectWarning does not warn when parent lacks root signals", () => {
+  const cwd = tempCwd();
+  const parent = path.join(cwd, "parent");
+  const subProject = path.join(parent, "cli");
+  fs.mkdirSync(subProject, { recursive: true });
+  fs.writeFileSync(path.join(subProject, "package.json"), "{}");
+
+  const warning = detectSubprojectWarning(subProject);
+  assert.equal(warning, undefined);
 });
