@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -56,15 +56,15 @@ Recent additions such as the `task-implementation` skill show the need for a cle
 
 ## Acceptance Criteria
 
-- [ ] `aios update [project-path]` is available in CLI help.
-- [ ] `aios update --dry-run [project-path]` reports planned additions without writing files.
-- [ ] Full-mode projects receive missing bundled `.aios/` files without overwriting existing local files.
-- [ ] Lite-mode projects do not receive the full `.aios/` kit unless their config is changed out of lite mode.
-- [ ] The command updates `.aios/config.json` with safe newly bundled default/core skills when they are missing from `selectedSkills`.
-- [ ] Native skill delivery installs missing selected native skills according to `selectedAgents`, `selectedSkills`, and `agentScope`.
-- [ ] Existing local files that differ from bundled assets are reported as skipped or needing review.
-- [ ] The output summarizes added, skipped existing, config updates, native skill updates, review-needed items, and the next validation step.
-- [ ] Existing `kit install`, `agent install`, `integration repair`, and `validate` behavior continues to pass.
+- [x] `aios update [project-path]` is available in CLI help.
+- [x] `aios update --dry-run [project-path]` reports planned additions without writing files.
+- [x] Full-mode projects receive missing bundled `.aios/` files without overwriting existing local files.
+- [x] Lite-mode projects do not receive the full `.aios/` kit unless their config is changed out of lite mode.
+- [x] The command updates `.aios/config.json` with safe newly bundled default/core skills when they are missing from `selectedSkills`.
+- [x] Native skill delivery installs missing selected native skills according to `selectedAgents`, `selectedSkills`, and `agentScope`.
+- [x] Existing local files that differ from bundled assets are reported as skipped or needing review.
+- [x] The output summarizes added, skipped existing, config updates, native skill updates, review-needed items, and the next validation step.
+- [x] Existing `kit install`, `agent install`, `integration repair`, and `validate` behavior continues to pass.
 
 ## Testing Expectations
 
@@ -86,7 +86,7 @@ Recent additions such as the `task-implementation` skill show the need for a cle
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `cli/src/index.ts`, `cli/test/commands.test.ts`, `docs/tasks/TASK-009-add-aios-update-command.md`
+- Tests run: 69/69 pass (`npm test` from `cli/`)
+- Acceptance criteria status: All 9 criteria met
+- Risks: Users may expect `update` to merge local edits; current behavior only backfills missing files and reports differences.

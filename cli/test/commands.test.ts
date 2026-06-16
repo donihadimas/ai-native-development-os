@@ -757,3 +757,129 @@ test("repair does not add portable skills to native-only projects", () => {
   assert.equal(fs.existsSync(path.join(project, ".aios", "skills")), false);
   assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "context-management", "SKILL.md")));
 });
+
+test("update is available in help output", () => {
+  const output = run(["help"], { runtimePaths, cwd: tempCwd() });
+  assert.match(output, /aios update \[project-path\] \[--dry-run\]/);
+  assert.match(output, /Update an adopted project/);
+});
+
+test("update --dry-run does not write files", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.rmSync(path.join(project, ".aios", "commands", "discover-product.md"));
+
+  const output = run(["update", "demo-project", "--dry-run"], { runtimePaths, cwd });
+  assert.match(output, /Dry-run/);
+  assert.match(output, /would be added/);
+  assert.equal(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")), false);
+});
+
+test("update backfills missing bundled files without overwriting existing", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const customContent = "# Custom prompt content\n";
+  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), customContent);
+  fs.rmSync(path.join(project, ".aios", "commands", "discover-product.md"));
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Kit:/);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")));
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "utf8"), customContent);
+});
+
+test("update adds new core skills to config when most core skills are present", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  config.selectedSkills = ["context-management", "implementation-planner", "task-breakdown", "testing", "code-review"];
+  fs.writeFileSync(path.join(project, ".aios", "config.json"), JSON.stringify(config, null, 2));
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Config: added new core skills/);
+  const updatedConfig = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  assert.ok(updatedConfig.selectedSkills.includes("task-implementation"));
+  assert.ok(updatedConfig.selectedSkills.includes("context-management"));
+});
+
+test("update does not add core skills when user has a minimal skill set", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  config.selectedSkills = ["context-management"];
+  fs.writeFileSync(path.join(project, ".aios", "config.json"), JSON.stringify(config, null, 2));
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Config: no new core skills to add/);
+  const updatedConfig = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  assert.deepEqual(updatedConfig.selectedSkills, ["context-management"]);
+});
+
+test("update reports review-needed files when local differs from bundled", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Review needed: 1 local file/);
+});
+
+test("update skips kit in lite mode", () => {
+  const cwd = tempCwd();
+  run(["init", "lite-project", "--lite"], { runtimePaths, cwd });
+
+  const output = run(["update", "lite-project"], { runtimePaths, cwd });
+  assert.match(output, /Kit: skipped \(lite mode\)/);
+});
+
+test("update restores missing native skills when configured", () => {
+  const cwd = tempCwd();
+  run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-project");
+
+  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+
+  const output = run(["update", "native-project"], { runtimePaths, cwd });
+  assert.match(output, /Native skills:/);
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")));
+});
+
+test("update --dry-run correctly counts missing native skills", () => {
+  const cwd = tempCwd();
+  run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-project");
+
+  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+
+  const output = run(["update", "native-project", "--dry-run"], { runtimePaths, cwd });
+  assert.match(output, /Dry-run/);
+  assert.match(output, /Native skills: 1 would be added/);
+  assert.equal(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")), false);
+});
+
+test("update --dry-run counts native skills from updated config, not original", () => {
+  const cwd = tempCwd();
+  run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-project");
+
+  const config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  config.selectedSkills = ["context-management", "implementation-planner", "task-breakdown", "testing", "code-review"];
+  fs.writeFileSync(path.join(project, ".aios", "config.json"), JSON.stringify(config, null, 2));
+
+  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+
+  const output = run(["update", "native-project", "--dry-run"], { runtimePaths, cwd });
+  assert.match(output, /Config: would add new core skills: task-implementation/);
+  assert.match(output, /Native skills: 1 would be added/);
+  assert.equal(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")), false);
+});

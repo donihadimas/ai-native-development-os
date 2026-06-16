@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import {
   AGENT_TARGETS,
+  AIOS_KIT_ENTRIES,
   CAVEMAN_MODES,
   CORE_SKILLS,
   INTEGRATIONS,
@@ -182,6 +183,11 @@ Advanced commands:
   aios repair [project-path]
     Repair missing .aios kit files, native skills, and integration rules.
     Non-destructive: skips existing valid files.
+
+  aios update [project-path] [--dry-run]
+    Update an adopted project with newly bundled AIOS assets, skills, and
+    safe config defaults. Non-destructive: skips existing local files.
+    Use --dry-run to preview changes without writing.
 
 Document commands:
   aios create feature <feature-name>
@@ -668,6 +674,193 @@ function commandRepair(ctx: CommandContext, projectPathArg: string | undefined):
   output.push("", `Total: ${totalCreated} created, ${totalSkipped} skipped`);
   output.push("Next step: run `aios validate` from the project root.");
   return output.join("\n");
+}
+
+function collectReviewNeeded(projectPath: string, config: ReturnType<typeof readProjectConfig>, sourceRoot: string): string[] {
+  const reviewNeeded: string[] = [];
+  if (config.mode !== "full") {
+    return reviewNeeded;
+  }
+
+  for (const entry of AIOS_KIT_ENTRIES) {
+    if (entry === "skills" && (config.skillDelivery === "native")) {
+      continue;
+    }
+    const sourcePath = path.join(sourceRoot, entry);
+    const targetPath = path.join(projectPath, ".aios", entry);
+    if (!fs.existsSync(sourcePath) || !fs.existsSync(targetPath)) {
+      continue;
+    }
+
+    if (fs.statSync(sourcePath).isFile()) {
+      const sourceContent = fs.readFileSync(sourcePath, "utf8");
+      const targetContent = fs.readFileSync(targetPath, "utf8");
+      if (sourceContent !== targetContent) {
+        reviewNeeded.push(`.aios/${entry}`);
+      }
+      continue;
+    }
+
+    const sourceFiles = listFilesRecursive(sourcePath);
+    for (const relative of sourceFiles) {
+      const sourceFile = path.join(sourcePath, relative);
+      const targetFile = path.join(targetPath, relative);
+      if (!fs.existsSync(targetFile)) {
+        continue;
+      }
+      const sourceContent = fs.readFileSync(sourceFile, "utf8");
+      const targetContent = fs.readFileSync(targetFile, "utf8");
+      if (sourceContent !== targetContent) {
+        reviewNeeded.push(`.aios/${entry}/${relative}`);
+      }
+    }
+  }
+  return reviewNeeded;
+}
+
+function listFilesRecursive(dir: string, base = dir): string[] {
+  if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
+    return [];
+  }
+  const results: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...listFilesRecursive(full, base));
+    } else {
+      results.push(path.relative(base, full).replace(/\\/g, "/"));
+    }
+  }
+  return results;
+}
+
+function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, options: ParsedArgs = parseArgs([])): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const config = readProjectConfig(projectPath);
+  const dryRun = options.dryRun;
+  const output = [dryRun ? `Dry-run: updating AIOS assets in ${projectPath}` : `Updating AIOS assets in ${projectPath}`];
+  let totalCreated = 0;
+  let totalSkipped = 0;
+  let configUpdated = false;
+
+  if (config.mode === "full") {
+    const includeSkills = config.skillDelivery === "portable" || config.skillDelivery === "both";
+    if (dryRun) {
+      const sourceRoot = ctx.runtimePaths.aiosKitSource;
+      let plannedKit = 0;
+      for (const entry of AIOS_KIT_ENTRIES) {
+        if (entry === "skills" && !includeSkills) {
+          continue;
+        }
+        const sourcePath = path.join(sourceRoot, entry);
+        if (!fs.existsSync(sourcePath)) {
+          continue;
+        }
+        if (fs.statSync(sourcePath).isFile()) {
+          const targetPath = path.join(projectPath, ".aios", entry);
+          if (!fs.existsSync(targetPath)) {
+            plannedKit++;
+          }
+        } else {
+          const targetDir = path.join(projectPath, ".aios", entry);
+          for (const file of listFilesRecursive(sourcePath)) {
+            const targetPath = path.join(targetDir, file);
+            if (!fs.existsSync(targetPath)) {
+              plannedKit++;
+            }
+          }
+        }
+      }
+      output.push(`Kit: ${plannedKit} files would be added`);
+    } else {
+      const kitResult = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, { includeSkills, config });
+      totalCreated += kitResult.created.length;
+      totalSkipped += kitResult.skipped.length;
+      output.push(`Kit: ${kitResult.created.length} added, ${kitResult.skipped.length} skipped existing`);
+    }
+  } else {
+    output.push("Kit: skipped (lite mode)");
+  }
+
+  const existingCoreCount = CORE_SKILLS.filter((skill) => config.selectedSkills.includes(skill)).length;
+  const hasMajorityCore = existingCoreCount >= Math.ceil(CORE_SKILLS.length / 2);
+  const newCoreSkills = hasMajorityCore ? CORE_SKILLS.filter((skill) => !config.selectedSkills.includes(skill)) : [];
+  const updatedSkills = [...new Set([...config.selectedSkills, ...newCoreSkills])].sort();
+
+  if (newCoreSkills.length > 0) {
+    if (dryRun) {
+      output.push(`Config: would add new core skills: ${newCoreSkills.join(", ")}`);
+    } else {
+      config.selectedSkills = updatedSkills;
+      configUpdated = true;
+      output.push(`Config: added new core skills: ${newCoreSkills.join(", ")}`);
+    }
+  } else {
+    output.push("Config: no new core skills to add");
+  }
+
+  if (config.skillDelivery === "native" || config.skillDelivery === "both") {
+    if (dryRun) {
+      let plannedNative = 0;
+      for (const agent of config.selectedAgents) {
+        for (const skill of updatedSkills) {
+          const skillPath = path.join(agentSkillRootForUpdate(projectPath, agent, config), skill, "SKILL.md");
+          if (!fs.existsSync(skillPath)) {
+            plannedNative++;
+          }
+        }
+      }
+      output.push(`Native skills: ${plannedNative} would be added`);
+    } else {
+      const agentResult = installAgentSkills({
+        sourceRoot: ctx.runtimePaths.aiosKitSource,
+        projectPath,
+        agents: config.selectedAgents,
+        skills: config.selectedSkills,
+        scope: config.agentScope
+      });
+      totalCreated += agentResult.created.length;
+      totalSkipped += agentResult.skipped.length;
+      output.push(`Native skills: ${agentResult.created.length} added, ${agentResult.skipped.length} skipped existing`);
+    }
+  } else {
+    output.push("Native skills: skipped (delivery mode is portable)");
+  }
+
+  if (!dryRun && configUpdated) {
+    writeProjectConfig(projectPath, config);
+  }
+
+  const reviewNeeded = collectReviewNeeded(projectPath, config, ctx.runtimePaths.aiosKitSource);
+  if (reviewNeeded.length > 0) {
+    output.push(`Review needed: ${reviewNeeded.length} local file(s) differ from bundled assets`);
+    for (const file of reviewNeeded.slice(0, 10)) {
+      output.push(`  - ${file}`);
+    }
+    if (reviewNeeded.length > 10) {
+      output.push(`  ... and ${reviewNeeded.length - 10} more`);
+    }
+  }
+
+  output.push("", `Total: ${totalCreated} added, ${totalSkipped} skipped existing`);
+  output.push("Next step: run `aios validate` from the project root.");
+  return output.join("\n");
+}
+
+function agentSkillRootForUpdate(projectPath: string, agent: AgentTarget, config: ReturnType<typeof readProjectConfig>): string {
+  const scope = config.agentScope;
+  const homeDir = process.env.HOME ?? "";
+  switch (agent) {
+    case "codex":
+    case "generic":
+      return scope === "user" ? path.join(homeDir, ".agents", "skills") : path.join(projectPath, ".agents", "skills");
+    case "qwen":
+      return scope === "user" ? path.join(homeDir, ".qwen", "skills") : path.join(projectPath, ".qwen", "skills");
+    case "opencode":
+      return scope === "user" ? path.join(homeDir, ".config", "opencode", "skills") : path.join(projectPath, ".opencode", "skills");
+    case "antigravity":
+      return path.join(projectPath, ".agent", "skills");
+  }
 }
 
 function commandDirectory(ctx: CommandContext, projectPathArg: string | undefined): string {
@@ -2065,6 +2258,7 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       { name: "Set up external integrations", value: "integration" },
       { name: "Validate project", value: "validate" },
       { name: "Repair missing AIOS assets", value: "repair" },
+      { name: "Update AIOS assets to latest bundled versions", value: "update" },
       { name: "Show next recommended step", value: "next" },
       { name: "Print AIOS command prompt", value: "command" },
       { name: "Show help", value: "help" }
@@ -2084,6 +2278,8 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       return commandValidate(ctx, await input({ message: "Project path:", default: "." }));
     case "repair":
       return commandRepair(ctx, await input({ message: "Project path:", default: "." }));
+    case "update":
+      return commandUpdate(ctx, await input({ message: "Project path:", default: "." }));
     case "next":
       return commandNext(ctx, await input({ message: "Project path:", default: "." }));
     case "command": {
@@ -2140,6 +2336,8 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return commandValidate(ctx, name, parsed);
     case "repair":
       return commandRepair(ctx, name);
+    case "update":
+      return commandUpdate(ctx, name, parsed);
     case "next":
       return commandNext(ctx, name);
     default:
