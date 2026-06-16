@@ -43,11 +43,11 @@ Adopt currently reports counts such as created, skipped, kit created, and native
 
 ## Acceptance Criteria
 
-- [ ] Adopt output includes project shape.
-- [ ] Adopt output includes expected app placeholders for the selected shape.
-- [ ] Docs shape reports no app placeholders expected.
-- [ ] Removed placeholder folders are reported when present.
-- [ ] Tests cover docs shape output.
+- [x] Adopt output includes project shape.
+- [x] Adopt output includes expected app placeholders for the selected shape.
+- [x] Docs shape reports no app placeholders expected.
+- [x] Removed placeholder folders are reported when present.
+- [x] Tests cover docs shape output.
 
 ## Testing Expectations
 
@@ -64,7 +64,7 @@ Adopt currently reports counts such as created, skipped, kit created, and native
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `cli/src/index.ts`, `cli/test/commands.test.ts`, `docs/tasks/TASK-006-improve-adopt-summary-output.md`
+- Tests run: 59/59 pass (`npm test` from `cli/`)
+- Acceptance criteria status: All 5 criteria met
+- Risks: None. Output-only change, no filesystem behavior affected.

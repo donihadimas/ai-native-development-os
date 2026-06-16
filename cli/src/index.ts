@@ -574,8 +574,14 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
     setupLiteConfig(projectPath, config);
   }
 
+  const shapeDirs = PROJECT_SHAPE_PATHS[config.projectShape];
+  const shapeLabel = config.projectShape === "docs" ? "docs (no app folders)" : config.projectShape;
+  const placeholderLabel = shapeDirs.length > 0 ? shapeDirs.join(", ") : "none";
+
   const output = [
     `Adopted AI Dev OS structure in ${projectPath}`,
+    `Shape: ${shapeLabel}`,
+    `App placeholders: ${placeholderLabel}`,
     `Created: ${result.created.length}`,
     `Skipped existing: ${result.skipped.length}`
   ];

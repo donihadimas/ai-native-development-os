@@ -147,6 +147,8 @@ test("adopt adds missing AI Dev OS files without overwriting existing files", ()
   const output = run(["adopt", "existing-project"], { runtimePaths, cwd });
 
   assert.match(output, /Adopted AI Dev OS structure/);
+  assert.match(output, /Shape: fullstack/);
+  assert.match(output, /App placeholders: frontend, backend/);
   assert.equal(fs.readFileSync(path.join(project, "README.md"), "utf8"), "# Existing Project\n");
   assert.match(fs.readFileSync(path.join(project, "AGENTS.md"), "utf8"), /^<!-- AIOS:BEGIN -->/);
   assert.match(fs.readFileSync(path.join(project, "AGENTS.md"), "utf8"), /# Existing Agent Rules/);
@@ -171,6 +173,8 @@ test("adopt honors docs project shape without keeping app placeholders", () => {
 
   const output = run(["adopt", "docs-project", "--shape", "docs"], { runtimePaths, cwd });
 
+  assert.match(output, /Shape: docs \(no app folders\)/);
+  assert.match(output, /App placeholders: none/);
   assert.match(output, /Shape placeholders removed: frontend, backend/);
   assert.equal(fs.existsSync(path.join(project, "frontend")), false);
   assert.equal(fs.existsSync(path.join(project, "backend")), false);
