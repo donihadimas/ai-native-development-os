@@ -41,10 +41,10 @@ The root README contains corrupted emoji/tree characters such as `ðŸ...` and g
 
 ## Acceptance Criteria
 
-- [ ] Root README no longer contains mojibake sequences such as `ðŸ`.
-- [ ] Headings and tree diagrams render cleanly in plain Markdown.
-- [ ] README content is otherwise preserved.
-- [ ] `git diff --check` passes.
+- [x] Root README no longer contains mojibake sequences such as `ðŸ`.
+- [x] Headings and tree diagrams render cleanly in plain Markdown.
+- [x] README content is otherwise preserved.
+- [x] `git diff --check` passes.
 
 ## Testing Expectations
 
@@ -61,7 +61,7 @@ The root README contains corrupted emoji/tree characters such as `ðŸ...` and g
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: None (no mojibake found)
+- Tests run: `git diff --check -- README.md cli/README.md .github/README.md` (clean)
+- Acceptance criteria status: All 4 criteria met (files already clean UTF-8)
+- Risks: None.
