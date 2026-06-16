@@ -41,6 +41,14 @@
 - Implementation tasks link to the same contract.
 - Contract changes are reviewed when they affect existing clients.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select the api-contract-design skill. Use `.aios/references/api-standards.md` for standards. Use `.aios/templates/openapi.template.yaml` for contract creation.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, `<docsRoot>/api/`, and any available API standards or OpenAPI template. Do not assume `.aios/skill-router.md` or `.aios/templates/` exist. Follow the same API contract checklist manually.
+
+## After This Flow
 
 Have the user review the contract for request, response, auth, errors, and compatibility. After approval, link the contract from provider/client tasks, then implement provider behavior before dependent client integration when possible.

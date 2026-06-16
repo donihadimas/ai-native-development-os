@@ -41,10 +41,10 @@ Workflow docs currently explain mode routing, but users and agents still need to
 
 ## Acceptance Criteria
 
-- [ ] `new-feature.workflow.md` includes clear full and lite mode flows.
-- [ ] Other core workflows are updated consistently where useful.
-- [ ] Each updated workflow includes a clear next action after completion.
-- [ ] No workflow tells lite mode to assume `.aios/` workflow files exist.
+- [x] `new-feature.workflow.md` includes clear full and lite mode flows.
+- [x] Other core workflows are updated consistently where useful.
+- [x] Each updated workflow includes a clear next action after completion.
+- [x] No workflow tells lite mode to assume `.aios/` workflow files exist.
 
 ## Testing Expectations
 
@@ -60,7 +60,7 @@ Workflow docs currently explain mode routing, but users and agents still need to
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `workflows/new-feature.workflow.md`, `workflows/bugfix.workflow.md`, `workflows/review.workflow.md`, `workflows/refactor.workflow.md`, `workflows/release.workflow.md`, `workflows/api-contract.workflow.md`, `workflows/database-migration.workflow.md`, `workflows/security-review.workflow.md`, `workflows/ui-design.workflow.md`, `workflows/new-project.workflow.md`, `workflows/README.md`
+- Tests run: `git diff --check -- workflows` (no whitespace errors)
+- Acceptance criteria status: All 4 criteria met
+- Risks: None. Documentation-only change, no runtime behavior affected.

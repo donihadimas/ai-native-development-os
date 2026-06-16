@@ -40,6 +40,14 @@
 - Compatibility risks are named.
 - Validation checks are defined before implementation.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select the database-migration skill. Use `.aios/references/database-standards.md` for standards. Use `.aios/templates/migration-plan.template.md` for migration plan creation.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, existing schema notes, and available database standards. Do not assume `.aios/skill-router.md` or `.aios/templates/` exist. Follow the same migration planning checklist manually.
+
+## After This Flow
 
 Have the user review compatibility, rollout, rollback, and validation checks. After approval, create or update the implementation task that applies the migration safely, then run pre-migration and post-migration validation.

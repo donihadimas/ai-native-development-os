@@ -43,6 +43,14 @@
 - Accessibility expectations are named.
 - User has reviewed design before implementation tasks are treated as ready.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select the ui-ux-design skill. Use `.aios/templates/design.template.md` for design creation. Use `.aios/references/frontend-principles.md` for standards.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, product docs, and available root or agent-provided design guidance. Do not assume `.aios/skill-router.md` or `.aios/templates/` exist. Follow the same UI/UX design checklist manually.
+
+## After This Flow
 
 Have the user review and accept the design. After approval, generate frontend or product-facing tasks with acceptance criteria and testing expectations, then implement one selected task with implementation planning.

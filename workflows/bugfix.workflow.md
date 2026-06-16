@@ -40,6 +40,14 @@
 - Regression risk is covered.
 - Tests or manual verification are reported.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select testing, implementation planning, and code-review skills. Use `.aios/templates/` for task and review documents. Use `.aios/references/` for engineering guidance.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, the bug report, affected files, and nearby tests. Do not assume `.aios/skill-router.md` or `.aios/templates/` exist. Follow the same sequence manually: reproduce, plan fix, implement, test, review.
+
+## After This Flow
 
 If the bug is not reproduced, define a reproduction or failing check first. If fixed, ask the user to review the diff and regression evidence, then run code review. If review passes, prepare the change for release notes when user-visible behavior changed.

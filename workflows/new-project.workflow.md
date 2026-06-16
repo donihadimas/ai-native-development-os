@@ -60,6 +60,14 @@
 - First tasks have acceptance criteria and testing expectations.
 - Agent can start a task without reading the entire repo.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select skills at each stage. Use `.aios/prompts/` for discovery, PRD, and architecture triggers. Use `.aios/templates/` for all document creation. Use `.aios/references/` for engineering guidance. Use `.aios/workflows/` for end-to-end sequencing.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, and project docs as primary context. Do not assume `.aios/skill-router.md`, `.aios/templates/`, or `.aios/references/` exist. Follow the same sequence manually: vision, PRD, architecture, ADRs, design, tasks, implementation, tests, review.
+
+## After This Flow
 
 If the PRD is not accepted yet, review and approve the PRD first. If PRD and architecture are accepted, create ADRs for important decisions, add design/API/migration planning when the project needs it, then generate small implementation tasks.
