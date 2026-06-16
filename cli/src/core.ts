@@ -118,6 +118,21 @@ export const REQUIRED_DOCS_PATHS = [
 
 export const OPTIONAL_V2X_DOCS_PATHS = ["security", "releases", "database/migrations"];
 
+export const OPTIONAL_V2X_COMMAND_MAP: Record<string, string> = {
+  security: "aios create security <name>",
+  releases: "aios create release <name>",
+  "database/migrations": "aios create migration <name>"
+};
+
+export function formatOptionalDocWarning(path: string, docsRoot: string): string {
+  const relative = relativePath(docsRoot, path);
+  const command = OPTIONAL_V2X_COMMAND_MAP[path];
+  if (command) {
+    return `Optional V2.x path not found: ${relative}. Create when needed with \`${command}\`.`;
+  }
+  return `Optional V2.x path not found: ${relative}`;
+}
+
 export const REQUIRED_AIOS_KIT_PATHS = [
   ".aios/skill-router.md",
   ".aios/config.json",
@@ -673,7 +688,7 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
 
   const warnings = OPTIONAL_V2X_DOCS_PATHS.filter((relativePath) => {
     return !fs.existsSync(docsPath(projectPath, relativePath, config));
-  }).map((item) => `Optional V2.x path not found: ${relativePath(config.docsRoot, item)}`);
+  }).map((item) => formatOptionalDocWarning(item, config.docsRoot));
 
   const apiDirectory = docsPath(projectPath, "api", config);
   const hasOpenApiContract =
@@ -681,7 +696,7 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
     fs.readdirSync(apiDirectory).some((file) => file.endsWith(".openapi.yaml") || file === "openapi.yaml");
 
   if (!hasOpenApiContract) {
-    warnings.push(`Optional V2.x OpenAPI contract not found in ${relativePath(config.docsRoot, "api")}/`);
+    warnings.push(`Optional V2.x OpenAPI contract not found in ${relativePath(config.docsRoot, "api")}/. Create when needed with \`aios create openapi <name>\`.`);
   }
 
   return {

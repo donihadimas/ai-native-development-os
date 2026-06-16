@@ -595,6 +595,39 @@ test("next reports vision, PRD, architecture, design/task creation, and task-rea
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Open the active task/);
 });
 
+test("next shows required workflow guidance before optional suggestions when tasks exist", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, "docs", "product", "vision.md"), "# Vision\n\nReal vision.\n");
+  fs.writeFileSync(path.join(project, "docs", "product", "prd.md"), "# PRD\n\nReal PRD.\n");
+  fs.writeFileSync(path.join(project, "docs", "architecture", "architecture.md"), "# Architecture\n\nReal arch.\n");
+  run(["create", "task", "Implement feature"], { runtimePaths, cwd: project });
+
+  const output = run(["next"], { runtimePaths, cwd: project });
+
+  assert.match(output, /Open the active task/);
+  const taskIndex = output.indexOf("Open the active task");
+  const optionalIndex = output.indexOf("Optional next steps");
+  assert.ok(optionalIndex > taskIndex, "optional section should appear after required guidance");
+  assert.match(output, /aios create security/);
+  assert.match(output, /aios create release/);
+  assert.match(output, /aios create migration/);
+  assert.match(output, /aios create openapi/);
+});
+
+test("next does not show optional suggestions when tasks do not exist yet", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const output = run(["next"], { runtimePaths, cwd: project });
+
+  assert.match(output, /Use product discovery/);
+  assert.ok(!output.includes("Optional next steps"), "should not show optional section before tasks exist");
+});
+
 test("detectSubprojectWarning warns for nested package folders with parent root signals", () => {
   const cwd = tempCwd();
   const repoRoot = path.join(cwd, "repo");

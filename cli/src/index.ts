@@ -1457,6 +1457,31 @@ function relativeDisplayPath(...parts: string[]): string {
   return path.join(...parts).replace(/\\/g, "/");
 }
 
+function collectOptionalDocSuggestions(projectPath: string, config: ReturnType<typeof readProjectConfig>): string[] {
+  const suggestions: string[] = [];
+  const securityPath = path.join(projectPath, config.docsRoot, "security");
+  const releasesPath = path.join(projectPath, config.docsRoot, "releases");
+  const migrationsPath = path.join(projectPath, config.docsRoot, "database", "migrations");
+  const apiDir = path.join(projectPath, config.docsRoot, "api");
+
+  if (!fs.existsSync(securityPath) || fs.readdirSync(securityPath).length === 0) {
+    suggestions.push(`Create a security review with \`aios create security <name>\` when you have an API or auth surface to review.`);
+  }
+  if (!fs.existsSync(releasesPath) || fs.readdirSync(releasesPath).filter((f) => f !== "CHANGELOG.md").length === 0) {
+    suggestions.push(`Create a release note with \`aios create release <version>\` when you are ready to ship.`);
+  }
+  if (!fs.existsSync(migrationsPath) || fs.readdirSync(migrationsPath).length === 0) {
+    suggestions.push(`Create a migration plan with \`aios create migration <name>\` when you have database schema changes.`);
+  }
+  const hasOpenApi =
+    fs.existsSync(apiDir) &&
+    fs.readdirSync(apiDir).some((file) => file.endsWith(".openapi.yaml") || file === "openapi.yaml");
+  if (!hasOpenApi) {
+    suggestions.push(`Create an OpenAPI contract with \`aios create openapi <name>\` when you have an API to document.`);
+  }
+  return suggestions;
+}
+
 function commandNext(ctx: CommandContext, projectPathArg: string | undefined): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
   const config = readProjectConfig(projectPath);
@@ -1509,11 +1534,16 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
     ].join("\n");
   }
 
-  return [
+  const optionalSuggestions = collectOptionalDocSuggestions(projectPath, config);
+  const lines = [
     `Next recommended step for ${projectPath}:`,
     `Open the active task in \`${tasksRelative}/\` and implement one task at a time.`,
     `Ask Codex to read \`AGENTS.md\`, \`${relativeDisplayPath(config.docsRoot, "context", "context-map.md")}\`, \`.aios/skill-router.md\`, and the active task before coding.`
-  ].join("\n");
+  ];
+  if (optionalSuggestions.length > 0) {
+    lines.push("", "Optional next steps (non-blocking):", ...optionalSuggestions.map((s) => `- ${s}`));
+  }
+  return lines.join("\n");
 }
 
 function starterChoices(ctx: CommandContext): string[] {

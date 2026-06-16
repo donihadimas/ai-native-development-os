@@ -175,7 +175,44 @@ test("validateProject reports missing AI-ready paths", () => {
   assert.ok(result.missing.includes(".aios/commands/discover-product.md"));
   assert.ok(result.missing.includes(".aios/commands/generate-prd.md"));
   assert.ok(result.missing.includes(".aios/skills/context-management/SKILL.md"));
-  assert.ok(result.warnings.includes("Optional V2.x path not found: docs/security"));
+  assert.ok(result.warnings.some((w) => w.includes("Optional V2.x path not found: docs/security") && w.includes("aios create security")));
+});
+
+test("validateProject includes actionable command guidance for all optional V2.x warnings", () => {
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-optional-"));
+  fs.mkdirSync(path.join(project, "docs", "context"), { recursive: true });
+  fs.writeFileSync(path.join(project, "AGENTS.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "context", "context-map.md"), "");
+
+  const result = validateProject(project);
+
+  assert.equal(result.ok, false);
+  const warnings = result.warnings.join("\n");
+  assert.ok(warnings.includes("aios create security"), "should recommend security command");
+  assert.ok(warnings.includes("aios create release"), "should recommend release command");
+  assert.ok(warnings.includes("aios create migration"), "should recommend migration command");
+  assert.ok(warnings.includes("aios create openapi"), "should recommend openapi command");
+  assert.ok(!result.ok, "missing optional docs should not make result.ok true");
+});
+
+test("validateProject does not warn for optional docs that exist", () => {
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-optional-exists-"));
+  fs.mkdirSync(path.join(project, "docs", "context"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "security"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "releases"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "database", "migrations"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "api"), { recursive: true });
+  fs.writeFileSync(path.join(project, "AGENTS.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "context", "context-map.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "api", "openapi.yaml"), "openapi: 3.0.0");
+
+  const result = validateProject(project);
+
+  const warnings = result.warnings.join("\n");
+  assert.ok(!warnings.includes("security"), "should not warn for existing security dir");
+  assert.ok(!warnings.includes("release"), "should not warn for existing release dir");
+  assert.ok(!warnings.includes("migration"), "should not warn for existing migration dir");
+  assert.ok(!warnings.includes("OpenAPI contract not found"), "should not warn for existing OpenAPI contract");
 });
 
 test("validateProject can ignore local AIOS kit in lite mode", () => {

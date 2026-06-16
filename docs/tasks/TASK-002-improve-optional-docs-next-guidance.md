@@ -46,10 +46,10 @@ Improve `aios next` and validation guidance so optional V2.x docs warnings tell 
 
 ## Acceptance Criteria
 
-- [ ] Optional docs warnings include the recommended command or next action.
-- [ ] Missing optional docs do not fail validation.
-- [ ] `aios next` remains focused on required workflow progress before optional suggestions.
-- [ ] Tests cover optional warning guidance.
+- [x] Optional docs warnings include the recommended command or next action.
+- [x] Missing optional docs do not fail validation.
+- [x] `aios next` remains focused on required workflow progress before optional suggestions.
+- [x] Tests cover optional warning guidance.
 
 ## Testing Expectations
 
@@ -66,7 +66,7 @@ Improve `aios next` and validation guidance so optional V2.x docs warnings tell 
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `cli/src/core.ts`, `cli/src/index.ts`, `cli/test/core.test.ts`, `cli/test/commands.test.ts`
+- Tests run: 52/52 pass (`npm test` from `cli/`)
+- Acceptance criteria status: All 4 criteria met
+- Risks: None. Warnings remain non-blocking, `result.ok` unaffected.
