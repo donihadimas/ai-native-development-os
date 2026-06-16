@@ -41,10 +41,10 @@ AIOS is now being used inside its own repository. A dogfood validation task shou
 
 ## Acceptance Criteria
 
-- [ ] A validation report records the AIOS dogfood cycle.
-- [ ] Report lists docs used, tasks created, tests run, and review evidence.
-- [ ] Report identifies friction points and follow-up tasks.
-- [ ] CLI validation passes at the end of the cycle.
+- [x] A validation report records the AIOS dogfood cycle.
+- [x] Report lists docs used, tasks created, tests run, and review evidence.
+- [x] Report identifies friction points and follow-up tasks.
+- [x] CLI validation passes at the end of the cycle.
 
 ## Testing Expectations
 
@@ -61,7 +61,7 @@ AIOS is now being used inside its own repository. A dogfood validation task shou
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `validation/aios-dogfood-validation-report.md` (new), `docs/tasks/TASK-008-dogfood-aios-validation-cycle.md`
+- Tests run: 59/59 pass, `git diff --check` clean
+- Acceptance criteria status: All 4 criteria met
+- Risks: None. Process validation only, no code changes.
