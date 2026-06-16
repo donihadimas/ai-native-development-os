@@ -689,7 +689,7 @@ npm run aios -- init ../demo-project
 
 ## 🚢 Publishing Checklist
 
-Before publishing to npm:
+Before publishing to npm, follow the step-by-step checklist at `../validation/npm-publish-readiness-checklist.md`. Quick summary:
 
 ```bash
 npm test

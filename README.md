@@ -273,7 +273,7 @@ npm test
 npm pack --dry-run
 ```
 
-For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`.
+For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`. For the step-by-step publish checklist, see `validation/npm-publish-readiness-checklist.md`.
 
 ## 📜 License
 

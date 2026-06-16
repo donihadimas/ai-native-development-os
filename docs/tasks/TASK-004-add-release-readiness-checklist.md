@@ -41,10 +41,10 @@ The CLI has build, test, sync-assets, and pack flows, but release preparation is
 
 ## Acceptance Criteria
 
-- [ ] A release readiness checklist exists and is easy to find.
-- [ ] Checklist includes `npm test`, `npm run build`, `npm pack --dry-run`, and tarball inspection.
-- [ ] Checklist reminds maintainers to verify synced assets include new workflow files.
-- [ ] Checklist keeps publishing manual.
+- [x] A release readiness checklist exists and is easy to find.
+- [x] Checklist includes `npm test`, `npm run build`, `npm pack --dry-run`, and tarball inspection.
+- [x] Checklist reminds maintainers to verify synced assets include new workflow files.
+- [x] Checklist keeps publishing manual.
 
 ## Testing Expectations
 
@@ -60,7 +60,7 @@ The CLI has build, test, sync-assets, and pack flows, but release preparation is
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `validation/npm-publish-readiness-checklist.md` (new), `README.md`, `cli/README.md`, `docs/tasks/TASK-004-add-release-readiness-checklist.md`
+- Tests run: `git diff --check` (no whitespace errors)
+- Acceptance criteria status: All 4 criteria met
+- Risks: Checklist may drift from package scripts over time; review during future releases.
