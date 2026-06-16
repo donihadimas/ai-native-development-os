@@ -179,6 +179,10 @@ Advanced commands:
   aios config [project-path]
     Print resolved AIOS project configuration.
 
+  aios repair [project-path]
+    Repair missing .aios kit files, native skills, and integration rules.
+    Non-destructive: skips existing valid files.
+
 Document commands:
   aios create feature <feature-name>
     Create a feature PRD stub in the configured docsRoot product/features folder.
@@ -602,6 +606,62 @@ function commandInstallKit(ctx: CommandContext, projectPathArg: string | undefin
     `Skipped existing: ${result.skipped.length}`,
     "Next step: run `aios validate` from the project root."
   ].join("\n");
+}
+
+function commandRepair(ctx: CommandContext, projectPathArg: string | undefined): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const config = readProjectConfig(projectPath);
+  const output = [`Repairing AIOS assets in ${projectPath}`];
+  let totalCreated = 0;
+  let totalSkipped = 0;
+
+  if (config.mode === "full") {
+    const includeSkills = config.skillDelivery === "portable" || config.skillDelivery === "both";
+    const kitResult = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, { includeSkills, config });
+    totalCreated += kitResult.created.length;
+    totalSkipped += kitResult.skipped.length;
+    output.push(`Kit: ${kitResult.created.length} created, ${kitResult.skipped.length} skipped`);
+  } else {
+    output.push("Kit: skipped (lite mode)");
+  }
+
+  if (config.skillDelivery === "native" || config.skillDelivery === "both") {
+    const agentResult = installAgentSkills({
+      sourceRoot: ctx.runtimePaths.aiosKitSource,
+      projectPath,
+      agents: config.selectedAgents,
+      skills: config.selectedSkills,
+      scope: config.agentScope
+    });
+    totalCreated += agentResult.created.length;
+    totalSkipped += agentResult.skipped.length;
+    output.push(`Native skills: ${agentResult.created.length} created, ${agentResult.skipped.length} skipped`);
+  } else {
+    output.push("Native skills: skipped (delivery mode is portable)");
+  }
+
+  let integrationCreated = 0;
+  let integrationSkipped = 0;
+  for (const integration of INTEGRATIONS) {
+    if (!config.integrations[integration].enabled) {
+      continue;
+    }
+    const target = integrationRulePath(projectPath, integration);
+    const existed = fs.existsSync(target);
+    ensureIntegrationRule(ctx, projectPath, integration);
+    if (existed) {
+      integrationSkipped++;
+    } else {
+      integrationCreated++;
+    }
+  }
+  totalCreated += integrationCreated;
+  totalSkipped += integrationSkipped;
+  output.push(`Integration rules: ${integrationCreated} created, ${integrationSkipped} skipped`);
+
+  output.push("", `Total: ${totalCreated} created, ${totalSkipped} skipped`);
+  output.push("Next step: run `aios validate` from the project root.");
+  return output.join("\n");
 }
 
 function commandDirectory(ctx: CommandContext, projectPathArg: string | undefined): string {
@@ -1998,6 +2058,7 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       { name: "Install native agent skills", value: "agent install" },
       { name: "Set up external integrations", value: "integration" },
       { name: "Validate project", value: "validate" },
+      { name: "Repair missing AIOS assets", value: "repair" },
       { name: "Show next recommended step", value: "next" },
       { name: "Print AIOS command prompt", value: "command" },
       { name: "Show help", value: "help" }
@@ -2015,6 +2076,8 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       return interactiveIntegration(ctx);
     case "validate":
       return commandValidate(ctx, await input({ message: "Project path:", default: "." }));
+    case "repair":
+      return commandRepair(ctx, await input({ message: "Project path:", default: "." }));
     case "next":
       return commandNext(ctx, await input({ message: "Project path:", default: "." }));
     case "command": {
@@ -2069,6 +2132,8 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return commandCreate(ctx, name, secondName);
     case "validate":
       return commandValidate(ctx, name, parsed);
+    case "repair":
+      return commandRepair(ctx, name);
     case "next":
       return commandNext(ctx, name);
     default:

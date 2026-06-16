@@ -676,3 +676,80 @@ test("detectSubprojectWarning does not warn when parent lacks root signals", () 
   const warning = detectSubprojectWarning(subProject);
   assert.equal(warning, undefined);
 });
+
+test("repair is available in help output", () => {
+  const output = run(["help"], { runtimePaths, cwd: tempCwd() });
+  assert.match(output, /aios repair \[project-path\]/);
+  assert.match(output, /Repair missing \.aios kit files/);
+});
+
+test("repair restores missing .aios kit files", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.rmSync(path.join(project, ".aios", "commands", "discover-product.md"));
+
+  const output = run(["repair", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Repairing AIOS assets/);
+  assert.match(output, /Kit: 1 created/);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")));
+  assert.match(output, /Next step: run `aios validate`/);
+});
+
+test("repair restores incomplete native skill folders", () => {
+  const cwd = tempCwd();
+  run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-project");
+
+  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+
+  const output = run(["repair", "native-project"], { runtimePaths, cwd });
+  assert.match(output, /Native skills:/);
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")));
+});
+
+test("repair restores enabled integration rules", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+  run(["integration", "add", "rtk", "demo-project"], { runtimePaths, cwd });
+
+  fs.rmSync(path.join(project, ".aios", "integrations", "rtk.md"));
+
+  const output = run(["repair", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Repairing AIOS assets/);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "rtk.md")));
+  assert.match(output, /Next step: run `aios validate`/);
+});
+
+test("repair reports skipped for already existing files", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+
+  const output = run(["repair", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Kit: 0 created, [1-9]\d* skipped/);
+  assert.match(output, /Total: 0 created/);
+});
+
+test("repair skips kit and native skills in lite mode", () => {
+  const cwd = tempCwd();
+  run(["init", "lite-project", "--lite"], { runtimePaths, cwd });
+
+  const output = run(["repair", "lite-project"], { runtimePaths, cwd });
+  assert.match(output, /Kit: skipped \(lite mode\)/);
+  assert.match(output, /Native skills: skipped \(delivery mode is portable\)/);
+});
+
+test("repair does not add portable skills to native-only projects", () => {
+  const cwd = tempCwd();
+  run(["init", "native-only", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-only");
+
+  assert.equal(fs.existsSync(path.join(project, ".aios", "skills")), false);
+
+  const output = run(["repair", "native-only"], { runtimePaths, cwd });
+  assert.match(output, /Kit: 0 created/);
+  assert.equal(fs.existsSync(path.join(project, ".aios", "skills")), false);
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "context-management", "SKILL.md")));
+});

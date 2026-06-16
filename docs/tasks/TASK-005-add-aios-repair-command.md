@@ -44,12 +44,12 @@ During local adoption, native skill folders existed but were incomplete. A dedic
 
 ## Acceptance Criteria
 
-- [ ] `aios repair [project-path]` is available in help.
-- [ ] Repair restores missing `.aios` kit files for full mode.
-- [ ] Repair restores incomplete native skill folders.
-- [ ] Repair restores enabled integration rule files.
-- [ ] Repair output reports created, skipped, and next validation step.
-- [ ] Tests cover repair behavior.
+- [x] `aios repair [project-path]` is available in help.
+- [x] Repair restores missing `.aios` kit files for full mode.
+- [x] Repair restores incomplete native skill folders.
+- [x] Repair restores enabled integration rule files.
+- [x] Repair output reports created, skipped, and next validation step.
+- [x] Tests cover repair behavior.
 
 ## Testing Expectations
 
@@ -66,7 +66,7 @@ During local adoption, native skill folders existed but were incomplete. A dedic
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `cli/src/index.ts`, `cli/test/commands.test.ts`, `docs/tasks/TASK-005-add-aios-repair-command.md`
+- Tests run: 59/59 pass (`npm test` from `cli/`)
+- Acceptance criteria status: All 6 criteria met
+- Risks: None. Reuses existing install/repair functions.
