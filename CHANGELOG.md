@@ -53,13 +53,13 @@ Feature release focused on safe project updates, workflow kit acceptance, and br
 
 Patch release focused on npm package metadata and README onboarding clarity.
 
-### Changed
+### 🔄 Changed
 
 - Added npm metadata for homepage, repository, issue tracker, and author.
 - Updated root and CLI README onboarding so guided setup is the primary path after install.
 - Reframed command examples as a non-interactive command quickstart.
 
-### Validation
+### ✅ Validation
 
 - `npm test`: 41 passed, 0 failed.
 - `npm pack --dry-run`: passed.

@@ -31,6 +31,7 @@ Examples:
 
 - `0.2.1`: fix README, validation report, package metadata, or a CLI bug without changing behavior.
 - `0.3.0`: add a new command, skill, template, workflow, or non-breaking skeleton capability.
+- `0.3.1`: add npm metadata, clarify README onboarding, or fix release documentation after `0.3.0`.
 - `1.0.0`: stable public API and workflow contract after real-project usage proves the system is ready for stronger compatibility expectations.
 
 ### 📌 Current Release Version
@@ -38,7 +39,7 @@ Examples:
 The current CLI release should use:
 
 ```text
-0.3.0
+0.3.1
 ```
 
 Reason:
@@ -46,7 +47,7 @@ Reason:
 - V1 manual workflow already exists.
 - V2 assisted CLI workflow is implemented.
 - V2.x ready-to-use workflow setup, guided CLI, native agent skills, and optional RTK/Caveman integrations are implemented.
-- This release includes intentional command cleanup while the project is still pre-`1.0.0`; document migration notes in the changelog and GitHub release.
+- `0.3.1` is a patch release for npm metadata and README onboarding clarity after the `0.3.0` guided setup release.
 
 ## 🏷️ Release Types
 
@@ -163,32 +164,28 @@ installed-package smoke test: passed
 
 9. Publish the GitHub release.
 
-### 🔄 Current `v0.3.0` GitHub Release
+### 🔄 Current `v0.3.1` GitHub Release
 
 Recommended release title:
 
 ```text
-v0.3.0 - Guided AIOS Project Setup
+v0.3.1 - npm Metadata and Guided Setup Docs
 ```
 
 Recommended release notes:
 
 ````md
-## v0.3.0 - Guided AIOS Project Setup
+## v0.3.1 - npm Metadata and Guided Setup Docs
 
-Feature release for ready-to-use AI-native project setup with the `@donihadimas/aios` CLI.
+Patch release for npm package metadata and README onboarding clarity.
 
-### Added
-- Guided `aios` setup for creating or adopting projects.
-- Local `.aios/` workflow kit with commands, prompts, references, templates, workflows, integrations, and config.
-- Native agent skill install for Codex/generic, Qwen Code, OpenCode, and Antigravity.
-- Configurable project shapes and docs root.
-- V2.x workflows for OpenAPI, database migration planning, security review, and release preparation.
-- Optional RTK and Caveman integration manager.
+### Changed
+- Added npm metadata for homepage, repository, issue tracker, and author.
+- Updated root and CLI README onboarding so guided setup is the primary path after install.
+- Reframed command examples as a non-interactive command quickstart.
 
 ### Breaking Changes
-- Legacy flat commands such as `aios task`, `aios adr`, `aios review`, and `aios feature` were replaced by grouped commands such as `aios create task`, `aios create adr`, `aios create review`, and `aios create feature`.
-- Legacy helper aliases such as `aios agent-install` and `aios command-list` were replaced by `aios agent install` and `aios prompt list`.
+None.
 
 ### Validation
 - `npm test`: 41 passed, 0 failed.
