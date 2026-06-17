@@ -38,6 +38,14 @@
 - Acceptance criteria status is clear.
 - Testing gaps are named.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select the code-review skill. Use `.aios/templates/review-report.template.md` for the review report. Use `.aios/references/` for review standards.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, the diff, active task, and available review template. Do not assume `.aios/templates/` or `.aios/skill-router.md` exist. Follow the same review sequence manually.
+
+## After This Flow
 
 If blocking findings exist, fix them and re-run review. If approved, update the task done summary and move to release planning when user-visible behavior changed.

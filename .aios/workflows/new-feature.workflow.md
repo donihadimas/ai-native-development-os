@@ -47,6 +47,14 @@
 - Tests or manual checks are reported.
 - Review does not identify blocking findings.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select skills. Use `.aios/prompts/` for known workflow triggers. Use `.aios/templates/` when creating or updating PRD, ADR, design, API, or task documents. Use `.aios/references/` for engineering guidance. Follow `.aios/workflows/` for end-to-end sequencing.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, and active product docs as primary context. Do not assume `.aios/skill-router.md`, `.aios/templates/`, or `.aios/references/` exist. Follow the same process sequence manually: PRD update, architecture check, ADRs, design, tasks, implementation, tests, review.
+
+## After This Flow
 
 If the feature changes product scope, have the user review the updated PRD or feature PRD first. If UI, API, data, or architecture changes are needed, create the design doc, contract, migration plan, or ADR before implementation. Otherwise select one task and run implementation planning before coding.

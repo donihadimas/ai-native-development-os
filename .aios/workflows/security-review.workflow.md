@@ -40,6 +40,14 @@
 - Residual risk is explicit.
 - Security-sensitive releases have human approval.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select the security-review skill. Use `.aios/references/security-principles.md` for standards. Use `.aios/templates/security-review-report.template.md` for report creation.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, affected files, and available security principles. Do not assume `.aios/skill-router.md` or `.aios/templates/` exist. Follow the same security review checklist manually.
+
+## After This Flow
 
 If blocking findings exist, fix them before release. If only residual risk remains, have the user explicitly accept or reject the risk, then continue to release planning or code review.

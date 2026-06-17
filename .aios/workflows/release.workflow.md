@@ -48,6 +48,14 @@
 - Post-release checks are defined.
 - Human approval is recorded outside the agent's assumptions.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select the release-management skill. Use `.aios/templates/` for release notes and changelog drafts. Use `.aios/references/` for release standards.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, completed task summaries, review evidence, and available release templates. Do not assume `.aios/templates/` or `.aios/skill-router.md` exist. Follow the same release checklist manually.
+
+## After This Flow
 
 Have the user review release scope, validation evidence, changelog impact, rollback plan, and post-release checks. After explicit approval, the user may publish or deploy outside AIOS automation.

@@ -39,6 +39,14 @@
 - Tests or manual checks show no regression.
 - No unrelated cleanup was mixed in.
 
-## Next Action
+## Full Mode Flow
+
+Use `.aios/skill-router.md` to select implementation-planning, testing, and code-review skills. Use `.aios/templates/` for task documents. Use `.aios/references/` for engineering guidance.
+
+## Lite Mode Flow
+
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, affected files, and existing tests. Do not assume `.aios/skill-router.md` or `.aios/templates/` exist. Follow the same sequence manually: define scope, plan, refactor, test, review.
+
+## After This Flow
 
 If scope or behavior impact is unclear, get user approval before editing. If refactor is complete, review the diff for accidental behavior change, then run relevant tests and record evidence.
