@@ -63,6 +63,20 @@ export interface AgentInstallResult {
   planned: string[];
 }
 
+export type AssetClassification = "missing" | "identical" | "contentDifferent" | "lineEndingOnly";
+
+export interface ClassifiedAsset {
+  relativePath: string;
+  classification: AssetClassification;
+  sourcePath: string;
+  targetPath: string;
+}
+
+export interface UpdateAcceptResult {
+  accepted: string[];
+  skipped: string[];
+}
+
 export const DEFAULT_DOCS_ROOT = "docs";
 export const DEFAULT_KIT_ROOT = ".aios";
 
@@ -704,4 +718,125 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
     missing,
     warnings
   };
+}
+
+function normalizeLineEndings(content: string): string {
+  return content.replace(/\r\n/g, "\n");
+}
+
+function listFilesRecursive(dir: string, base = dir): string[] {
+  if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
+    return [];
+  }
+  const results: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...listFilesRecursive(full, base));
+    } else {
+      results.push(path.relative(base, full).replace(/\\/g, "/"));
+    }
+  }
+  return results;
+}
+
+export function classifyAsset(sourcePath: string, targetPath: string): AssetClassification {
+  if (!fs.existsSync(targetPath)) {
+    return "missing";
+  }
+
+  const sourceContent = fs.readFileSync(sourcePath, "utf8");
+  const targetContent = fs.readFileSync(targetPath, "utf8");
+
+  if (sourceContent === targetContent) {
+    return "identical";
+  }
+
+  if (normalizeLineEndings(sourceContent) === normalizeLineEndings(targetContent)) {
+    return "lineEndingOnly";
+  }
+
+  return "contentDifferent";
+}
+
+export function classifyKitAssets(
+  sourceRoot: string,
+  projectPath: string,
+  config: ProjectConfig,
+  sectionFilter?: string
+): ClassifiedAsset[] {
+  const results: ClassifiedAsset[] = [];
+
+  if (config.mode !== "full") {
+    return results;
+  }
+
+  const includeSkills = config.skillDelivery === "portable" || config.skillDelivery === "both";
+
+  for (const entry of AIOS_KIT_ENTRIES) {
+    if (entry === "skills" && !includeSkills) {
+      continue;
+    }
+
+    if (sectionFilter && entry !== sectionFilter) {
+      continue;
+    }
+
+    const sourcePath = path.join(sourceRoot, entry);
+    const targetPath = path.join(projectPath, ".aios", entry);
+
+    if (!fs.existsSync(sourcePath)) {
+      continue;
+    }
+
+    if (fs.statSync(sourcePath).isFile()) {
+      const classification = classifyAsset(sourcePath, targetPath);
+      results.push({
+        relativePath: `.aios/${entry}`,
+        classification,
+        sourcePath,
+        targetPath
+      });
+      continue;
+    }
+
+    const sourceFiles = listFilesRecursive(sourcePath);
+    for (const relative of sourceFiles) {
+      const sourceFile = path.join(sourcePath, relative);
+      const targetFile = path.join(targetPath, relative);
+      const classification = classifyAsset(sourceFile, targetFile);
+      results.push({
+        relativePath: `.aios/${entry}/${relative}`,
+        classification,
+        sourcePath: sourceFile,
+        targetPath: targetFile
+      });
+    }
+  }
+
+  return results;
+}
+
+export function acceptKitAssets(
+  sourceRoot: string,
+  projectPath: string,
+  config: ProjectConfig,
+  options: { sectionFilter?: string; dryRun?: boolean } = {}
+): UpdateAcceptResult {
+  const result: UpdateAcceptResult = { accepted: [], skipped: [] };
+  const classified = classifyKitAssets(sourceRoot, projectPath, config, options.sectionFilter);
+
+  for (const asset of classified) {
+    if (asset.classification === "contentDifferent" || asset.classification === "lineEndingOnly") {
+      if (options.dryRun) {
+        result.accepted.push(asset.relativePath);
+      } else {
+        fs.mkdirSync(path.dirname(asset.targetPath), { recursive: true });
+        fs.copyFileSync(asset.sourcePath, asset.targetPath);
+        result.accepted.push(asset.relativePath);
+      }
+    }
+  }
+
+  return result;
 }

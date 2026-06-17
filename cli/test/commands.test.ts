@@ -883,3 +883,114 @@ test("update --dry-run counts native skills from updated config, not original", 
   assert.match(output, /Native skills: 1 would be added/);
   assert.equal(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")), false);
 });
+
+test("update --accept overwrites a differing local .aios file with bundled source", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+
+  const output = run(["update", "demo-project", "--accept"], { runtimePaths, cwd });
+  assert.match(output, /Accept: 1 file\(s\) accepted/);
+  assert.match(output, /\.aios\/skill-router\.md/);
+  const content = fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8");
+  assert.notEqual(content, "# Modified locally\n");
+});
+
+test("update --dry-run --accept reports planned overwrites without writing", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const originalContent = fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8");
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+
+  const output = run(["update", "demo-project", "--dry-run", "--accept"], { runtimePaths, cwd });
+  assert.match(output, /Dry-run/);
+  assert.match(output, /Accept: 1 file\(s\) would be accepted/);
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
+});
+
+test("update --accept workflows only updates workflow assets", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "# Modified prompt\n");
+
+  const output = run(["update", "demo-project", "--accept", "prompts"], { runtimePaths, cwd });
+  assert.match(output, /Accept: 1 file\(s\) accepted/);
+  assert.match(output, /\.aios\/prompts\/01-generate-prd\.md/);
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
+});
+
+test("update default behavior does not overwrite existing differing files", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Review needed: 1 local file/);
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
+});
+
+test("update reports line-ending-only differences separately", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const targetPath = path.join(project, ".aios", "skill-router.md");
+  const originalContent = fs.readFileSync(targetPath, "utf8");
+  const normalized = originalContent.replace(/\r\n/g, "\n");
+  const crlfContent = normalized.replace(/\n/g, "\r\n");
+
+  if (crlfContent !== originalContent) {
+    fs.writeFileSync(targetPath, crlfContent);
+    const output = run(["update", "demo-project"], { runtimePaths, cwd });
+    assert.match(output, /Line-ending differences: 1 file/);
+    assert.ok(!output.includes("Review needed"));
+  } else {
+    fs.writeFileSync(targetPath, originalContent + " ");
+    const output = run(["update", "demo-project"], { runtimePaths, cwd });
+    assert.match(output, /Review needed: 1 local file/);
+  }
+});
+
+test("update --accept is available in help output", () => {
+  const output = run(["help"], { runtimePaths, cwd: tempCwd() });
+  assert.match(output, /--accept/);
+  assert.match(output, /accept only a specific section/);
+});
+
+test("update --accept <section> <project-path> parses section before project path", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "# Modified prompt\n");
+
+  const output = run(["update", "--accept", "prompts", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Accept: 1 file\(s\) accepted/);
+  assert.match(output, /\.aios\/prompts\/01-generate-prd\.md/);
+  assert.match(output, /Updating AIOS assets in.*demo-project/);
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
+  assert.ok(!fs.existsSync(path.join(cwd, "prompts", ".aios")), "should not create .aios in a 'prompts' directory");
+});
+
+test("update --accept <section> <project-path> does not treat section name as project path when --accept is last", () => {
+  const cwd = tempCwd();
+  run(["init", "my-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "my-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "# Modified prompt\n");
+
+  const output = run(["update", "my-project", "--accept", "prompts"], { runtimePaths, cwd });
+  assert.match(output, /Updating AIOS assets in.*my-project/);
+  assert.match(output, /Accept: 1 file\(s\) accepted/);
+  assert.ok(!fs.existsSync(path.join(cwd, "prompts", ".aios")), "should not create .aios in a 'prompts' directory");
+});

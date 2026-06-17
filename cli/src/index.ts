@@ -36,7 +36,9 @@ import {
   validateProject,
   writeProjectConfig,
   writeRenderedTemplate,
-  type RuntimePaths
+  type RuntimePaths,
+  classifyKitAssets,
+  acceptKitAssets
 } from "./core.js";
 
 interface CommandContext {
@@ -184,10 +186,12 @@ Advanced commands:
     Repair missing .aios kit files, native skills, and integration rules.
     Non-destructive: skips existing valid files.
 
-  aios update [project-path] [--dry-run]
+  aios update [project-path] [--dry-run] [--accept [section]]
     Update an adopted project with newly bundled AIOS assets, skills, and
     safe config defaults. Non-destructive: skips existing local files.
     Use --dry-run to preview changes without writing.
+    Use --accept to apply review-needed .aios/ asset changes.
+    Use --accept <section> to accept only a specific section (commands, integrations, skills, prompts, references, templates, workflows).
 
 Document commands:
   aios create feature <feature-name>
@@ -292,6 +296,8 @@ Next step after generating docs:
 `;
 }
 
+const ACCEPT_SECTIONS = ["commands", "integrations", "skills", "prompts", "references", "templates", "workflows"];
+
 interface ParsedArgs {
   args: string[];
   lite: boolean;
@@ -306,6 +312,8 @@ interface ParsedArgs {
   projectShape?: ProjectShape;
   install: boolean;
   mode?: string;
+  accept: boolean;
+  acceptSection?: string;
 }
 
 function requireName(value: string | undefined, command: string): string {
@@ -332,10 +340,25 @@ function parseArgs(argv: string[]): ParsedArgs {
   const commandFlags = new Set(["--version", "--help"]);
   const args: string[] = [];
 
+  let acceptSection: string | undefined;
+  const acceptIndex = argv.indexOf("--accept");
+  if (acceptIndex !== -1) {
+    const afterAccept = argv[acceptIndex + 1];
+    if (afterAccept && ACCEPT_SECTIONS.includes(afterAccept)) {
+      acceptSection = afterAccept;
+    }
+  }
+
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (valueFlags.has(arg)) {
       index += 1;
+      continue;
+    }
+    if (arg === "--accept") {
+      if (acceptSection) {
+        index += 1;
+      }
       continue;
     }
     if (arg.startsWith("--") && !commandFlags.has(arg)) {
@@ -343,6 +366,8 @@ function parseArgs(argv: string[]): ParsedArgs {
     }
     args.push(arg);
   }
+
+  const accept = argv.includes("--accept");
 
   return {
     args,
@@ -357,7 +382,9 @@ function parseArgs(argv: string[]): ParsedArgs {
     skills: readFlagValue(argv, "--skills"),
     scope: readFlagValue(argv, "--scope"),
     projectShape: readFlagValue(argv, "--shape") as ProjectShape | undefined,
-    mode: readFlagValue(argv, "--mode")
+    mode: readFlagValue(argv, "--mode"),
+    accept,
+    acceptSection
   };
 }
 
@@ -676,48 +703,6 @@ function commandRepair(ctx: CommandContext, projectPathArg: string | undefined):
   return output.join("\n");
 }
 
-function collectReviewNeeded(projectPath: string, config: ReturnType<typeof readProjectConfig>, sourceRoot: string): string[] {
-  const reviewNeeded: string[] = [];
-  if (config.mode !== "full") {
-    return reviewNeeded;
-  }
-
-  for (const entry of AIOS_KIT_ENTRIES) {
-    if (entry === "skills" && (config.skillDelivery === "native")) {
-      continue;
-    }
-    const sourcePath = path.join(sourceRoot, entry);
-    const targetPath = path.join(projectPath, ".aios", entry);
-    if (!fs.existsSync(sourcePath) || !fs.existsSync(targetPath)) {
-      continue;
-    }
-
-    if (fs.statSync(sourcePath).isFile()) {
-      const sourceContent = fs.readFileSync(sourcePath, "utf8");
-      const targetContent = fs.readFileSync(targetPath, "utf8");
-      if (sourceContent !== targetContent) {
-        reviewNeeded.push(`.aios/${entry}`);
-      }
-      continue;
-    }
-
-    const sourceFiles = listFilesRecursive(sourcePath);
-    for (const relative of sourceFiles) {
-      const sourceFile = path.join(sourcePath, relative);
-      const targetFile = path.join(targetPath, relative);
-      if (!fs.existsSync(targetFile)) {
-        continue;
-      }
-      const sourceContent = fs.readFileSync(sourceFile, "utf8");
-      const targetContent = fs.readFileSync(targetFile, "utf8");
-      if (sourceContent !== targetContent) {
-        reviewNeeded.push(`.aios/${entry}/${relative}`);
-      }
-    }
-  }
-  return reviewNeeded;
-}
-
 function listFilesRecursive(dir: string, base = dir): string[] {
   if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
     return [];
@@ -738,6 +723,8 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
   const config = readProjectConfig(projectPath);
   const dryRun = options.dryRun;
+  const acceptMode = options.accept;
+  const sectionFilter = options.acceptSection;
   const output = [dryRun ? `Dry-run: updating AIOS assets in ${projectPath}` : `Updating AIOS assets in ${projectPath}`];
   let totalCreated = 0;
   let totalSkipped = 0;
@@ -750,6 +737,9 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
       let plannedKit = 0;
       for (const entry of AIOS_KIT_ENTRIES) {
         if (entry === "skills" && !includeSkills) {
+          continue;
+        }
+        if (sectionFilter && entry !== sectionFilter) {
           continue;
         }
         const sourcePath = path.join(sourceRoot, entry);
@@ -831,14 +821,41 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
     writeProjectConfig(projectPath, config);
   }
 
-  const reviewNeeded = collectReviewNeeded(projectPath, config, ctx.runtimePaths.aiosKitSource);
-  if (reviewNeeded.length > 0) {
-    output.push(`Review needed: ${reviewNeeded.length} local file(s) differ from bundled assets`);
-    for (const file of reviewNeeded.slice(0, 10)) {
-      output.push(`  - ${file}`);
+  if (acceptMode) {
+    const acceptResult = acceptKitAssets(ctx.runtimePaths.aiosKitSource, projectPath, config, {
+      sectionFilter,
+      dryRun
+    });
+
+    if (acceptResult.accepted.length > 0) {
+      const label = dryRun ? "would be accepted" : "accepted";
+      output.push(`Accept: ${acceptResult.accepted.length} file(s) ${label}`);
+      for (const file of acceptResult.accepted.slice(0, 10)) {
+        output.push(`  - ${file}`);
+      }
+      if (acceptResult.accepted.length > 10) {
+        output.push(`  ... and ${acceptResult.accepted.length - 10} more`);
+      }
+    } else {
+      output.push("Accept: no review-needed files to accept");
     }
-    if (reviewNeeded.length > 10) {
-      output.push(`  ... and ${reviewNeeded.length - 10} more`);
+  } else {
+    const classified = classifyKitAssets(ctx.runtimePaths.aiosKitSource, projectPath, config, sectionFilter);
+    const contentDiffs = classified.filter((a) => a.classification === "contentDifferent");
+    const lineEndingDiffs = classified.filter((a) => a.classification === "lineEndingOnly");
+
+    if (contentDiffs.length > 0) {
+      output.push(`Review needed: ${contentDiffs.length} local file(s) differ from bundled assets`);
+      for (const file of contentDiffs.slice(0, 10)) {
+        output.push(`  - ${file.relativePath}`);
+      }
+      if (contentDiffs.length > 10) {
+        output.push(`  ... and ${contentDiffs.length - 10} more`);
+      }
+    }
+
+    if (lineEndingDiffs.length > 0) {
+      output.push(`Line-ending differences: ${lineEndingDiffs.length} file(s) differ only in line endings`);
     }
   }
 
