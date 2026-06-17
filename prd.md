@@ -266,6 +266,8 @@ ai-native-dev-os/
 │   │   └── SKILL.md
 │   ├── implementation-planner/
 │   │   └── SKILL.md
+│   ├── task-implementation/
+│   │   └── SKILL.md
 │   ├── testing/
 │   │   └── SKILL.md
 │   └── code-review/
@@ -298,8 +300,7 @@ ai-native-dev-os/
 │   ├── bugfix.workflow.md
 │   ├── refactor.workflow.md
 │   ├── review.workflow.md
-│   ├── release.workflow.md
-│   └── v2-roadmap.workflow.md
+│   └── release.workflow.md
 │
 ├── prompts/
 │   ├── 01-generate-prd.md
@@ -500,7 +501,31 @@ Rules:
 
 ---
 
-### 11.8 testing
+### 11.8 task-implementation
+
+Purpose:
+
+Menjalankan satu active task dari rencana implementasi sampai validasi selesai.
+
+Outputs:
+
+- scoped implementation
+- test or validation evidence
+- acceptance criteria status
+- updated task status or Done Summary
+- risks and next step
+
+Rules:
+
+- Harus membaca active task sebelum implementasi.
+- Harus mengikuti implementation plan atau membuat plan singkat lebih dulu.
+- Harus menjalankan validasi yang relevan.
+- Harus update task status atau Done Summary ketika acceptance criteria terpenuhi.
+- Tidak boleh menandai task selesai jika acceptance criteria belum terpenuhi.
+
+---
+
+### 11.9 testing
 
 Purpose:
 
@@ -523,7 +548,7 @@ Rules:
 
 ---
 
-### 11.9 code-review
+### 11.10 code-review
 
 Purpose:
 
@@ -1021,7 +1046,6 @@ Acceptance Criteria:
 - Refactor workflow exists.
 - Review workflow exists.
 - Release workflow exists.
-- V2 roadmap workflow exists.
 - Each workflow has input, process, output, and done criteria.
 
 ---
@@ -1677,6 +1701,7 @@ Deliverables:
 - adr-generator,
 - task-breakdown,
 - implementation-planner,
+- task-implementation,
 - testing,
 - code-review.
 
@@ -1698,7 +1723,6 @@ Deliverables:
 - refactor workflow,
 - review workflow,
 - release workflow,
-- v2-roadmap workflow.
 
 Done Criteria:
 
@@ -1770,6 +1794,7 @@ The most important V1 deliverables are:
 - `skills/context-management`,
 - `skills/task-breakdown`,
 - `skills/implementation-planner`,
+- `skills/task-implementation`,
 - `skills/code-review`,
 - templates,
 - references,

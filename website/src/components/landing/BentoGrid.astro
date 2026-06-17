@@ -1,0 +1,15 @@
+---
+---
+
+<div class="bento-grid">
+  <slot />
+</div>
+
+<style>
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 4rem 0;
+  }
+</style>

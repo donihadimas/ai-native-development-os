@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Implementation"
+  short_description: "Use when implementing an active AIOS task from docs/tasks after an implementation plan exists or has been created, including scoped code or documentation changes, validation, acceptance criteria verification, and updating the task status or Done Summary when work is complete."
+  default_prompt: "Use $task-implementation for this AIOS workflow."

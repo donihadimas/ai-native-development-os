@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 export type TemplateValues = Record<string, string | number | undefined>;
 
@@ -62,19 +63,41 @@ export interface AgentInstallResult {
   planned: string[];
 }
 
+export type AssetClassification = "missing" | "identical" | "contentDifferent" | "lineEndingOnly";
+
+export interface ClassifiedAsset {
+  relativePath: string;
+  classification: AssetClassification;
+  sourcePath: string;
+  targetPath: string;
+}
+
+export interface UpdateAcceptResult {
+  accepted: string[];
+  skipped: string[];
+}
+
 export const DEFAULT_DOCS_ROOT = "docs";
 export const DEFAULT_KIT_ROOT = ".aios";
 
-export const CORE_SKILLS = ["context-management", "implementation-planner", "task-breakdown", "testing", "code-review"];
+export const CORE_SKILLS = [
+  "context-management",
+  "implementation-planner",
+  "task-implementation",
+  "task-breakdown",
+  "testing",
+  "code-review"
+];
 export const PLANNING_SKILLS = [
   "product-discovery",
   "prd-generator",
   "architecture-design",
+  "ui-ux-design",
   "adr-generator",
   "task-breakdown",
   "implementation-planner"
 ];
-export const DELIVERY_SKILLS = ["testing", "code-review", "security-review", "release-management"];
+export const DELIVERY_SKILLS = ["task-implementation", "testing", "code-review", "security-review", "release-management"];
 
 export const AGENT_TARGETS: AgentTarget[] = ["codex", "qwen", "opencode", "antigravity", "generic"];
 export const PROJECT_SHAPES: ProjectShape[] = ["fullstack", "frontend", "backend", "mobile", "library", "docs"];
@@ -99,6 +122,7 @@ export const REQUIRED_DOCS_PATHS = [
   "product/vision.md",
   "product/prd.md",
   "product/features",
+  "design/design.md",
   "architecture/architecture.md",
   "adr",
   "tasks",
@@ -108,12 +132,29 @@ export const REQUIRED_DOCS_PATHS = [
 
 export const OPTIONAL_V2X_DOCS_PATHS = ["security", "releases", "database/migrations"];
 
+export const OPTIONAL_V2X_COMMAND_MAP: Record<string, string> = {
+  security: "aios create security <name>",
+  releases: "aios create release <name>",
+  "database/migrations": "aios create migration <name>"
+};
+
+export function formatOptionalDocWarning(path: string, docsRoot: string): string {
+  const relative = relativePath(docsRoot, path);
+  const command = OPTIONAL_V2X_COMMAND_MAP[path];
+  if (command) {
+    return `Optional V2.x path not found: ${relative}. Create when needed with \`${command}\`.`;
+  }
+  return `Optional V2.x path not found: ${relative}`;
+}
+
 export const REQUIRED_AIOS_KIT_PATHS = [
   ".aios/skill-router.md",
   ".aios/config.json",
+  ".aios/commands/discover-product.md",
   ".aios/commands/generate-prd.md",
   ".aios/commands/implement-task.md",
   ".aios/commands/review-code.md",
+  ".aios/prompts/00-discover-product.md",
   ".aios/prompts/01-generate-prd.md",
   ".aios/references/context-principles.md",
   ".aios/templates/task.template.md",
@@ -133,13 +174,50 @@ export const AIOS_KIT_ENTRIES = [
 ];
 
 export const PORTABLE_SKILL_PATHS = CORE_SKILLS.map((skill) => `.aios/skills/${skill}/SKILL.md`);
+const AIOS_MANAGED_BEGIN = "<!-- AIOS:BEGIN -->";
+const AIOS_MANAGED_END = "<!-- AIOS:END -->";
+const AIOS_AGENT_FILES = new Set(["AGENTS.md", "CLAUDE.md"]);
+
+function relativePath(...parts: string[]): string {
+  return path.join(...parts).replace(/\\/g, "/");
+}
+
+function isAiosAgentInstructionFile(filePath: string): boolean {
+  return AIOS_AGENT_FILES.has(path.basename(filePath));
+}
+
+function extractAiosManagedSection(content: string): string {
+  const start = content.indexOf(AIOS_MANAGED_BEGIN);
+  const end = content.lastIndexOf(AIOS_MANAGED_END);
+
+  if (start === -1 || end === -1 || end < start) {
+    return content.trim();
+  }
+
+  return content.slice(start, end + AIOS_MANAGED_END.length).trim();
+}
+
+function prependAiosManagedSection(source: string, target: string): boolean {
+  const targetContent = fs.readFileSync(target, "utf8");
+  if (targetContent.includes(AIOS_MANAGED_BEGIN)) {
+    return false;
+  }
+
+  const sourceContent = fs.readFileSync(source, "utf8");
+  const managedSection = extractAiosManagedSection(sourceContent);
+  const preservedContent = targetContent.trimStart();
+  const heading = path.basename(target) === "CLAUDE.md" ? "## Existing Claude Instructions" : "## Existing Agent Instructions";
+
+  fs.writeFileSync(target, `${managedSection}\n\n${heading}\n\n${preservedContent}`, "utf8");
+  return true;
+}
 
 export function getOsRoot(): string {
   return getRuntimePaths().root;
 }
 
 export function getRuntimePaths(): RuntimePaths {
-  const compiledSourceDir = path.dirname(new URL(import.meta.url).pathname);
+  const compiledSourceDir = path.dirname(fileURLToPath(import.meta.url));
   const packageRoot = path.resolve(compiledSourceDir, "../..");
   const packageAssetsRoot = path.join(packageRoot, "assets");
 
@@ -506,10 +584,13 @@ export function installAgentSkills(options: {
 
       if (fs.existsSync(target)) {
         if (!options.overwrite) {
-          result.skipped.push(relativeTarget);
-          continue;
+          if (fs.existsSync(path.join(target, "SKILL.md"))) {
+            result.skipped.push(relativeTarget);
+            continue;
+          }
+        } else {
+          fs.rmSync(target, { recursive: true, force: true });
         }
-        fs.rmSync(target, { recursive: true, force: true });
       }
 
       copyDirectory(source, target);
@@ -529,6 +610,10 @@ function copyMissingEntries(source: string, target: string, root: string, result
 
   if (sourceStat.isFile()) {
     if (fs.existsSync(target)) {
+      if (isAiosAgentInstructionFile(target) && prependAiosManagedSection(source, target)) {
+        result.created.push(`${relativeRootPath} (AIOS section prepended)`);
+        return;
+      }
       result.skipped.push(relativeRootPath);
       return;
     }
@@ -547,6 +632,10 @@ function copyMissingEntries(source: string, target: string, root: string, result
     const relativePath = path.relative(root, targetPath) || ".";
 
     if (fs.existsSync(targetPath)) {
+      if (entry.isFile() && isAiosAgentInstructionFile(targetPath) && prependAiosManagedSection(sourcePath, targetPath)) {
+        result.created.push(`${relativePath} (AIOS section prepended)`);
+        continue;
+      }
       result.skipped.push(relativePath);
       if (entry.isDirectory()) {
         copyMissingEntries(sourcePath, targetPath, root, result);
@@ -586,14 +675,15 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
     ...currentConfig,
     projectShape: options.projectShape ?? currentConfig.projectShape
   });
-  const docsRequired = REQUIRED_DOCS_PATHS.map((relativePath) => path.join(config.docsRoot, relativePath));
+  const effectiveLite = options.lite || config.mode === "lite";
+  const docsRequired = REQUIRED_DOCS_PATHS.map((item) => relativePath(config.docsRoot, item));
   const shapeRequired = PROJECT_SHAPE_PATHS[config.projectShape] ?? PROJECT_SHAPE_PATHS.fullstack;
   const kitRequired =
     config.skillDelivery === "native"
       ? REQUIRED_AIOS_KIT_PATHS
       : [...REQUIRED_AIOS_KIT_PATHS, ...PORTABLE_SKILL_PATHS];
   const nativeSkillRequired =
-    !options.lite && (config.skillDelivery === "native" || config.skillDelivery === "both") && config.agentScope === "repo"
+    !effectiveLite && (config.skillDelivery === "native" || config.skillDelivery === "both") && config.agentScope === "repo"
       ? config.selectedAgents.flatMap((agent) => {
           try {
             const root = agentSkillRoot(projectPath, agent, "repo", process.env.HOME ?? "");
@@ -603,7 +693,7 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
           }
         })
       : [];
-  const requiredPaths = options.lite
+  const requiredPaths = effectiveLite
     ? [...REQUIRED_PROJECT_PATHS, ...shapeRequired, ...docsRequired]
     : [...REQUIRED_PROJECT_PATHS, ...shapeRequired, ...docsRequired, ...kitRequired, ...nativeSkillRequired];
   const missing = requiredPaths.filter((relativePath) => {
@@ -612,7 +702,7 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
 
   const warnings = OPTIONAL_V2X_DOCS_PATHS.filter((relativePath) => {
     return !fs.existsSync(docsPath(projectPath, relativePath, config));
-  }).map((relativePath) => `Optional V2.x path not found: ${path.join(config.docsRoot, relativePath)}`);
+  }).map((item) => formatOptionalDocWarning(item, config.docsRoot));
 
   const apiDirectory = docsPath(projectPath, "api", config);
   const hasOpenApiContract =
@@ -620,7 +710,7 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
     fs.readdirSync(apiDirectory).some((file) => file.endsWith(".openapi.yaml") || file === "openapi.yaml");
 
   if (!hasOpenApiContract) {
-    warnings.push(`Optional V2.x OpenAPI contract not found in ${path.join(config.docsRoot, "api")}/`);
+    warnings.push(`Optional V2.x OpenAPI contract not found in ${relativePath(config.docsRoot, "api")}/. Create when needed with \`aios create openapi <name>\`.`);
   }
 
   return {
@@ -628,4 +718,125 @@ export function validateProject(projectPath: string, options: { lite?: boolean; 
     missing,
     warnings
   };
+}
+
+function normalizeLineEndings(content: string): string {
+  return content.replace(/\r\n/g, "\n");
+}
+
+function listFilesRecursive(dir: string, base = dir): string[] {
+  if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
+    return [];
+  }
+  const results: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...listFilesRecursive(full, base));
+    } else {
+      results.push(path.relative(base, full).replace(/\\/g, "/"));
+    }
+  }
+  return results;
+}
+
+export function classifyAsset(sourcePath: string, targetPath: string): AssetClassification {
+  if (!fs.existsSync(targetPath)) {
+    return "missing";
+  }
+
+  const sourceContent = fs.readFileSync(sourcePath, "utf8");
+  const targetContent = fs.readFileSync(targetPath, "utf8");
+
+  if (sourceContent === targetContent) {
+    return "identical";
+  }
+
+  if (normalizeLineEndings(sourceContent) === normalizeLineEndings(targetContent)) {
+    return "lineEndingOnly";
+  }
+
+  return "contentDifferent";
+}
+
+export function classifyKitAssets(
+  sourceRoot: string,
+  projectPath: string,
+  config: ProjectConfig,
+  sectionFilter?: string
+): ClassifiedAsset[] {
+  const results: ClassifiedAsset[] = [];
+
+  if (config.mode !== "full") {
+    return results;
+  }
+
+  const includeSkills = config.skillDelivery === "portable" || config.skillDelivery === "both";
+
+  for (const entry of AIOS_KIT_ENTRIES) {
+    if (entry === "skills" && !includeSkills) {
+      continue;
+    }
+
+    if (sectionFilter && entry !== sectionFilter) {
+      continue;
+    }
+
+    const sourcePath = path.join(sourceRoot, entry);
+    const targetPath = path.join(projectPath, ".aios", entry);
+
+    if (!fs.existsSync(sourcePath)) {
+      continue;
+    }
+
+    if (fs.statSync(sourcePath).isFile()) {
+      const classification = classifyAsset(sourcePath, targetPath);
+      results.push({
+        relativePath: `.aios/${entry}`,
+        classification,
+        sourcePath,
+        targetPath
+      });
+      continue;
+    }
+
+    const sourceFiles = listFilesRecursive(sourcePath);
+    for (const relative of sourceFiles) {
+      const sourceFile = path.join(sourcePath, relative);
+      const targetFile = path.join(targetPath, relative);
+      const classification = classifyAsset(sourceFile, targetFile);
+      results.push({
+        relativePath: `.aios/${entry}/${relative}`,
+        classification,
+        sourcePath: sourceFile,
+        targetPath: targetFile
+      });
+    }
+  }
+
+  return results;
+}
+
+export function acceptKitAssets(
+  sourceRoot: string,
+  projectPath: string,
+  config: ProjectConfig,
+  options: { sectionFilter?: string; dryRun?: boolean } = {}
+): UpdateAcceptResult {
+  const result: UpdateAcceptResult = { accepted: [], skipped: [] };
+  const classified = classifyKitAssets(sourceRoot, projectPath, config, options.sectionFilter);
+
+  for (const asset of classified) {
+    if (asset.classification === "contentDifferent" || asset.classification === "lineEndingOnly") {
+      if (options.dryRun) {
+        result.accepted.push(asset.relativePath);
+      } else {
+        fs.mkdirSync(path.dirname(asset.targetPath), { recursive: true });
+        fs.copyFileSync(asset.sourcePath, asset.targetPath);
+        result.accepted.push(asset.relativePath);
+      }
+    }
+  }
+
+  return result;
 }

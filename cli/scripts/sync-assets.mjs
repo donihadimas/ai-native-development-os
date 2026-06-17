@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const cliRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const cliRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(cliRoot, "..");
 const assetsRoot = path.join(cliRoot, "assets");
 

@@ -1,5 +1,13 @@
 # AGENTS.md
 
+<!-- AIOS:BEGIN -->
+
+## AIOS Managed Section
+
+Do not edit this AIOS section directly. It is managed by AI-Native Development OS and may be refreshed by `aios adopt` or `aios kit install`.
+
+Project-specific instructions may be added below `<!-- AIOS:END -->`. User instructions below the AIOS section are valid and should be followed as long as they do not conflict with AIOS safety, context-routing, and verification rules.
+
 ## Role
 
 You are an AI coding agent working in this repository.
@@ -10,11 +18,11 @@ For implementation work, do not code before reading the active task file.
 
 ## Context Routing
 
-If `.aios/config.json` exists, read it first and resolve `docsRoot` before opening project docs. Use `<docsRoot>/context/context-map.md` to decide which documents to read. Do not read the whole repository by default.
+If `.aios/config.json` exists, read it first and resolve `mode`, `docsRoot`, and `projectShape` before opening project docs. If config is missing, treat the project as lite mode, use `docs` as `docsRoot`, and infer project shape from folders. Use `<docsRoot>/context/context-map.md` to decide which documents to read. Do not read the whole repository by default.
 
 ## Local AIOS Kit
 
-Before selecting a workflow, read `.aios/skill-router.md` when `.aios/` is installed.
+In full mode, before selecting a workflow, read `.aios/skill-router.md` when `.aios/` is installed.
 If `skillDelivery` is `native`, use the agent's native skill system first.
 If `skillDelivery` is `portable`, use `.aios/skills/*/SKILL.md` when a task matches a reusable workflow.
 If `skillDelivery` is `both`, prefer native skills and use `.aios/skills/*/SKILL.md` as the readable fallback.
@@ -23,14 +31,16 @@ Use `.aios/prompts/` for manual AI workflow prompts.
 Use `.aios/templates/` when creating docs.
 Use `.aios/references/` for stable engineering guidance.
 Use `.aios/workflows/` to follow development sequences.
-If `.aios/config.json` enables `integrations.rtk`, use `.aios/integrations/rtk.md` and `.aios/references/context-budget.md` for noisy command output.
-If `.aios/config.json` enables `integrations.caveman`, use `.aios/integrations/caveman.md` and `.aios/references/response-style.md` for concise operational updates only.
+In lite mode, use `AGENTS.md`, `<docsRoot>/context/context-map.md`, active project docs, and any root-level AIOS skills/templates/references/workflows available to the agent. Do not assume `.aios/` exists.
+If `.aios/config.json` enables `integrations.rtk`, use `.aios/integrations/rtk.md` and `.aios/references/context-budget.md` for noisy command output unless exact full output is required.
+If `.aios/config.json` enables `integrations.caveman`, use `.aios/integrations/caveman.md` and `.aios/references/response-style.md` for concise operational updates and debug loops only. Keep formal PRDs, ADRs, architecture, security reviews, migration plans, and release notes complete.
 Use `projectShape` from `.aios/config.json` to decide whether code lives in `frontend/`, `backend/`, `mobile/`, `src/`, or docs only.
 When a generator skill has a Clarification Gate, ask focused questions before writing final files if the input is vague.
+Every workflow response should end with what the user should review and the next recommended action.
 
 ## Required Before Implementation
 
-1. Resolve `docsRoot` from `.aios/config.json`; default to `docs` only when config is missing.
+1. Resolve `mode`, `docsRoot`, and `projectShape` from `.aios/config.json`; default to lite mode and `docs` only when config is missing.
 2. Read the active task in `<docsRoot>/tasks/`.
 3. Read related ADRs if the task mentions them.
 4. Read the relevant PRD or architecture sections only when acceptance criteria or constraints are unclear.
@@ -55,3 +65,9 @@ Always report:
 - acceptance criteria status,
 - risks,
 - next recommended step.
+
+<!-- AIOS:END -->
+
+## Project-Specific Instructions
+
+Add or keep repository-specific agent instructions here. Do not edit the AIOS managed section above.

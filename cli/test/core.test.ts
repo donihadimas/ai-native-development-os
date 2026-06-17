@@ -9,6 +9,7 @@ import {
   ensureEmptyOrMissingDirectory,
   getOsRoot,
   getRuntimePaths,
+  installAgentSkills,
   nextNumber,
   renderTemplate,
   slugify,
@@ -95,6 +96,30 @@ test("adoptSkeleton copies missing files and skips existing files", () => {
   assert.ok(result.skipped.includes("README.md"));
 });
 
+test("adoptSkeleton prepends AIOS sections to existing agent instruction files", () => {
+  const source = fs.mkdtempSync(path.join(os.tmpdir(), "aios-adopt-agent-source-"));
+  const target = fs.mkdtempSync(path.join(os.tmpdir(), "aios-adopt-agent-target-"));
+  fs.writeFileSync(
+    path.join(source, "AGENTS.md"),
+    "# AGENTS.md\n\n<!-- AIOS:BEGIN -->\n\n## AIOS Managed Section\n\nFollow AIOS. User instructions may be added below `<!-- AIOS:END -->`.\n\n<!-- AIOS:END -->\n",
+    "utf8"
+  );
+  fs.writeFileSync(path.join(target, "AGENTS.md"), "# Existing Agent Rules\n\nKeep this.\n", "utf8");
+
+  const result = adoptSkeleton(source, target);
+  const adopted = fs.readFileSync(path.join(target, "AGENTS.md"), "utf8");
+
+  assert.match(adopted, /^<!-- AIOS:BEGIN -->/);
+  assert.match(adopted, /<!-- AIOS:END -->\n\n## Existing Agent Instructions/);
+  assert.match(adopted, /## Existing Agent Instructions/);
+  assert.match(adopted, /# Existing Agent Rules/);
+  assert.match(result.created.join("\n"), /AGENTS\.md \(AIOS section prepended\)/);
+
+  adoptSkeleton(source, target);
+  const adoptedAgain = fs.readFileSync(path.join(target, "AGENTS.md"), "utf8");
+  assert.equal(adoptedAgain.match(/<!-- AIOS:BEGIN -->/g)?.length, 1);
+});
+
 test("writeRenderedTemplate writes rendered content and refuses overwrite", () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "aios-template-"));
   const templatePath = path.join(directory, "template.md");
@@ -110,6 +135,30 @@ test("writeRenderedTemplate writes rendered content and refuses overwrite", () =
   );
 });
 
+test("installAgentSkills repairs incomplete existing native skill folders", () => {
+  const sourceRoot = fs.mkdtempSync(path.join(os.tmpdir(), "aios-skill-source-"));
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-skill-target-"));
+  fs.mkdirSync(path.join(sourceRoot, "skills", "testing"), { recursive: true });
+  fs.writeFileSync(
+    path.join(sourceRoot, "skills", "testing", "SKILL.md"),
+    "---\nname: testing\ndescription: Test skill.\n---\n\n# Testing\n",
+    "utf8"
+  );
+  fs.mkdirSync(path.join(project, ".agents", "skills", "testing", "agents"), { recursive: true });
+
+  const result = installAgentSkills({
+    sourceRoot,
+    projectPath: project,
+    agents: ["codex"],
+    skills: ["testing"]
+  });
+
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "agents", "openai.yaml")));
+  assert.deepEqual(result.skipped, []);
+  assert.equal(result.created.length, 1);
+});
+
 test("validateProject reports missing AI-ready paths", () => {
   const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-"));
   fs.mkdirSync(path.join(project, "docs", "context"), { recursive: true });
@@ -123,9 +172,47 @@ test("validateProject reports missing AI-ready paths", () => {
   assert.ok(result.missing.includes("docs/product/features"));
   assert.ok(result.missing.includes("docs/reviews"));
   assert.ok(result.missing.includes(".aios/skill-router.md"));
+  assert.ok(result.missing.includes(".aios/commands/discover-product.md"));
   assert.ok(result.missing.includes(".aios/commands/generate-prd.md"));
   assert.ok(result.missing.includes(".aios/skills/context-management/SKILL.md"));
-  assert.ok(result.warnings.includes("Optional V2.x path not found: docs/security"));
+  assert.ok(result.warnings.some((w) => w.includes("Optional V2.x path not found: docs/security") && w.includes("aios create security")));
+});
+
+test("validateProject includes actionable command guidance for all optional V2.x warnings", () => {
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-optional-"));
+  fs.mkdirSync(path.join(project, "docs", "context"), { recursive: true });
+  fs.writeFileSync(path.join(project, "AGENTS.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "context", "context-map.md"), "");
+
+  const result = validateProject(project);
+
+  assert.equal(result.ok, false);
+  const warnings = result.warnings.join("\n");
+  assert.ok(warnings.includes("aios create security"), "should recommend security command");
+  assert.ok(warnings.includes("aios create release"), "should recommend release command");
+  assert.ok(warnings.includes("aios create migration"), "should recommend migration command");
+  assert.ok(warnings.includes("aios create openapi"), "should recommend openapi command");
+  assert.ok(!result.ok, "missing optional docs should not make result.ok true");
+});
+
+test("validateProject does not warn for optional docs that exist", () => {
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-optional-exists-"));
+  fs.mkdirSync(path.join(project, "docs", "context"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "security"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "releases"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "database", "migrations"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "api"), { recursive: true });
+  fs.writeFileSync(path.join(project, "AGENTS.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "context", "context-map.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "api", "openapi.yaml"), "openapi: 3.0.0");
+
+  const result = validateProject(project);
+
+  const warnings = result.warnings.join("\n");
+  assert.ok(!warnings.includes("security"), "should not warn for existing security dir");
+  assert.ok(!warnings.includes("release"), "should not warn for existing release dir");
+  assert.ok(!warnings.includes("migration"), "should not warn for existing migration dir");
+  assert.ok(!warnings.includes("OpenAPI contract not found"), "should not warn for existing OpenAPI contract");
 });
 
 test("validateProject can ignore local AIOS kit in lite mode", () => {
@@ -134,6 +221,7 @@ test("validateProject can ignore local AIOS kit in lite mode", () => {
     "docs/context",
     "docs/product/features",
     "docs/architecture",
+    "docs/design",
     "docs/adr",
     "docs/tasks",
     "docs/reviews",
@@ -149,6 +237,7 @@ test("validateProject can ignore local AIOS kit in lite mode", () => {
   fs.writeFileSync(path.join(project, "docs", "product", "vision.md"), "");
   fs.writeFileSync(path.join(project, "docs", "product", "prd.md"), "");
   fs.writeFileSync(path.join(project, "docs", "architecture", "architecture.md"), "");
+  fs.writeFileSync(path.join(project, "docs", "design", "design.md"), "");
 
   const result = validateProject(project, { lite: true });
 

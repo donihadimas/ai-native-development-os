@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ui Ux Design"
+  short_description: "Use when designing user flows, screens, interface states, and UX constraints before frontend or product-facing implementation tasks."
+  default_prompt: "Use $ui-ux-design for this AIOS workflow."

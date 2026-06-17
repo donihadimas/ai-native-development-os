@@ -5,7 +5,7 @@
 
 AI-Native Development OS is a reusable workflow foundation for building software with AI coding agents. It gives a solo fullstack developer a consistent way to move from idea to product docs, architecture, ADRs, small tasks, implementation, review, testing, and release.
 
-This repository is not an application framework, SaaS starter, dashboard, or AI agent. It is a portable operating system for AI-assisted development: reusable skills, templates, references, workflows, project skeletons, and a small helper CLI.
+This repository is not an application framework, SaaS starter, dashboard, or AI agent. It is a portable operating system for AI-assisted development: reusable skills, templates, references, workflows, project skeletons, and a small helper CLI. The CLI is only for setup, validation, and generating AIOS template files; AI-native development happens through Codex or another AI agent inside the project.
 
 ## 📑 Table of Contents
 
@@ -47,7 +47,7 @@ Use this project when you want to:
 ## 📦 What Is Included
 
 - `skills/` - reusable operating procedures for AI agents.
-- `templates/` - document templates for PRD, architecture, ADR, task, review, testing, implementation plans, OpenAPI contracts, migration plans, security reviews, release notes, and changelog drafts.
+- `templates/` - document templates for PRD, design, architecture, ADR, task, review, testing, implementation plans, OpenAPI contracts, migration plans, security reviews, release notes, and changelog drafts.
 - `references/` - stable engineering principles and standards.
 - `workflows/` - end-to-end development flows.
 - `prompts/` - thin prompt wrappers that route agents to the right artifacts.
@@ -110,7 +110,7 @@ aios next demo-project
 cd demo-project
 ```
 
-`aios init` installs a local `.aios/` workflow kit by default. Use `--lite` only when you want the old minimal skeleton behavior.
+`aios init` installs a local `.aios/` workflow kit by default. Use `--lite` when you want minimal project docs without the local workflow kit; lite still writes `.aios/config.json` so agents can resolve `mode`, `docsRoot`, and `projectShape`. Run `aios` without arguments for the guided setup wizard.
 
 Native agent skill install keeps `.aios/` compact and installs selected skills into agent-specific folders:
 
@@ -147,13 +147,29 @@ aios adopt
 aios validate
 ```
 
-### Manual Setup
+Create planning and review documents:
+
+```bash
+aios create feature "Habit reminders"
+aios create design "Habit reminders"
+aios create openapi "Habit API"
+aios create migration "Create habits table"
+aios create security "Habit API"
+aios create adr "Use server date for completion"
+aios create task "Implement habit API"
+aios create review "Habit API"
+aios create release "0.3.0"
+```
+
+### Manual Use
+
+Use the manual flow when you want full control and do not need the CLI.
 
 1. Copy `project-skeleton/` into a new project directory.
 2. Open the new project with Codex or another coding agent.
-3. Fill `docs/product/vision.md` with the product idea.
-4. Use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md` to create `docs/product/prd.md`.
-5. Generate architecture, ADRs, and task breakdowns before coding.
+3. Use `prompts/00-discover-product.md` and `skills/product-discovery/SKILL.md` to interview the user and fill `docs/product/vision.md`.
+4. Review the vision, then use `prompts/01-generate-prd.md` and `skills/prd-generator/SKILL.md` to create `docs/product/prd.md`.
+5. Generate architecture, design notes for user-facing UI, ADRs, and task breakdowns before coding.
 6. Implement one small task at a time.
 7. Save review evidence in `docs/reviews/`, run tests, and summarize before marking work done.
 
@@ -164,7 +180,7 @@ aios init <project-name>
 ↓
 aios next <project-name>
 ↓
-Fill docs/product/vision.md
+Use product-discovery to interview user and fill docs/product/vision.md
 ↓
 Use Codex with the prompts from .aios/prompts/
 ↓
@@ -190,13 +206,13 @@ The CLI prepares files. Codex should still follow the AI Dev OS workflow.
 For PRD generation:
 
 ```text
-Read AGENTS.md, docs/product/vision.md, and .aios/prompts/01-generate-prd.md. Generate docs/product/prd.md using .aios/templates/prd.template.md and keep acceptance criteria testable.
+If docs/product/vision.md is still thin, read AGENTS.md and .aios/prompts/00-discover-product.md, interview me, and fill the vision first. Then read .aios/prompts/01-generate-prd.md and generate docs/product/prd.md using .aios/templates/prd.template.md.
 ```
 
 For task implementation:
 
 ```text
-Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and the active task in docs/tasks/. Use native agent skills when installed, otherwise use .aios/skills. Create a short implementation plan before editing files. Do not modify unrelated files.
+Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and the active task in docs/tasks/. Use implementation-planner before editing, then task-implementation to implement, validate acceptance criteria, and update the task Done Summary when complete. Do not modify unrelated files.
 ```
 
 For review:
@@ -222,6 +238,7 @@ Review the diff against the active task acceptance criteria. Findings first, the
 - `aios create adr <name>`: Creates the next numbered ADR.
 - `aios create task <name>`: Creates the next numbered implementation task.
 - `aios create review <name>`: Creates a review report stub.
+- `aios create design <name>`: Creates a UI/UX design document stub.
 - `aios create openapi <name>`: Creates an OpenAPI contract stub.
 - `aios create migration <name>`: Creates the next numbered database migration plan.
 - `aios create security <name>`: Creates a security review report stub.
@@ -243,6 +260,8 @@ A project created with `aios init` looks like this:
 │   │   └── 📁 features/
 │   ├── 📁 architecture/
 │   │   └── 📄 architecture.md
+│   ├── 📁 design/
+│   │   └── 📄 design.md
 │   ├── 📁 adr/
 │   ├── 📁 tasks/
 │   ├── 📁 reviews/
@@ -294,7 +313,7 @@ npm test
 npm pack --dry-run
 ```
 
-For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`.
+For the full release process, including versioning, npm publish, Git tags, GitHub Releases, and rollback notes, see `RELEASE.md`. For the step-by-step publish checklist, see `validation/npm-publish-readiness-checklist.md`.
 
 ## 📜 License
 

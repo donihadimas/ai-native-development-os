@@ -4,9 +4,9 @@
 ![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 ![Node Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)
 
-`aios` is the small CLI for AI-Native Development OS. It helps you create an AI-ready project with a local `.aios/` workflow kit, generate common planning documents from templates, and validate that a project has the expected AI workflow structure.
+`aios` is the small CLI for AI-Native Development OS. It is only for setup, validation, and generating AIOS template files. It helps you create an AI-ready project with a local `.aios/` workflow kit, generate common planning documents from templates, and validate that a project has the expected AI workflow structure.
 
-It does not replace Codex or another coding agent. The CLI only creates, copies, numbers, renders, and validates files. Your agent still does the product thinking, planning, implementation, testing, and review with the generated docs as context.
+It does not replace Codex or another coding agent. For AI-native development, use the AI agent directly inside the project. The CLI only creates, copies, numbers, renders, and validates files. Your agent still does the product thinking, planning, implementation, testing, and review with the generated docs as context.
 
 ## 📑 Table of Contents
 
@@ -99,7 +99,7 @@ aios next demo-project
 cd demo-project
 ```
 
-By default, generated projects include `.aios/` with skills, prompts, references, templates, and workflows. Use `--lite` only when you want a minimal structure without the local workflow kit.
+By default, generated projects include `.aios/` with skills, prompts, references, templates, and workflows. Use `--lite` only when you want a minimal structure without the local workflow kit. Lite still writes `.aios/config.json` so agents can resolve `mode`, `docsRoot`, and `projectShape`.
 
 For a compact `.aios/` with native skills:
 
@@ -123,6 +123,7 @@ Create the first planning artifacts:
 
 ```bash
 aios create feature "Habit reminders"
+aios create design "Habit reminders"
 aios create openapi "Habit API"
 aios create migration "Create habits table"
 aios create security "Habit API"
@@ -153,7 +154,7 @@ aios init <project-name>
 ↓
 aios next <project-name>
 ↓
-Fill docs/product/vision.md
+Use product-discovery to interview user and fill docs/product/vision.md
 ↓
 Use Codex with the prompts from .aios/prompts/
 ↓
@@ -173,6 +174,7 @@ aios validate
 For V2.x workflow docs, add only the pieces the project needs:
 
 ```text
+aios create design <feature-name>
 aios create openapi <api-name>
 aios create migration <migration-name>
 aios create security <review-name>
@@ -209,8 +211,9 @@ Behavior:
 - Creates `my-saas/`.
 - Refuses to overwrite an existing non-empty directory.
 - Includes `AGENTS.md`, optional `CLAUDE.md`, shared docs, `frontend/`, `backend/`, and `.aios/` by default.
-- `--lite` skips `.aios/` and preserves the older minimal behavior.
+- `--lite` skips the local `.aios` workflow kit but still writes `.aios/config.json` with `mode: "lite"`.
 - `--shape` accepts `fullstack`, `frontend`, `backend`, `mobile`, `library`, or `docs`; default is `fullstack`.
+- Shape controls placeholder folders and validation: `fullstack` creates `frontend/` and `backend/`, `frontend` creates `frontend/`, `backend` creates `backend/`, `mobile` creates `mobile/`, `library` creates `src/`, and `docs` creates no app placeholder folders.
 - `--docs-root` stores project docs somewhere other than `docs/`.
 - `--skill-delivery` accepts `portable`, `native`, or `both`.
 - `--agents` accepts `codex`, `qwen`, `opencode`, `antigravity`, and `generic`.
@@ -235,6 +238,7 @@ It checks for:
 - `docs/product/prd.md`
 - `docs/product/features/`
 - `docs/architecture/architecture.md`
+- `docs/design/design.md`
 - `docs/adr/`
 - `docs/tasks/`
 - `docs/reviews/`
@@ -278,7 +282,7 @@ Behavior:
 - Refuses to overwrite an existing non-empty directory.
 - Includes stack-oriented placeholders, AI-ready docs, and `.aios/` by default.
 - Does not include framework code or dependencies.
-- `--lite` skips `.aios/`.
+- `--lite` skips the local `.aios` workflow kit but still writes `.aios/config.json` with `mode: "lite"`.
 
 ### `aios adopt [project-path] [--lite] [--shape <shape>] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery <mode>]`
 
@@ -304,7 +308,7 @@ Behavior:
 - Skips files that already exist.
 - Does not overwrite your existing `README.md`, source code, docs, frontend, or backend folders.
 - Adds `frontend/` and `backend/` placeholders if they are missing so the project validates against the generic AI-ready structure.
-- `--lite` skips `.aios/`.
+- `--lite` skips the local `.aios` workflow kit but still writes `.aios/config.json` with `mode: "lite"`.
 
 Use `adopt` when a project already exists and `init` would be too destructive.
 
@@ -469,6 +473,7 @@ Output:
 
 ```text
 Available AIOS commands:
+- discover-product
 - generate-prd
 - implement-task
 - review-code
@@ -494,7 +499,7 @@ aios next
 aios next my-saas
 ```
 
-It checks whether vision, PRD, architecture, and tasks are ready, then points the user to the next local prompt or command.
+It checks whether vision, PRD, architecture, design/task readiness, and tasks are ready, then points the user to the next local prompt or command.
 
 ### `aios create feature <feature-name>`
 
@@ -554,6 +559,20 @@ Output:
 
 ```text
 docs/reviews/login-endpoint-review.md
+```
+
+### `aios create design <name>`
+
+Creates a UI/UX design document stub.
+
+```bash
+aios create design "Login flow"
+```
+
+Output:
+
+```text
+docs/design/login-flow-design.md
 ```
 
 ### `aios create openapi <api-name>`
@@ -631,6 +650,8 @@ my-project/
 │   │   └── features/
 │   ├── architecture/
 │   │   └── architecture.md
+│   ├── design/
+│   │   └── design.md
 │   ├── adr/
 │   ├── tasks/
 │   ├── reviews/
@@ -663,7 +684,7 @@ The CLI prepares files. Codex should still follow the AI Dev OS workflow.
 For PRD generation:
 
 ```text
-Read AGENTS.md, docs/product/vision.md, and .aios/prompts/01-generate-prd.md. Generate docs/product/prd.md using .aios/templates/prd.template.md and keep acceptance criteria testable.
+If docs/product/vision.md is still thin, read AGENTS.md and .aios/prompts/00-discover-product.md, interview me, and fill the vision first. Then read .aios/prompts/01-generate-prd.md and generate docs/product/prd.md using .aios/templates/prd.template.md.
 ```
 
 For task implementation:
@@ -707,7 +728,7 @@ npm run aios -- init ../demo-project
 
 ## 🚢 Publishing Checklist
 
-Before publishing to npm:
+Before publishing to npm, follow the step-by-step checklist at `../validation/npm-publish-readiness-checklist.md`. Quick summary:
 
 ```bash
 npm test

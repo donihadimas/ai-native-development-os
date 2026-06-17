@@ -24,7 +24,7 @@ Guided setup UX has been validated at the CLI contract level: `aios --help` now 
 | Native agent skills | Pass | `aios agent install` installs selected skills into Codex/generic, Qwen, OpenCode, and Antigravity repo folders. |
 | Compact native setup | Pass | Native skill delivery skips `.aios/skills` and relies on agent-native skill folders. |
 | Default full setup | Pass | `aios init`, `starter`, and `adopt` install `.aios/` by default. |
-| Lite mode | Pass | `--lite` skips `.aios/` for `init`, `starter`, `adopt`, and `validate`. |
+| Lite mode | Pass | `--lite` skips the local `.aios` workflow kit while keeping `.aios/config.json` with `mode: "lite"` for routing. |
 | Install kit command | Pass | `aios kit install` installs or repairs `.aios/` without overwriting existing files. |
 | Next step command | Pass | `aios next` reports the next recommended step without changing files. |
 | AI docs only starters | Pass | Seven starter shells exist under `starters/` with AI-ready docs and stack placeholders. |
@@ -86,7 +86,7 @@ Covered by CLI tests and manual workflow definition:
 - `aios validate`
 - generated `.aios/commands/*` route through `.aios/skill-router.md`
 - generated context maps use the configured `docsRoot`
-- generator prompts apply Clarification Gates before final PRD, architecture, ADR, task, API, migration, security, test, and release documents
+- generator prompts apply Clarification Gates before final PRD, design, architecture, ADR, task, API, migration, security, test, and release documents
 
 ## Result
 

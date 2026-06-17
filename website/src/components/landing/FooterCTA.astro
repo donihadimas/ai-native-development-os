@@ -1,0 +1,80 @@
+---
+---
+
+<div class="footer-cta card text-center">
+  <h2>Start with a workflow your agent can follow.</h2>
+  <p>Install AIOS, create or adopt a project, then give Codex explicit docs, skills, tasks, and review criteria.</p>
+  <div class="actions">
+    <a href="/getting-started" class="btn btn-primary">Read Documentation</a>
+    <a href="/guides/workflow" class="btn btn-secondary">View Workflow</a>
+    <code>npm install -g @donihadimas/aios</code>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: linear-gradient(180deg, var(--color-card-start), var(--color-card-end));
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 4rem 2rem;
+    margin: 4rem 0;
+    text-align: center;
+  }
+  h2 {
+    font-size: 2rem;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+    margin-top: 0;
+  }
+  p {
+    color: var(--color-text-muted);
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-hover);
+    color: var(--color-accent-contrast);
+  }
+  .btn-secondary {
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+  .btn-secondary:hover {
+    background: var(--color-badge-bg);
+  }
+  code {
+    max-width: 100%;
+    background: var(--color-code-bg);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--color-accent-2);
+    overflow-wrap: anywhere;
+  }
+</style>

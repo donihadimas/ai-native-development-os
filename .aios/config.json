@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "mode": "full",
+  "docsRoot": "docs",
+  "kitRoot": ".aios",
+  "skillDelivery": "native",
+  "selectedAgents": [
+    "codex"
+  ],
+  "selectedSkills": [
+    "adr-generator",
+    "api-contract-design",
+    "architecture-design",
+    "backend-api-development",
+    "code-review",
+    "context-management",
+    "database-migration",
+    "implementation-planner",
+    "task-implementation",
+    "prd-generator",
+    "product-discovery",
+    "release-management",
+    "security-review",
+    "task-breakdown",
+    "testing",
+    "ui-ux-design"
+  ],
+  "agentScope": "repo",
+  "projectShape": "docs",
+  "integrations": {
+    "rtk": {
+      "enabled": true,
+      "commandPolicy": "prefer-for-noisy-output"
+    },
+    "caveman": {
+      "enabled": true,
+      "mode": "lite",
+      "responsePolicy": "concise-for-status-only",
+      "targetAgents": [
+        "codex"
+      ]
+    }
+  }
+}

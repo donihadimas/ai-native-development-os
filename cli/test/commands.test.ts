@@ -3,11 +3,12 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import packageJson from "../package.json" with { type: "json" };
-import { run } from "../src/index.js";
+import { run, detectSubprojectWarning } from "../src/index.js";
 import type { RuntimePaths } from "../src/core.js";
 
-const osRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../..");
+const osRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const runtimePaths: RuntimePaths = {
   root: osRoot,
   aiosKitSource: osRoot,
@@ -23,7 +24,9 @@ function tempCwd(): string {
 test("help explains the CLI purpose and available commands", () => {
   const output = run(["help"], { runtimePaths, cwd: tempCwd() });
 
-  assert.match(output, /AIOS creates an AI-ready project setup/);
+  assert.match(output, /The CLI is only for setup, validation, and generating AIOS template files/);
+  assert.match(output, /For AI-native development, use Codex or another AI/);
+  assert.match(output, /The CLI does not\s+run the agent or generate application code/);
   assert.match(output, /aios\n    Open the guided setup wizard/);
   assert.match(output, /Start here:/);
   assert.match(output, /Common commands:/);
@@ -44,6 +47,7 @@ test("help explains the CLI purpose and available commands", () => {
   assert.match(output, /aios integration doctor \[project-path\]/);
   assert.match(output, /aios integration repair \[project-path\]/);
   assert.match(output, /aios config \[project-path\]/);
+  assert.match(output, /aios create design <name>/);
   assert.match(output, /aios create openapi <api-name>/);
   assert.match(output, /aios create migration <migration-name>/);
   assert.match(output, /aios create security <review-name>/);
@@ -66,24 +70,29 @@ test("init copies the project skeleton", () => {
   assert.match(output, /Created AI-ready project/);
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skill-router.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "generate-prd.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "prompts", "00-discover-product.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "prompts", "01-generate-prd.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "development-start.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
+  assert.ok(fs.existsSync(path.join(project, "docs", "design", "design.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "reviews")));
 });
 
-test("init --lite skips the local AIOS kit", () => {
+test("init --lite writes lite config and skips the local AIOS workflow kit", () => {
   const cwd = tempCwd();
   run(["init", "demo-project", "--lite"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
-  assert.equal(fs.existsSync(path.join(project, ".aios")), false);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "config.json")));
+  assert.equal(JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8")).mode, "lite");
+  assert.equal(fs.existsSync(path.join(project, ".aios", "skill-router.md")), false);
 
-  const output = run(["validate", "demo-project", "--lite"], { runtimePaths, cwd });
+  const output = run(["validate", "demo-project"], { runtimePaths, cwd });
   assert.match(output, /AI-ready structure validated/);
 });
 
@@ -132,12 +141,19 @@ test("adopt adds missing AI Dev OS files without overwriting existing files", ()
   const project = path.join(cwd, "existing-project");
   fs.mkdirSync(project, { recursive: true });
   fs.writeFileSync(path.join(project, "README.md"), "# Existing Project\n");
+  fs.writeFileSync(path.join(project, "AGENTS.md"), "# Existing Agent Rules\n\nKeep user rules.\n");
+  fs.writeFileSync(path.join(project, "CLAUDE.md"), "# Existing Claude Rules\n\nKeep Claude rules.\n");
 
   const output = run(["adopt", "existing-project"], { runtimePaths, cwd });
 
   assert.match(output, /Adopted AI Dev OS structure/);
+  assert.match(output, /Shape: fullstack/);
+  assert.match(output, /App placeholders: frontend, backend/);
   assert.equal(fs.readFileSync(path.join(project, "README.md"), "utf8"), "# Existing Project\n");
-  assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
+  assert.match(fs.readFileSync(path.join(project, "AGENTS.md"), "utf8"), /^<!-- AIOS:BEGIN -->/);
+  assert.match(fs.readFileSync(path.join(project, "AGENTS.md"), "utf8"), /# Existing Agent Rules/);
+  assert.match(fs.readFileSync(path.join(project, "CLAUDE.md"), "utf8"), /^<!-- AIOS:BEGIN -->/);
+  assert.match(fs.readFileSync(path.join(project, "CLAUDE.md"), "utf8"), /# Existing Claude Rules/);
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
@@ -147,6 +163,22 @@ test("adopt adds missing AI Dev OS files without overwriting existing files", ()
 
   const validateOutput = run(["validate"], { runtimePaths, cwd: project });
   assert.match(validateOutput, /AI-ready structure validated/);
+});
+
+test("adopt honors docs project shape without keeping app placeholders", () => {
+  const cwd = tempCwd();
+  const project = path.join(cwd, "docs-project");
+  fs.mkdirSync(project, { recursive: true });
+  fs.writeFileSync(path.join(project, "README.md"), "# Docs Project\n");
+
+  const output = run(["adopt", "docs-project", "--shape", "docs"], { runtimePaths, cwd });
+
+  assert.match(output, /Shape: docs \(no app folders\)/);
+  assert.match(output, /App placeholders: none/);
+  assert.match(output, /Shape placeholders removed: frontend, backend/);
+  assert.equal(fs.existsSync(path.join(project, "frontend")), false);
+  assert.equal(fs.existsSync(path.join(project, "backend")), false);
+  assert.match(run(["validate", "docs-project"], { runtimePaths, cwd }), /AI-ready structure validated/);
 });
 
 test("adopt defaults to the current working directory", () => {
@@ -253,6 +285,7 @@ test("prompt list and prompt show expose local workflow command prompts", () => 
   const project = path.join(cwd, "demo-project");
 
   const listOutput = run(["prompt", "list"], { runtimePaths, cwd: project });
+  assert.match(listOutput, /discover-product/);
   assert.match(listOutput, /generate-prd/);
   assert.match(listOutput, /implement-task/);
   assert.match(listOutput, /review-code/);
@@ -261,6 +294,10 @@ test("prompt list and prompt show expose local workflow command prompts", () => 
   assert.match(commandOutput, /Command: Generate PRD/);
   assert.match(commandOutput, /\.aios\/skill-router\.md/);
   assert.match(commandOutput, /prd-generator/);
+
+  const discoveryOutput = run(["prompt", "show", "discover-product"], { runtimePaths, cwd: project });
+  assert.match(discoveryOutput, /Command: Discover Product Vision/);
+  assert.match(discoveryOutput, /product-discovery/);
 });
 
 test("integration list and status expose optional external integrations", () => {
@@ -380,9 +417,13 @@ test("integration install runs external commands from the target project path", 
       runtimePaths,
       cwd
     });
-    assert.match(output, /install: executed/);
-    assert.match(output, /caveman: ready/);
-    assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "caveman", "SKILL.md")));
+    if (os.platform() === "win32") {
+      assert.match(output, /install: manual only on this platform/);
+    } else {
+      assert.match(output, /install: executed/);
+      assert.match(output, /caveman: ready/);
+      assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "caveman", "SKILL.md")));
+    }
     assert.equal(fs.existsSync(path.join(cwd, ".agents", "skills", "caveman", "SKILL.md")), false);
   } finally {
     process.env.PATH = oldPath;
@@ -407,7 +448,7 @@ test("integration status detects mocked RTK and Caveman locations", () => {
   process.env.HOME = fakeHome;
   try {
     const status = run(["integration", "status", "demo-project"], { runtimePaths, cwd });
-    assert.match(status, /rtk 0\.0\.0-test/);
+    assert.match(status, os.platform() === "win32" ? /rtk found|rtk 0\.0\.0-test/ : /rtk 0\.0\.0-test/);
     assert.match(status, /caveman location\(s\) found/);
   } finally {
     process.env.PATH = oldPath;
@@ -463,14 +504,16 @@ test("starter creates an AI docs only stack starter and refuses overwrite", () =
   );
 });
 
-test("starter --lite skips the local AIOS kit", () => {
+test("starter --lite writes lite config and skips the local AIOS workflow kit", () => {
   const cwd = tempCwd();
 
   run(["starter", "fullstack-saas", "demo-saas", "--lite"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-saas");
 
   assert.ok(fs.existsSync(path.join(project, "frontend")));
-  assert.equal(fs.existsSync(path.join(project, ".aios")), false);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "config.json")));
+  assert.equal(JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8")).mode, "lite");
+  assert.equal(fs.existsSync(path.join(project, ".aios", "skill-router.md")), false);
 });
 
 test("fullstack starter creates frontend and backend placeholders", () => {
@@ -487,16 +530,18 @@ test("fullstack starter creates frontend and backend placeholders", () => {
   assert.match(validateOutput, /AI-ready structure validated/);
 });
 
-test("openapi, migration, security, and release create V2.x documents", () => {
+test("design, openapi, migration, security, and release create V2.x documents", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
+  run(["create", "design", "Habit UI"], { runtimePaths, cwd: project });
   run(["create", "openapi", "Habit API"], { runtimePaths, cwd: project });
   run(["create", "migration", "Create Habits Table"], { runtimePaths, cwd: project });
   run(["create", "security", "Habit API"], { runtimePaths, cwd: project });
   const releaseOutput = run(["create", "release", "0.3.0"], { runtimePaths, cwd: project });
 
+  assert.ok(fs.existsSync(path.join(project, "docs", "design", "habit-ui-design.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "api", "habit-api.openapi.yaml")));
   assert.ok(fs.existsSync(path.join(project, "docs", "database", "migrations", "MIGRATION-001-create-habits-table.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "security", "habit-api-security-review.md")));
@@ -517,25 +562,29 @@ test("validate succeeds for generated skeleton", () => {
   assert.match(output, /Optional V2.x path not found: docs\/security/);
 });
 
-test("validate requires local AIOS kit unless lite mode is used", () => {
+test("validate follows lite config and requires kit only when not lite", () => {
   const cwd = tempCwd();
   run(["init", "demo-project", "--lite"], { runtimePaths, cwd });
 
   const output = run(["validate", "demo-project"], { runtimePaths, cwd });
-  assert.match(output, /AI-ready structure is incomplete/);
-  assert.match(output, /\.aios\/skills\/context-management\/SKILL.md/);
+  assert.match(output, /AI-ready structure validated/);
+
+  fs.rmSync(path.join(cwd, "demo-project", ".aios"), { recursive: true, force: true });
+  const fullOutput = run(["validate", "demo-project"], { runtimePaths, cwd });
+  assert.match(fullOutput, /AI-ready structure is incomplete/);
+  assert.match(fullOutput, /\.aios\/skills\/context-management\/SKILL.md/);
   process.exitCode = undefined;
 
   const liteOutput = run(["validate", "demo-project", "--lite"], { runtimePaths, cwd });
   assert.match(liteOutput, /AI-ready structure validated/);
 });
 
-test("next reports vision, PRD, architecture, task creation, and task-ready states", () => {
+test("next reports vision, PRD, architecture, design/task creation, and task-ready states", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
-  assert.match(run(["next"], { runtimePaths, cwd: project }), /Fill `docs\/product\/vision.md`/);
+  assert.match(run(["next"], { runtimePaths, cwd: project }), /Use product discovery to interview the user/);
 
   fs.writeFileSync(path.join(project, "docs", "product", "vision.md"), "# Product Vision\n\nReal product vision.\n");
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Generate `docs\/product\/prd.md`/);
@@ -544,8 +593,404 @@ test("next reports vision, PRD, architecture, task creation, and task-ready stat
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Generate `docs\/architecture\/architecture.md`/);
 
   fs.writeFileSync(path.join(project, "docs", "architecture", "architecture.md"), "# Architecture\n\nReal architecture.\n");
-  assert.match(run(["next"], { runtimePaths, cwd: project }), /Create the first implementation task/);
+  assert.match(run(["next"], { runtimePaths, cwd: project }), /create or update `docs\/design\/design.md` first/);
 
   run(["create", "task", "Implement habit API"], { runtimePaths, cwd: project });
   assert.match(run(["next"], { runtimePaths, cwd: project }), /Open the active task/);
+});
+
+test("next shows required workflow guidance before optional suggestions when tasks exist", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, "docs", "product", "vision.md"), "# Vision\n\nReal vision.\n");
+  fs.writeFileSync(path.join(project, "docs", "product", "prd.md"), "# PRD\n\nReal PRD.\n");
+  fs.writeFileSync(path.join(project, "docs", "architecture", "architecture.md"), "# Architecture\n\nReal arch.\n");
+  run(["create", "task", "Implement feature"], { runtimePaths, cwd: project });
+
+  const output = run(["next"], { runtimePaths, cwd: project });
+
+  assert.match(output, /Open the active task/);
+  const taskIndex = output.indexOf("Open the active task");
+  const optionalIndex = output.indexOf("Optional next steps");
+  assert.ok(optionalIndex > taskIndex, "optional section should appear after required guidance");
+  assert.match(output, /aios create security/);
+  assert.match(output, /aios create release/);
+  assert.match(output, /aios create migration/);
+  assert.match(output, /aios create openapi/);
+});
+
+test("next does not show optional suggestions when tasks do not exist yet", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const output = run(["next"], { runtimePaths, cwd: project });
+
+  assert.match(output, /Use product discovery/);
+  assert.ok(!output.includes("Optional next steps"), "should not show optional section before tasks exist");
+});
+
+test("detectSubprojectWarning warns for nested package folders with parent root signals", () => {
+  const cwd = tempCwd();
+  const repoRoot = path.join(cwd, "repo");
+  const subProject = path.join(repoRoot, "cli");
+  fs.mkdirSync(subProject, { recursive: true });
+  fs.writeFileSync(path.join(subProject, "package.json"), "{}");
+  fs.mkdirSync(path.join(repoRoot, ".git"), { recursive: true });
+
+  const warning = detectSubprojectWarning(subProject);
+  assert.ok(warning);
+  assert.equal(warning.targetName, "cli");
+  assert.equal(warning.parentPath, repoRoot);
+});
+
+test("detectSubprojectWarning does not warn for repository root targets", () => {
+  const cwd = tempCwd();
+  const repoRoot = path.join(cwd, "repo");
+  fs.mkdirSync(repoRoot, { recursive: true });
+  fs.writeFileSync(path.join(repoRoot, "package.json"), "{}");
+  fs.mkdirSync(path.join(repoRoot, ".git"), { recursive: true });
+
+  const warning = detectSubprojectWarning(repoRoot);
+  assert.equal(warning, undefined);
+});
+
+test("detectSubprojectWarning does not warn for already adopted targets", () => {
+  const cwd = tempCwd();
+  const repoRoot = path.join(cwd, "repo");
+  const subProject = path.join(repoRoot, "cli");
+  fs.mkdirSync(path.join(subProject, ".aios"), { recursive: true });
+  fs.writeFileSync(path.join(subProject, ".aios", "config.json"), "{}");
+  fs.writeFileSync(path.join(subProject, "package.json"), "{}");
+  fs.mkdirSync(path.join(repoRoot, ".git"), { recursive: true });
+
+  const warning = detectSubprojectWarning(subProject);
+  assert.equal(warning, undefined);
+});
+
+test("detectSubprojectWarning does not warn when parent lacks root signals", () => {
+  const cwd = tempCwd();
+  const parent = path.join(cwd, "parent");
+  const subProject = path.join(parent, "cli");
+  fs.mkdirSync(subProject, { recursive: true });
+  fs.writeFileSync(path.join(subProject, "package.json"), "{}");
+
+  const warning = detectSubprojectWarning(subProject);
+  assert.equal(warning, undefined);
+});
+
+test("repair is available in help output", () => {
+  const output = run(["help"], { runtimePaths, cwd: tempCwd() });
+  assert.match(output, /aios repair \[project-path\]/);
+  assert.match(output, /Repair missing \.aios kit files/);
+});
+
+test("repair restores missing .aios kit files", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.rmSync(path.join(project, ".aios", "commands", "discover-product.md"));
+
+  const output = run(["repair", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Repairing AIOS assets/);
+  assert.match(output, /Kit: 1 created/);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")));
+  assert.match(output, /Next step: run `aios validate`/);
+});
+
+test("repair restores incomplete native skill folders", () => {
+  const cwd = tempCwd();
+  run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-project");
+
+  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+
+  const output = run(["repair", "native-project"], { runtimePaths, cwd });
+  assert.match(output, /Native skills:/);
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")));
+});
+
+test("repair restores enabled integration rules", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+  run(["integration", "add", "rtk", "demo-project"], { runtimePaths, cwd });
+
+  fs.rmSync(path.join(project, ".aios", "integrations", "rtk.md"));
+
+  const output = run(["repair", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Repairing AIOS assets/);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "rtk.md")));
+  assert.match(output, /Next step: run `aios validate`/);
+});
+
+test("repair reports skipped for already existing files", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+
+  const output = run(["repair", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Kit: 0 created, [1-9]\d* skipped/);
+  assert.match(output, /Total: 0 created/);
+});
+
+test("repair skips kit and native skills in lite mode", () => {
+  const cwd = tempCwd();
+  run(["init", "lite-project", "--lite"], { runtimePaths, cwd });
+
+  const output = run(["repair", "lite-project"], { runtimePaths, cwd });
+  assert.match(output, /Kit: skipped \(lite mode\)/);
+  assert.match(output, /Native skills: skipped \(delivery mode is portable\)/);
+});
+
+test("repair does not add portable skills to native-only projects", () => {
+  const cwd = tempCwd();
+  run(["init", "native-only", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-only");
+
+  assert.equal(fs.existsSync(path.join(project, ".aios", "skills")), false);
+
+  const output = run(["repair", "native-only"], { runtimePaths, cwd });
+  assert.match(output, /Kit: 0 created/);
+  assert.equal(fs.existsSync(path.join(project, ".aios", "skills")), false);
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "context-management", "SKILL.md")));
+});
+
+test("update is available in help output", () => {
+  const output = run(["help"], { runtimePaths, cwd: tempCwd() });
+  assert.match(output, /aios update \[project-path\] \[--dry-run\]/);
+  assert.match(output, /Update an adopted project/);
+});
+
+test("update --dry-run does not write files", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.rmSync(path.join(project, ".aios", "commands", "discover-product.md"));
+
+  const output = run(["update", "demo-project", "--dry-run"], { runtimePaths, cwd });
+  assert.match(output, /Dry-run/);
+  assert.match(output, /would be added/);
+  assert.equal(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")), false);
+});
+
+test("update backfills missing bundled files without overwriting existing", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const customContent = "# Custom prompt content\n";
+  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), customContent);
+  fs.rmSync(path.join(project, ".aios", "commands", "discover-product.md"));
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Kit:/);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")));
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "utf8"), customContent);
+});
+
+test("update adds new core skills to config when most core skills are present", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  config.selectedSkills = ["context-management", "implementation-planner", "task-breakdown", "testing", "code-review"];
+  fs.writeFileSync(path.join(project, ".aios", "config.json"), JSON.stringify(config, null, 2));
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Config: added new core skills/);
+  const updatedConfig = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  assert.ok(updatedConfig.selectedSkills.includes("task-implementation"));
+  assert.ok(updatedConfig.selectedSkills.includes("context-management"));
+});
+
+test("update does not add core skills when user has a minimal skill set", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  config.selectedSkills = ["context-management"];
+  fs.writeFileSync(path.join(project, ".aios", "config.json"), JSON.stringify(config, null, 2));
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Config: no new core skills to add/);
+  const updatedConfig = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  assert.deepEqual(updatedConfig.selectedSkills, ["context-management"]);
+});
+
+test("update reports review-needed files when local differs from bundled", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Review needed: 1 local file/);
+});
+
+test("update skips kit in lite mode", () => {
+  const cwd = tempCwd();
+  run(["init", "lite-project", "--lite"], { runtimePaths, cwd });
+
+  const output = run(["update", "lite-project"], { runtimePaths, cwd });
+  assert.match(output, /Kit: skipped \(lite mode\)/);
+});
+
+test("update restores missing native skills when configured", () => {
+  const cwd = tempCwd();
+  run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-project");
+
+  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+
+  const output = run(["update", "native-project"], { runtimePaths, cwd });
+  assert.match(output, /Native skills:/);
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")));
+});
+
+test("update --dry-run correctly counts missing native skills", () => {
+  const cwd = tempCwd();
+  run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-project");
+
+  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+
+  const output = run(["update", "native-project", "--dry-run"], { runtimePaths, cwd });
+  assert.match(output, /Dry-run/);
+  assert.match(output, /Native skills: 1 would be added/);
+  assert.equal(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")), false);
+});
+
+test("update --dry-run counts native skills from updated config, not original", () => {
+  const cwd = tempCwd();
+  run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
+  const project = path.join(cwd, "native-project");
+
+  const config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  config.selectedSkills = ["context-management", "implementation-planner", "task-breakdown", "testing", "code-review"];
+  fs.writeFileSync(path.join(project, ".aios", "config.json"), JSON.stringify(config, null, 2));
+
+  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+
+  const output = run(["update", "native-project", "--dry-run"], { runtimePaths, cwd });
+  assert.match(output, /Config: would add new core skills: task-implementation/);
+  assert.match(output, /Native skills: 1 would be added/);
+  assert.equal(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")), false);
+});
+
+test("update --accept overwrites a differing local .aios file with bundled source", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+
+  const output = run(["update", "demo-project", "--accept"], { runtimePaths, cwd });
+  assert.match(output, /Accept: 1 file\(s\) accepted/);
+  assert.match(output, /\.aios\/skill-router\.md/);
+  const content = fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8");
+  assert.notEqual(content, "# Modified locally\n");
+});
+
+test("update --dry-run --accept reports planned overwrites without writing", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const originalContent = fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8");
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+
+  const output = run(["update", "demo-project", "--dry-run", "--accept"], { runtimePaths, cwd });
+  assert.match(output, /Dry-run/);
+  assert.match(output, /Accept: 1 file\(s\) would be accepted/);
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
+});
+
+test("update --accept workflows only updates workflow assets", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "# Modified prompt\n");
+
+  const output = run(["update", "demo-project", "--accept", "prompts"], { runtimePaths, cwd });
+  assert.match(output, /Accept: 1 file\(s\) accepted/);
+  assert.match(output, /\.aios\/prompts\/01-generate-prd\.md/);
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
+});
+
+test("update default behavior does not overwrite existing differing files", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+
+  const output = run(["update", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Review needed: 1 local file/);
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
+});
+
+test("update reports line-ending-only differences separately", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  const targetPath = path.join(project, ".aios", "skill-router.md");
+  const originalContent = fs.readFileSync(targetPath, "utf8");
+  const normalized = originalContent.replace(/\r\n/g, "\n");
+  const crlfContent = normalized.replace(/\n/g, "\r\n");
+
+  if (crlfContent !== originalContent) {
+    fs.writeFileSync(targetPath, crlfContent);
+    const output = run(["update", "demo-project"], { runtimePaths, cwd });
+    assert.match(output, /Line-ending differences: 1 file/);
+    assert.ok(!output.includes("Review needed"));
+  } else {
+    fs.writeFileSync(targetPath, originalContent + " ");
+    const output = run(["update", "demo-project"], { runtimePaths, cwd });
+    assert.match(output, /Review needed: 1 local file/);
+  }
+});
+
+test("update --accept is available in help output", () => {
+  const output = run(["help"], { runtimePaths, cwd: tempCwd() });
+  assert.match(output, /--accept/);
+  assert.match(output, /accept only a specific section/);
+});
+
+test("update --accept <section> <project-path> parses section before project path", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
+  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "# Modified prompt\n");
+
+  const output = run(["update", "--accept", "prompts", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Accept: 1 file\(s\) accepted/);
+  assert.match(output, /\.aios\/prompts\/01-generate-prd\.md/);
+  assert.match(output, /Updating AIOS assets in.*demo-project/);
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
+  assert.ok(!fs.existsSync(path.join(cwd, "prompts", ".aios")), "should not create .aios in a 'prompts' directory");
+});
+
+test("update --accept <section> <project-path> does not treat section name as project path when --accept is last", () => {
+  const cwd = tempCwd();
+  run(["init", "my-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "my-project");
+
+  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "# Modified prompt\n");
+
+  const output = run(["update", "my-project", "--accept", "prompts"], { runtimePaths, cwd });
+  assert.match(output, /Updating AIOS assets in.*my-project/);
+  assert.match(output, /Accept: 1 file\(s\) accepted/);
+  assert.ok(!fs.existsSync(path.join(cwd, "prompts", ".aios")), "should not create .aios in a 'prompts' directory");
 });

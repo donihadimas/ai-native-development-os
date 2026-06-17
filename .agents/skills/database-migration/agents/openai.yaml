@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Migration"
+  short_description: "Use the database-migration AIOS workflow."
+  default_prompt: "Use $database-migration for this AIOS workflow."

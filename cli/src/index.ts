@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import {
   AGENT_TARGETS,
+  AIOS_KIT_ENTRIES,
   CAVEMAN_MODES,
   CORE_SKILLS,
   INTEGRATIONS,
@@ -35,7 +36,9 @@ import {
   validateProject,
   writeProjectConfig,
   writeRenderedTemplate,
-  type RuntimePaths
+  type RuntimePaths,
+  classifyKitAssets,
+  acceptKitAssets
 } from "./core.js";
 
 interface CommandContext {
@@ -44,7 +47,7 @@ interface CommandContext {
 }
 
 function packageVersion(): string {
-  const compiledSourceDir = path.dirname(new URL(import.meta.url).pathname);
+  const compiledSourceDir = path.dirname(fileURLToPath(import.meta.url));
   const packageRoot = path.resolve(compiledSourceDir, "../..");
   const packageJsonPath = path.join(packageRoot, "package.json");
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8")) as { version?: string };
@@ -52,12 +55,63 @@ function packageVersion(): string {
   return packageJson.version ?? "0.0.0";
 }
 
+const SUBPROJECT_SIGNALS = [
+  "package.json",
+  "pyproject.toml",
+  "Cargo.toml",
+  "go.mod",
+  "composer.json",
+  "pubspec.yaml",
+  "pom.xml"
+];
+
+const ROOT_SIGNALS = [
+  ".git",
+  "AGENTS.md",
+  ".aios",
+  "project-skeleton",
+  "skills",
+  "templates",
+  "workflows"
+];
+
+function detectSubprojectWarning(targetPath: string): { warn: boolean; targetName: string; parentPath: string } | undefined {
+  if (fs.existsSync(path.join(targetPath, ".aios", "config.json"))) {
+    return undefined;
+  }
+
+  const basename = path.basename(targetPath);
+  const hasSubprojectSignal = SUBPROJECT_SIGNALS.some((file) =>
+    fs.existsSync(path.join(targetPath, file))
+  );
+  if (!hasSubprojectSignal) {
+    return undefined;
+  }
+
+  const parentPath = path.dirname(targetPath);
+  if (parentPath === targetPath) {
+    return undefined;
+  }
+
+  const hasRootSignal = ROOT_SIGNALS.some((signal) =>
+    fs.existsSync(path.join(parentPath, signal))
+  );
+  if (!hasRootSignal) {
+    return undefined;
+  }
+
+  return { warn: true, targetName: basename, parentPath };
+}
+
 function usage(): string {
   return `AI-Native Development OS CLI
 
-AIOS creates an AI-ready project setup for Codex and other coding agents:
-docs, tasks, prompts, skills, workflow rules, validation, and optional
-RTK/Caveman integration rules. It does not generate application code.
+The CLI is only for setup, validation, and generating AIOS template files:
+docs, tasks, prompts, skills, workflow rules, and optional RTK/Caveman
+integration rules. For AI-native development, use Codex or another AI
+agent directly inside the project. The agent should read AGENTS.md,
+.aios/config.json, project docs, skills, and workflows. The CLI does not
+run the agent or generate application code.
 
 Start here:
   aios
@@ -128,6 +182,17 @@ Advanced commands:
   aios config [project-path]
     Print resolved AIOS project configuration.
 
+  aios repair [project-path]
+    Repair missing .aios kit files, native skills, and integration rules.
+    Non-destructive: skips existing valid files.
+
+  aios update [project-path] [--dry-run] [--accept [section]]
+    Update an adopted project with newly bundled AIOS assets, skills, and
+    safe config defaults. Non-destructive: skips existing local files.
+    Use --dry-run to preview changes without writing.
+    Use --accept to apply review-needed .aios/ asset changes.
+    Use --accept <section> to accept only a specific section (commands, integrations, skills, prompts, references, templates, workflows).
+
 Document commands:
   aios create feature <feature-name>
     Create a feature PRD stub in the configured docsRoot product/features folder.
@@ -140,6 +205,9 @@ Document commands:
 
   aios create review <name>
     Create a review report stub in the configured docsRoot reviews folder.
+
+  aios create design <name>
+    Create a UI/UX design document stub in the configured docsRoot design folder.
 
   aios create openapi <api-name>
     Create an OpenAPI contract stub in the configured docsRoot api folder.
@@ -166,7 +234,13 @@ Options:
     Create or validate only the base project docs, without the local .aios kit.
 
   --shape fullstack|frontend|backend|mobile|library|docs
-    Choose which app placeholder folders should exist.
+    Choose placeholder folders and validation shape:
+    fullstack creates frontend/ and backend/.
+    frontend creates frontend/ only.
+    backend creates backend/ only.
+    mobile creates mobile/ only.
+    library creates src/ only.
+    docs creates no app placeholder folders.
 
   --docs-root <path>
     Put product, architecture, task, review, and API docs somewhere other than docs/.
@@ -195,6 +269,8 @@ Typical workflow:
   aios next demo-project
   cd demo-project
   aios create feature "Habit reminders"
+  aios prompt show discover-product
+  aios create design "Habit reminders"
   aios create openapi "Habit API"
   aios create migration "Create habits table"
   aios create security "Habit API"
@@ -220,6 +296,8 @@ Next step after generating docs:
 `;
 }
 
+const ACCEPT_SECTIONS = ["commands", "integrations", "skills", "prompts", "references", "templates", "workflows"];
+
 interface ParsedArgs {
   args: string[];
   lite: boolean;
@@ -234,6 +312,8 @@ interface ParsedArgs {
   projectShape?: ProjectShape;
   install: boolean;
   mode?: string;
+  accept: boolean;
+  acceptSection?: string;
 }
 
 function requireName(value: string | undefined, command: string): string {
@@ -260,10 +340,25 @@ function parseArgs(argv: string[]): ParsedArgs {
   const commandFlags = new Set(["--version", "--help"]);
   const args: string[] = [];
 
+  let acceptSection: string | undefined;
+  const acceptIndex = argv.indexOf("--accept");
+  if (acceptIndex !== -1) {
+    const afterAccept = argv[acceptIndex + 1];
+    if (afterAccept && ACCEPT_SECTIONS.includes(afterAccept)) {
+      acceptSection = afterAccept;
+    }
+  }
+
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (valueFlags.has(arg)) {
       index += 1;
+      continue;
+    }
+    if (arg === "--accept") {
+      if (acceptSection) {
+        index += 1;
+      }
       continue;
     }
     if (arg.startsWith("--") && !commandFlags.has(arg)) {
@@ -271,6 +366,8 @@ function parseArgs(argv: string[]): ParsedArgs {
     }
     args.push(arg);
   }
+
+  const accept = argv.includes("--accept");
 
   return {
     args,
@@ -285,7 +382,9 @@ function parseArgs(argv: string[]): ParsedArgs {
     skills: readFlagValue(argv, "--skills"),
     scope: readFlagValue(argv, "--scope"),
     projectShape: readFlagValue(argv, "--shape") as ProjectShape | undefined,
-    mode: readFlagValue(argv, "--mode")
+    mode: readFlagValue(argv, "--mode"),
+    accept,
+    acceptSection
   };
 }
 
@@ -380,6 +479,32 @@ function ensureProjectShape(projectPath: string, shape: ProjectShape): void {
   }
 }
 
+function removeAdoptedShapePlaceholders(projectPath: string, shape: ProjectShape, createdPaths: string[]): string[] {
+  const allShapeDirs = [...new Set(Object.values(PROJECT_SHAPE_PATHS).flat())];
+  const required = new Set(PROJECT_SHAPE_PATHS[shape]);
+  const created = new Set(createdPaths.map((item) => item.replace(/\\/g, "/").replace(/\/$/, "")));
+  const removed: string[] = [];
+
+  for (const directory of allShapeDirs) {
+    if (required.has(directory) || !created.has(directory)) {
+      continue;
+    }
+
+    const target = path.join(projectPath, directory);
+    if (!fs.existsSync(target) || !fs.statSync(target).isDirectory()) {
+      continue;
+    }
+
+    const entries = fs.readdirSync(target);
+    if (entries.length === 0 || (entries.length === 1 && entries[0] === ".gitkeep")) {
+      fs.rmSync(target, { recursive: true, force: true });
+      removed.push(directory);
+    }
+  }
+
+  return removed;
+}
+
 function setupAiosForProject(
   ctx: CommandContext,
   projectPath: string,
@@ -412,6 +537,13 @@ function setupAiosForProject(
   };
 }
 
+function setupLiteConfig(projectPath: string, config: ReturnType<typeof normalizeProjectSetup>): void {
+  writeProjectConfig(projectPath, {
+    ...config,
+    mode: "lite"
+  });
+}
+
 function commandInit(ctx: CommandContext, name: string | undefined, options: ParsedArgs = parseArgs([])): string {
   const projectName = requireName(name, "init");
   const target = path.resolve(ctx.cwd, projectName);
@@ -423,6 +555,8 @@ function commandInit(ctx: CommandContext, name: string | undefined, options: Par
   relocateDocsRoot(target, config.docsRoot, path.join(ctx.runtimePaths.projectSkeleton, "docs"));
   if (!options.lite) {
     setupAiosForProject(ctx, target, options, config);
+  } else {
+    setupLiteConfig(target, config);
   }
   return `Created AI-ready project at ${target}`;
 }
@@ -448,6 +582,8 @@ function commandStarter(
   relocateDocsRoot(target, config.docsRoot, path.join(source, "docs"));
   if (!options.lite) {
     setupAiosForProject(ctx, target, options, config);
+  } else {
+    setupLiteConfig(target, config);
   }
   return `Created AI-ready ${starter} starter at ${target}`;
 }
@@ -457,6 +593,7 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
   const config = normalizeProjectSetup(ctx, options);
   const hadDocs = fs.existsSync(path.join(projectPath, "docs"));
   const result = adoptSkeleton(ctx.runtimePaths.projectSkeleton, projectPath);
+  const removedShapePlaceholders = removeAdoptedShapePlaceholders(projectPath, config.projectShape, result.created);
   ensureProjectShape(projectPath, config.projectShape);
   if (config.docsRoot !== "docs") {
     if (hadDocs) {
@@ -466,15 +603,27 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
     }
   }
   const setupResult = options.lite ? { kit: [], agent: [], skipped: [] } : setupAiosForProject(ctx, projectPath, options, config);
+  if (options.lite) {
+    setupLiteConfig(projectPath, config);
+  }
+
+  const shapeDirs = PROJECT_SHAPE_PATHS[config.projectShape];
+  const shapeLabel = config.projectShape === "docs" ? "docs (no app folders)" : config.projectShape;
+  const placeholderLabel = shapeDirs.length > 0 ? shapeDirs.join(", ") : "none";
 
   const output = [
     `Adopted AI Dev OS structure in ${projectPath}`,
+    `Shape: ${shapeLabel}`,
+    `App placeholders: ${placeholderLabel}`,
     `Created: ${result.created.length}`,
     `Skipped existing: ${result.skipped.length}`
   ];
 
   if (!options.lite) {
     output.push(`AIOS kit created: ${setupResult.kit.length}`, `Native agent skills created: ${setupResult.agent.length}`);
+  }
+  if (removedShapePlaceholders.length > 0) {
+    output.push(`Shape placeholders removed: ${removedShapePlaceholders.join(", ")}`);
   }
 
   output.push("Next step: run `aios validate` from the project root.");
@@ -483,7 +632,12 @@ function commandAdopt(ctx: CommandContext, projectPathArg: string | undefined, o
 
 function commandInstallKit(ctx: CommandContext, projectPathArg: string | undefined): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
-  const result = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, { config: readProjectConfig(projectPath) });
+  const result = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, {
+    config: {
+      ...readProjectConfig(projectPath),
+      mode: "full"
+    }
+  });
 
   return [
     `Installed AIOS workflow kit in ${path.join(projectPath, ".aios")}`,
@@ -491,6 +645,239 @@ function commandInstallKit(ctx: CommandContext, projectPathArg: string | undefin
     `Skipped existing: ${result.skipped.length}`,
     "Next step: run `aios validate` from the project root."
   ].join("\n");
+}
+
+function commandRepair(ctx: CommandContext, projectPathArg: string | undefined): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const config = readProjectConfig(projectPath);
+  const output = [`Repairing AIOS assets in ${projectPath}`];
+  let totalCreated = 0;
+  let totalSkipped = 0;
+
+  if (config.mode === "full") {
+    const includeSkills = config.skillDelivery === "portable" || config.skillDelivery === "both";
+    const kitResult = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, { includeSkills, config });
+    totalCreated += kitResult.created.length;
+    totalSkipped += kitResult.skipped.length;
+    output.push(`Kit: ${kitResult.created.length} created, ${kitResult.skipped.length} skipped`);
+  } else {
+    output.push("Kit: skipped (lite mode)");
+  }
+
+  if (config.skillDelivery === "native" || config.skillDelivery === "both") {
+    const agentResult = installAgentSkills({
+      sourceRoot: ctx.runtimePaths.aiosKitSource,
+      projectPath,
+      agents: config.selectedAgents,
+      skills: config.selectedSkills,
+      scope: config.agentScope
+    });
+    totalCreated += agentResult.created.length;
+    totalSkipped += agentResult.skipped.length;
+    output.push(`Native skills: ${agentResult.created.length} created, ${agentResult.skipped.length} skipped`);
+  } else {
+    output.push("Native skills: skipped (delivery mode is portable)");
+  }
+
+  let integrationCreated = 0;
+  let integrationSkipped = 0;
+  for (const integration of INTEGRATIONS) {
+    if (!config.integrations[integration].enabled) {
+      continue;
+    }
+    const target = integrationRulePath(projectPath, integration);
+    const existed = fs.existsSync(target);
+    ensureIntegrationRule(ctx, projectPath, integration);
+    if (existed) {
+      integrationSkipped++;
+    } else {
+      integrationCreated++;
+    }
+  }
+  totalCreated += integrationCreated;
+  totalSkipped += integrationSkipped;
+  output.push(`Integration rules: ${integrationCreated} created, ${integrationSkipped} skipped`);
+
+  output.push("", `Total: ${totalCreated} created, ${totalSkipped} skipped`);
+  output.push("Next step: run `aios validate` from the project root.");
+  return output.join("\n");
+}
+
+function listFilesRecursive(dir: string, base = dir): string[] {
+  if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
+    return [];
+  }
+  const results: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...listFilesRecursive(full, base));
+    } else {
+      results.push(path.relative(base, full).replace(/\\/g, "/"));
+    }
+  }
+  return results;
+}
+
+function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, options: ParsedArgs = parseArgs([])): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const config = readProjectConfig(projectPath);
+  const dryRun = options.dryRun;
+  const acceptMode = options.accept;
+  const sectionFilter = options.acceptSection;
+  const output = [dryRun ? `Dry-run: updating AIOS assets in ${projectPath}` : `Updating AIOS assets in ${projectPath}`];
+  let totalCreated = 0;
+  let totalSkipped = 0;
+  let configUpdated = false;
+
+  if (config.mode === "full") {
+    const includeSkills = config.skillDelivery === "portable" || config.skillDelivery === "both";
+    if (dryRun) {
+      const sourceRoot = ctx.runtimePaths.aiosKitSource;
+      let plannedKit = 0;
+      for (const entry of AIOS_KIT_ENTRIES) {
+        if (entry === "skills" && !includeSkills) {
+          continue;
+        }
+        if (sectionFilter && entry !== sectionFilter) {
+          continue;
+        }
+        const sourcePath = path.join(sourceRoot, entry);
+        if (!fs.existsSync(sourcePath)) {
+          continue;
+        }
+        if (fs.statSync(sourcePath).isFile()) {
+          const targetPath = path.join(projectPath, ".aios", entry);
+          if (!fs.existsSync(targetPath)) {
+            plannedKit++;
+          }
+        } else {
+          const targetDir = path.join(projectPath, ".aios", entry);
+          for (const file of listFilesRecursive(sourcePath)) {
+            const targetPath = path.join(targetDir, file);
+            if (!fs.existsSync(targetPath)) {
+              plannedKit++;
+            }
+          }
+        }
+      }
+      output.push(`Kit: ${plannedKit} files would be added`);
+    } else {
+      const kitResult = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, { includeSkills, config });
+      totalCreated += kitResult.created.length;
+      totalSkipped += kitResult.skipped.length;
+      output.push(`Kit: ${kitResult.created.length} added, ${kitResult.skipped.length} skipped existing`);
+    }
+  } else {
+    output.push("Kit: skipped (lite mode)");
+  }
+
+  const existingCoreCount = CORE_SKILLS.filter((skill) => config.selectedSkills.includes(skill)).length;
+  const hasMajorityCore = existingCoreCount >= Math.ceil(CORE_SKILLS.length / 2);
+  const newCoreSkills = hasMajorityCore ? CORE_SKILLS.filter((skill) => !config.selectedSkills.includes(skill)) : [];
+  const updatedSkills = [...new Set([...config.selectedSkills, ...newCoreSkills])].sort();
+
+  if (newCoreSkills.length > 0) {
+    if (dryRun) {
+      output.push(`Config: would add new core skills: ${newCoreSkills.join(", ")}`);
+    } else {
+      config.selectedSkills = updatedSkills;
+      configUpdated = true;
+      output.push(`Config: added new core skills: ${newCoreSkills.join(", ")}`);
+    }
+  } else {
+    output.push("Config: no new core skills to add");
+  }
+
+  if (config.skillDelivery === "native" || config.skillDelivery === "both") {
+    if (dryRun) {
+      let plannedNative = 0;
+      for (const agent of config.selectedAgents) {
+        for (const skill of updatedSkills) {
+          const skillPath = path.join(agentSkillRootForUpdate(projectPath, agent, config), skill, "SKILL.md");
+          if (!fs.existsSync(skillPath)) {
+            plannedNative++;
+          }
+        }
+      }
+      output.push(`Native skills: ${plannedNative} would be added`);
+    } else {
+      const agentResult = installAgentSkills({
+        sourceRoot: ctx.runtimePaths.aiosKitSource,
+        projectPath,
+        agents: config.selectedAgents,
+        skills: config.selectedSkills,
+        scope: config.agentScope
+      });
+      totalCreated += agentResult.created.length;
+      totalSkipped += agentResult.skipped.length;
+      output.push(`Native skills: ${agentResult.created.length} added, ${agentResult.skipped.length} skipped existing`);
+    }
+  } else {
+    output.push("Native skills: skipped (delivery mode is portable)");
+  }
+
+  if (!dryRun && configUpdated) {
+    writeProjectConfig(projectPath, config);
+  }
+
+  if (acceptMode) {
+    const acceptResult = acceptKitAssets(ctx.runtimePaths.aiosKitSource, projectPath, config, {
+      sectionFilter,
+      dryRun
+    });
+
+    if (acceptResult.accepted.length > 0) {
+      const label = dryRun ? "would be accepted" : "accepted";
+      output.push(`Accept: ${acceptResult.accepted.length} file(s) ${label}`);
+      for (const file of acceptResult.accepted.slice(0, 10)) {
+        output.push(`  - ${file}`);
+      }
+      if (acceptResult.accepted.length > 10) {
+        output.push(`  ... and ${acceptResult.accepted.length - 10} more`);
+      }
+    } else {
+      output.push("Accept: no review-needed files to accept");
+    }
+  } else {
+    const classified = classifyKitAssets(ctx.runtimePaths.aiosKitSource, projectPath, config, sectionFilter);
+    const contentDiffs = classified.filter((a) => a.classification === "contentDifferent");
+    const lineEndingDiffs = classified.filter((a) => a.classification === "lineEndingOnly");
+
+    if (contentDiffs.length > 0) {
+      output.push(`Review needed: ${contentDiffs.length} local file(s) differ from bundled assets`);
+      for (const file of contentDiffs.slice(0, 10)) {
+        output.push(`  - ${file.relativePath}`);
+      }
+      if (contentDiffs.length > 10) {
+        output.push(`  ... and ${contentDiffs.length - 10} more`);
+      }
+    }
+
+    if (lineEndingDiffs.length > 0) {
+      output.push(`Line-ending differences: ${lineEndingDiffs.length} file(s) differ only in line endings`);
+    }
+  }
+
+  output.push("", `Total: ${totalCreated} added, ${totalSkipped} skipped existing`);
+  output.push("Next step: run `aios validate` from the project root.");
+  return output.join("\n");
+}
+
+function agentSkillRootForUpdate(projectPath: string, agent: AgentTarget, config: ReturnType<typeof readProjectConfig>): string {
+  const scope = config.agentScope;
+  const homeDir = process.env.HOME ?? "";
+  switch (agent) {
+    case "codex":
+    case "generic":
+      return scope === "user" ? path.join(homeDir, ".agents", "skills") : path.join(projectPath, ".agents", "skills");
+    case "qwen":
+      return scope === "user" ? path.join(homeDir, ".qwen", "skills") : path.join(projectPath, ".qwen", "skills");
+    case "opencode":
+      return scope === "user" ? path.join(homeDir, ".config", "opencode", "skills") : path.join(projectPath, ".opencode", "skills");
+    case "antigravity":
+      return path.join(projectPath, ".agent", "skills");
+  }
 }
 
 function commandDirectory(ctx: CommandContext, projectPathArg: string | undefined): string {
@@ -1185,6 +1572,25 @@ function commandReview(ctx: CommandContext, name: string | undefined): string {
   return `Created review report at ${target}`;
 }
 
+function commandDesign(ctx: CommandContext, name: string | undefined): string {
+  const designName = requireName(name, "design");
+  const slug = slugify(designName);
+  const title = titleize(designName);
+  const target = docsPath(ctx.cwd, path.join("design", `${slug}-design.md`));
+
+  writeRenderedTemplate({
+    templatePath: path.join(ctx.runtimePaths.templates, "design.template.md"),
+    targetPath: target,
+    values: {
+      feature_or_product_name: title,
+      title,
+      slug
+    }
+  });
+
+  return `Created design document at ${target}`;
+}
+
 function commandOpenApi(ctx: CommandContext, name: string | undefined): string {
   const apiName = requireName(name, "openapi");
   const slug = slugify(apiName);
@@ -1270,6 +1676,8 @@ function commandCreate(ctx: CommandContext, type: string | undefined, name: stri
       return commandTask(ctx, name);
     case "review":
       return commandReview(ctx, name);
+    case "design":
+      return commandDesign(ctx, name);
     case "openapi":
       return commandOpenApi(ctx, name);
     case "migration":
@@ -1279,7 +1687,7 @@ function commandCreate(ctx: CommandContext, type: string | undefined, name: stri
     case "release":
       return commandRelease(ctx, name);
     default:
-      throw new Error("Missing artifact type. Usage: aios create <feature|adr|task|review|openapi|migration|security|release> <name>");
+      throw new Error("Missing artifact type. Usage: aios create <feature|adr|task|review|design|openapi|migration|security|release> <name>");
   }
 }
 
@@ -1321,13 +1729,43 @@ function hasTaskFiles(projectPath: string): boolean {
   return fs.readdirSync(tasksDir).some((file) => file.startsWith("TASK-") && file.endsWith(".md"));
 }
 
+function relativeDisplayPath(...parts: string[]): string {
+  return path.join(...parts).replace(/\\/g, "/");
+}
+
+function collectOptionalDocSuggestions(projectPath: string, config: ReturnType<typeof readProjectConfig>): string[] {
+  const suggestions: string[] = [];
+  const securityPath = path.join(projectPath, config.docsRoot, "security");
+  const releasesPath = path.join(projectPath, config.docsRoot, "releases");
+  const migrationsPath = path.join(projectPath, config.docsRoot, "database", "migrations");
+  const apiDir = path.join(projectPath, config.docsRoot, "api");
+
+  if (!fs.existsSync(securityPath) || fs.readdirSync(securityPath).length === 0) {
+    suggestions.push(`Create a security review with \`aios create security <name>\` when you have an API or auth surface to review.`);
+  }
+  if (!fs.existsSync(releasesPath) || fs.readdirSync(releasesPath).filter((f) => f !== "CHANGELOG.md").length === 0) {
+    suggestions.push(`Create a release note with \`aios create release <version>\` when you are ready to ship.`);
+  }
+  if (!fs.existsSync(migrationsPath) || fs.readdirSync(migrationsPath).length === 0) {
+    suggestions.push(`Create a migration plan with \`aios create migration <name>\` when you have database schema changes.`);
+  }
+  const hasOpenApi =
+    fs.existsSync(apiDir) &&
+    fs.readdirSync(apiDir).some((file) => file.endsWith(".openapi.yaml") || file === "openapi.yaml");
+  if (!hasOpenApi) {
+    suggestions.push(`Create an OpenAPI contract with \`aios create openapi <name>\` when you have an API to document.`);
+  }
+  return suggestions;
+}
+
 function commandNext(ctx: CommandContext, projectPathArg: string | undefined): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
   const config = readProjectConfig(projectPath);
-  const visionRelative = path.join(config.docsRoot, "product", "vision.md");
-  const prdRelative = path.join(config.docsRoot, "product", "prd.md");
-  const architectureRelative = path.join(config.docsRoot, "architecture", "architecture.md");
-  const tasksRelative = path.join(config.docsRoot, "tasks");
+  const visionRelative = relativeDisplayPath(config.docsRoot, "product", "vision.md");
+  const prdRelative = relativeDisplayPath(config.docsRoot, "product", "prd.md");
+  const architectureRelative = relativeDisplayPath(config.docsRoot, "architecture", "architecture.md");
+  const designRelative = relativeDisplayPath(config.docsRoot, "design", "design.md");
+  const tasksRelative = relativeDisplayPath(config.docsRoot, "tasks");
   const visionPath = path.join(projectPath, visionRelative);
   const prdPath = path.join(projectPath, prdRelative);
   const architecturePath = path.join(projectPath, architectureRelative);
@@ -1341,8 +1779,9 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
   ) {
     return [
       `Next recommended step for ${projectPath}:`,
-      `Fill \`${visionRelative}\` with the product problem, users, MVP scope, and success metrics.`,
-      "Then ask Codex to read `AGENTS.md` and `.aios/prompts/01-generate-prd.md`."
+      `Use product discovery to interview the user and fill \`${visionRelative}\` with the problem, users, MVP scope, success metrics, assumptions, and constraints.`,
+      "Ask Codex to read `AGENTS.md` and `.aios/prompts/00-discover-product.md`.",
+      "After the user reviews the vision, generate the PRD with `.aios/prompts/01-generate-prd.md`."
     ].join("\n");
   }
 
@@ -1365,16 +1804,22 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
   if (!hasTaskFiles(projectPath)) {
     return [
       `Next recommended step for ${projectPath}:`,
-      `Create the first implementation task in \`${tasksRelative}/\`.`,
-      "Use `aios create task \"Task name\"` or ask Codex to use `.aios/prompts/04-generate-tasks.md`."
+      `If the work has user-facing UI or product-facing interactions, create or update \`${designRelative}\` first.`,
+      "Use `aios create design \"Feature name\"` or ask Codex to use `.aios/prompts/13-design-ui-ux.md`.",
+      `When the design is reviewed, create the first implementation task in \`${tasksRelative}/\` with \`aios create task "Task name"\` or \`.aios/prompts/04-generate-tasks.md\`.`
     ].join("\n");
   }
 
-  return [
+  const optionalSuggestions = collectOptionalDocSuggestions(projectPath, config);
+  const lines = [
     `Next recommended step for ${projectPath}:`,
     `Open the active task in \`${tasksRelative}/\` and implement one task at a time.`,
-    `Ask Codex to read \`AGENTS.md\`, \`${path.join(config.docsRoot, "context", "context-map.md")}\`, \`.aios/skill-router.md\`, and the active task before coding.`
-  ].join("\n");
+    `Ask Codex to read \`AGENTS.md\`, \`${relativeDisplayPath(config.docsRoot, "context", "context-map.md")}\`, \`.aios/skill-router.md\`, and the active task before coding.`
+  ];
+  if (optionalSuggestions.length > 0) {
+    lines.push("", "Optional next steps (non-blocking):", ...optionalSuggestions.map((s) => `- ${s}`));
+  }
+  return lines.join("\n");
 }
 
 function starterChoices(ctx: CommandContext): string[] {
@@ -1451,16 +1896,29 @@ function integrationReviewMessage(selected: IntegrationName[], projectPath: stri
   return lines.join(" ");
 }
 
+function hasRunnableInstallers(selected: IntegrationName[], projectPath: string): boolean {
+  const config = readProjectConfig(projectPath);
+  const targets = normalizeCavemanTargetAgents(config, { ...parseArgs([]), agents: config.selectedAgents });
+
+  return selected.some((integration) => {
+    const detection = detectIntegration(projectPath, integration);
+    if (detection.detected) {
+      return false;
+    }
+    return installCommand(integration, targets).runnable;
+  });
+}
+
 async function promptSetupOptions(ctx: CommandContext): Promise<ParsedArgs> {
   const projectShape = await select<ProjectShape>({
     message: "Project shape?",
     choices: [
-      { name: "Fullstack: frontend + backend", value: "fullstack" },
-      { name: "Frontend only", value: "frontend" },
-      { name: "Backend only", value: "backend" },
-      { name: "Mobile only", value: "mobile" },
-      { name: "Library/package", value: "library" },
-      { name: "Docs/planning only", value: "docs" }
+      { name: "Fullstack: create frontend/ + backend/", value: "fullstack" },
+      { name: "Frontend only: create frontend/", value: "frontend" },
+      { name: "Backend only: create backend/", value: "backend" },
+      { name: "Mobile only: create mobile/", value: "mobile" },
+      { name: "Library/package: create src/", value: "library" },
+      { name: "Docs/planning only: no app placeholder folders", value: "docs" }
     ]
   });
 
@@ -1597,7 +2055,7 @@ async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: 
       })
     );
   }
-  const yes = install
+  const yes = install && hasRunnableInstallers(selected, projectPath)
     ? await confirm({
         message: integrationReviewMessage(selected, projectPath),
         default: false
@@ -1617,6 +2075,19 @@ async function interactiveAdopt(ctx: CommandContext): Promise<string> {
   const setup = await promptSetupOptions(ctx);
   const resolvedProjectPath = path.resolve(ctx.cwd, projectPath);
   console.log(formatSetupSummary(resolvedProjectPath, setup, "adopt"));
+
+  const subprojectWarning = detectSubprojectWarning(resolvedProjectPath);
+  if (subprojectWarning) {
+    console.log(
+      `\nWarning: "${subprojectWarning.targetName}" looks like a subproject or package folder. ` +
+      `The parent directory "${subprojectWarning.parentPath}" appears to be the repository root.`
+    );
+    const continueAnyway = await confirm({ message: "Continue adopting into the subproject?", default: false });
+    if (!continueAnyway) {
+      return `Cancelled. Consider running adopt from the repository root instead:\n  aios adopt ${subprojectWarning.parentPath}`;
+    }
+  }
+
   const shouldAdopt = await confirm({ message: "Adopt AIOS into this project now?", default: true });
   if (!shouldAdopt) {
     return "Cancelled.";
@@ -1747,7 +2218,11 @@ async function interactiveIntegration(ctx: CommandContext): Promise<string> {
         })
       );
     }
-    const yes = install ? await confirm({ message: integrationReviewMessage(selected, path.resolve(ctx.cwd, projectPath)), default: false }) : false;
+    const resolvedProjectPath = path.resolve(ctx.cwd, projectPath);
+    const yes =
+      install && hasRunnableInstallers(selected, resolvedProjectPath)
+        ? await confirm({ message: integrationReviewMessage(selected, resolvedProjectPath), default: false })
+        : false;
     return commandIntegrationAdd(ctx, integrationArg, projectPath, {
       ...parseArgs([]),
       install,
@@ -1799,6 +2274,8 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       { name: "Install native agent skills", value: "agent install" },
       { name: "Set up external integrations", value: "integration" },
       { name: "Validate project", value: "validate" },
+      { name: "Repair missing AIOS assets", value: "repair" },
+      { name: "Update AIOS assets to latest bundled versions", value: "update" },
       { name: "Show next recommended step", value: "next" },
       { name: "Print AIOS command prompt", value: "command" },
       { name: "Show help", value: "help" }
@@ -1816,6 +2293,10 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       return interactiveIntegration(ctx);
     case "validate":
       return commandValidate(ctx, await input({ message: "Project path:", default: "." }));
+    case "repair":
+      return commandRepair(ctx, await input({ message: "Project path:", default: "." }));
+    case "update":
+      return commandUpdate(ctx, await input({ message: "Project path:", default: "." }));
     case "next":
       return commandNext(ctx, await input({ message: "Project path:", default: "." }));
     case "command": {
@@ -1833,6 +2314,8 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       return usage();
   }
 }
+
+export { detectSubprojectWarning };
 
 export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }): string {
   const parsed = parseArgs(argv);
@@ -1868,6 +2351,10 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return commandCreate(ctx, name, secondName);
     case "validate":
       return commandValidate(ctx, name, parsed);
+    case "repair":
+      return commandRepair(ctx, name);
+    case "update":
+      return commandUpdate(ctx, name, parsed);
     case "next":
       return commandNext(ctx, name);
     default:

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementation Planner"
+  short_description: "Use the implementation-planner AIOS workflow."
+  default_prompt: "Use $implementation-planner for this AIOS workflow."

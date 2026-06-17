@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Discovery"
+  short_description: "Use the product-discovery AIOS workflow."
+  default_prompt: "Use $product-discovery for this AIOS workflow."

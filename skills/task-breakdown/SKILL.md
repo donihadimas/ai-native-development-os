@@ -51,7 +51,8 @@ Expected outputs:
 - affected modules,
 - dependencies,
 - acceptance criteria,
-- testing expectations.
+- testing expectations,
+- review checklist and next step guidance.
 
 ## Process
 
@@ -63,8 +64,10 @@ Step-by-step process:
 4. List affected modules and dependencies.
 5. Add testable acceptance criteria.
 6. Add testing expectations tied to behavior.
-7. Use `templates/task.template.md` for structure.
-8. Flag tasks that need ADR or API contract work first.
+7. Add review notes so the user can confirm the task list order and scope.
+8. End with the next workflow step: user chooses one task, uses `implementation-planner` before coding, then uses `task-implementation` to execute and close status.
+9. Use `templates/task.template.md` for structure.
+10. Flag tasks that need ADR or API contract work first.
 
 ## Rules
 
@@ -74,6 +77,7 @@ Hard rules:
 - Do not create tasks that require broad repo changes without explicit scope.
 - Do not hide backend work inside a frontend task or vice versa when complexity is high.
 - Do not call a task implementation-ready without acceptance criteria and testing expectations.
+- Do not tell the agent to implement every generated task in one session.
 
 ## Quality Checklist
 
@@ -85,6 +89,7 @@ Before finishing, verify:
 - [ ] Dependencies are listed.
 - [ ] Acceptance criteria are testable.
 - [ ] Testing expectations are defined.
+- [ ] Next step tells the user to select one task and plan before coding.
 
 ## Failure Modes
 
@@ -94,7 +99,8 @@ Watch out for:
 - unclear ownership between frontend and backend,
 - missing API contract work,
 - acceptance criteria that describe implementation details,
-- tasks that cannot be verified.
+- tasks that cannot be verified,
+- ending without a clear first task recommendation.
 
 ## Example Prompt
 
