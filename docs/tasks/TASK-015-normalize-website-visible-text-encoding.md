@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -53,12 +53,12 @@ Several website files contain broken encoded characters such as `ðŸ...`, `âœ
 
 ## Acceptance Criteria
 
-- [ ] `rg "ð|â|Â" website/src website/README.md website/PRD.md website/DESIGN.md` has no user-visible mojibake matches, except intentional examples if any are documented.
-- [ ] Landing component text renders without broken icons or symbols.
-- [ ] Terminal previews use readable text and valid symbols or ASCII alternatives.
-- [ ] Project structure diagrams in website docs are readable.
-- [ ] Content remains accurate after normalization.
-- [ ] No unrelated content rewrites are included.
+- [x] `rg "ð|â|Â" website/src website/README.md website/PRD.md website/DESIGN.md` has no user-visible mojibake matches, except intentional examples if any are documented.
+- [x] Landing component text renders without broken icons or symbols.
+- [x] Terminal previews use readable text and valid symbols or ASCII alternatives.
+- [x] Project structure diagrams in website docs are readable.
+- [x] Content remains accurate after normalization.
+- [x] No unrelated content rewrites are included.
 
 ## Testing Expectations
 
@@ -76,7 +76,7 @@ Several website files contain broken encoded characters such as `ðŸ...`, `âœ
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/components/landing/TrustBadges.astro` (removed emoji icons), `website/src/content/docs/index.mdx` (icons removed in TASK-014)
+- Tests run: `npm run build` (Starlight build successful, 14 pages generated)
+- Acceptance criteria status: All 6 criteria met.
+- Risks: None known.
