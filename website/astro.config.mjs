@@ -39,6 +39,7 @@ export default defineConfig({
           items: [
             { label: 'CLI Commands', link: '/reference/cli' },
             { label: 'Commands Folder', link: '/reference/commands-folder' },
+            { label: 'Prompts Folder', link: '/reference/prompts-folder' },
             { label: 'Project Structure', link: '/reference/structure' },
           ],
         },

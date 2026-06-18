@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -67,12 +67,12 @@ The `prompts/` folder contains numbered workflow prompts such as product discove
 
 ## Acceptance Criteria
 
-- [ ] Every current file in `prompts/` is listed and explained.
-- [ ] The page clearly explains prompts as routing wrappers, not the full operating procedure.
-- [ ] Each prompt entry includes lifecycle stage, purpose, prerequisite docs, output artifact, related skill/template, and review gate when applicable.
-- [ ] The page distinguishes `prompts/` from `commands/`.
-- [ ] The page links to AI agent simulation and relevant skills/templates pages.
-- [ ] The page is discoverable from the sidebar.
+- [x] Every current file in `prompts/` is listed and explained.
+- [x] The page clearly explains prompts as routing wrappers, not the full operating procedure.
+- [x] Each prompt entry includes lifecycle stage, purpose, prerequisite docs, output artifact, related skill/template, and review gate when applicable.
+- [x] The page distinguishes `prompts/` from `commands/`.
+- [x] The page links to AI agent simulation and relevant skills/templates pages.
+- [x] The page is discoverable from the sidebar.
 
 ## Testing Expectations
 
@@ -89,7 +89,7 @@ The `prompts/` folder contains numbered workflow prompts such as product discove
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/reference/prompts-folder.md` (new), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 18 pages generated)
+- Acceptance criteria status: All 6 criteria met.
+- Risks: None known.
