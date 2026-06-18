@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -63,14 +63,14 @@ AIOS has two different usage surfaces: the `aios` CLI and the AI coding agent. T
 
 ## Acceptance Criteria
 
-- [ ] The guide clearly separates CLI responsibilities from AI agent responsibilities.
-- [ ] The guide includes a realistic new-project CLI simulation using current commands.
-- [ ] The guide includes a realistic existing-project adoption CLI simulation.
-- [ ] The guide explains the files or folders created by the CLI, including `docs/`, `.aios/`, and optional native agent folders.
-- [ ] The guide explains that `aios create ...` creates stubs for the agent or user to fill later.
-- [ ] The guide explains that `aios next` is read-only guidance.
-- [ ] The guide links users to the AI agent simulation as the next step after CLI setup.
-- [ ] The guide is discoverable from the sidebar.
+- [x] The guide clearly separates CLI responsibilities from AI agent responsibilities.
+- [x] The guide includes a realistic new-project CLI simulation using current commands.
+- [x] The guide includes a realistic existing-project adoption CLI simulation.
+- [x] The guide explains the files or folders created by the CLI, including `docs/`, `.aios/`, and optional native agent folders.
+- [x] The guide explains that `aios create ...` creates stubs for the agent or user to fill later.
+- [x] The guide explains that `aios next` is read-only guidance.
+- [x] The guide links users to the AI agent guide as the next step after CLI setup.
+- [x] The guide is discoverable from the sidebar.
 
 ## Testing Expectations
 
@@ -92,7 +92,7 @@ AIOS has two different usage surfaces: the `aios` CLI and the AI coding agent. T
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/guides/cli-simulation.md` (new), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 15 pages generated)
+- Acceptance criteria status: All 8 criteria met.
+- Risks: None known.

@@ -27,6 +27,7 @@ export default defineConfig({
           items: [
             { label: 'Concept & How It Works', link: '/guides/how-it-works' },
             { label: 'Command Guide', link: '/guides/command-guide' },
+            { label: 'CLI Simulation', link: '/guides/cli-simulation' },
             { label: 'Skills', link: '/guides/skills' },
             { label: 'Templates', link: '/guides/templates' },
             { label: 'Integrations', link: '/guides/integrations' },
