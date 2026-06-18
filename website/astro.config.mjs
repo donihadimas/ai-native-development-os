@@ -41,6 +41,7 @@ export default defineConfig({
             { label: 'Commands Folder', link: '/reference/commands-folder' },
             { label: 'Prompts Folder', link: '/reference/prompts-folder' },
             { label: 'References Folder', link: '/reference/references-folder' },
+            { label: 'Workflows Folder', link: '/reference/workflows-folder' },
             { label: 'Integrations Folder', link: '/reference/integrations-folder' },
             { label: 'Project Structure', link: '/reference/structure' },
           ],

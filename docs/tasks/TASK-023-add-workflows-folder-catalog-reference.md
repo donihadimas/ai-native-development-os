@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -65,12 +65,12 @@ Workflows connect skills, templates, references, and project docs into end-to-en
 
 ## Acceptance Criteria
 
-- [ ] Every current workflow file is listed and explained.
-- [ ] The page helps users choose the right workflow for a project situation.
-- [ ] Each workflow entry includes purpose, when to use, prerequisites, involved skills, expected outputs, and next action.
-- [ ] The page explains full mode and lite mode differences without duplicating all workflow text.
-- [ ] The page links to the recommended workflow guide and AI agent simulation.
-- [ ] The page is discoverable from the sidebar.
+- [x] Every current workflow file is listed and explained.
+- [x] The page helps users choose the right workflow for a project situation.
+- [x] Each workflow entry includes purpose, when to use, prerequisites, involved skills, expected outputs, and next action.
+- [x] The page explains full mode and lite mode differences without duplicating all workflow text.
+- [x] The page links to the recommended workflow guide and AI agent simulation.
+- [x] The page is discoverable from the sidebar.
 
 ## Testing Expectations
 
@@ -86,7 +86,7 @@ Workflows connect skills, templates, references, and project docs into end-to-en
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/reference/workflows-folder.md` (new), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 21 pages generated)
+- Acceptance criteria status: All 6 criteria met.
+- Risks: None known.
