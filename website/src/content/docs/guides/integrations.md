@@ -80,3 +80,9 @@ aios integration doctor
 - They should not weaken AIOS documentation and review requirements.
 
 Use integrations only when they make the local agent workflow clearer.
+
+## Related Pages
+
+- [Integrations Folder](/reference/integrations-folder) - Catalog of integration rule files
+- [Command Guide](/guides/command-guide) - Choose the right command for your situation
+- [CLI Reference](/reference/cli) - Full `aios integration` command syntax

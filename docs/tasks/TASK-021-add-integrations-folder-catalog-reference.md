@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -57,13 +57,13 @@ The current integrations guide explains RTK and Caveman at a high level. It does
 
 ## Acceptance Criteria
 
-- [ ] Every current file in `integrations/` is listed and explained.
-- [ ] RTK is documented as guidance for noisy command output and summarized operational traces.
-- [ ] Caveman is documented as concise operational update guidance, not formal artifact compression.
-- [ ] The page explains that integrations are optional and rules-first.
-- [ ] The page links integration files to `aios integration list/status/add/remove/doctor/repair`.
-- [ ] The page states that integrations must not store secrets or silently install external tools.
-- [ ] The page is discoverable from the sidebar or the existing integrations guide.
+- [x] Every current file in `integrations/` is listed and explained.
+- [x] RTK is documented as guidance for noisy command output and summarized operational traces.
+- [x] Caveman is documented as concise operational update guidance, not formal artifact compression.
+- [x] The page explains that integrations are optional and rules-first.
+- [x] The page links integration files to `aios integration list/status/add/remove/doctor/repair`.
+- [x] The page states that integrations must not store secrets or silently install external tools.
+- [x] The page is discoverable from the sidebar or the existing integrations guide.
 
 ## Testing Expectations
 
@@ -79,7 +79,7 @@ The current integrations guide explains RTK and Caveman at a high level. It does
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/reference/integrations-folder.md` (new), `website/src/content/docs/guides/integrations.md` (added links), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 19 pages generated)
+- Acceptance criteria status: All 7 criteria met.
+- Risks: None known.
