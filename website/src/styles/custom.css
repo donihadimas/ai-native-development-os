@@ -55,7 +55,7 @@
 
   --color-primary: #3DDC97;
   --color-primary-hover: #2FBF82;
-  --color-primary-contrast: #0B0F14;
+  --color-primary-contrast: #ffffff;
   --color-primary-soft: rgba(61, 220, 151, 0.12);
 
   --color-secondary: #7AA2F7;
@@ -70,7 +70,7 @@
 
   --color-accent: #3DDC97;
   --color-accent-hover: #2FBF82;
-  --color-accent-contrast: #0B0F14;
+  --color-accent-contrast: #ffffff;
   --color-accent-2: #7AA2F7;
   --color-accent-soft: rgba(61, 220, 151, 0.12);
   --color-focus: rgba(122, 162, 247, 0.55);
