@@ -3,6 +3,29 @@ title: Workflows Folder
 description: Catalog of multi-step workflow files in the .aios/workflows/ folder.
 ---
 
+| | |
+|---|---|
+| **Purpose** | Multi-step development sequences connecting skills, templates, and project docs |
+| **Location** | `.aios/workflows/` |
+| **Use When** | Agent needs an ordered sequence for a type of work |
+| **Related Artifacts** | [Skills](/reference/skills-folder), [Templates](/reference/templates-folder), [Context Map](/guides/how-it-works) |
+| **Next Step** | [Recommended Workflow](/guides/workflow) |
+
+```
+.aios/workflows/
+├── README.md
+├── api-contract.workflow.md
+├── bugfix.workflow.md
+├── database-migration.workflow.md
+├── new-feature.workflow.md
+├── new-project.workflow.md
+├── refactor.workflow.md
+├── release.workflow.md
+├── review.workflow.md
+├── security-review.workflow.md
+└── ui-design.workflow.md
+```
+
 The `workflows/` folder contains multi-step development sequences that connect skills, templates, references, and project docs into end-to-end flows. Each workflow tells the agent what steps to follow for a specific type of work.
 
 ## What Workflows Are
