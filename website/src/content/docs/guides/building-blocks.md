@@ -21,7 +21,7 @@ You can reuse the same `.aios/` workflow kit across projects. Each project keeps
 | Artifact | What It Is | Example |
 | --- | --- | --- |
 | **CLI Commands** | Named actions you run from the terminal. They create files, install kits, or validate projects. | `aios create task` |
-| **Command Prompts** | Markdown instructions in `.aios/commands/` that tell the agent what to do when you invoke a command. | `.aios/commands/generate-prd.md` |
+| **Command Prompts** | Markdown instructions in `.aios/commands/` that tell the agent what to do when you invoke a command. | [Commands Folder](/reference/commands-folder) |
 | **Numbered Prompts** | Step-by-step workflow prompts in `.aios/prompts/`. Numbered from 00 to 13 for the full development lifecycle. | `.aios/prompts/01-generate-prd.md` |
 | **Skills** | Reusable operating procedures for agents. They define inputs, process, outputs, and quality checks for a specific job. | `product-discovery`, `code-review` |
 | **Templates** | Standard document formats. Fill them in to produce PRDs, ADRs, tasks, reviews, and other artifacts. | `prd.template.md` |

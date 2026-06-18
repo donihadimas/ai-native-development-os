@@ -38,6 +38,7 @@ export default defineConfig({
           label: 'Reference',
           items: [
             { label: 'CLI Commands', link: '/reference/cli' },
+            { label: 'Commands Folder', link: '/reference/commands-folder' },
             { label: 'Project Structure', link: '/reference/structure' },
           ],
         },

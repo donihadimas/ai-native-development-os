@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -67,12 +67,12 @@ The CLI command guide explains terminal commands like `aios init` and `aios crea
 
 ## Acceptance Criteria
 
-- [ ] Every current file in `commands/` is listed and explained.
-- [ ] The page clearly distinguishes AIOS command prompt files from terminal CLI commands.
-- [ ] Each command prompt entry includes purpose, when to use, expected context, expected output, and related skill/workflow.
-- [ ] The page links to CLI command docs where `aios prompt list/show` is relevant.
-- [ ] The page is linked from the sidebar and from the building blocks guide.
-- [ ] The documentation remains accurate if the user is using full mode with `.aios/commands/`.
+- [x] Every current file in `commands/` is listed and explained.
+- [x] The page clearly distinguishes AIOS command prompt files from terminal CLI commands.
+- [x] Each command prompt entry includes purpose, when to use, expected context, expected output, and related skill/workflow.
+- [x] The page links to CLI command docs where `aios prompt list/show` is relevant.
+- [x] The page is linked from the sidebar and from the building blocks guide.
+- [x] The documentation remains accurate if the user is using full mode with `.aios/commands/`.
 
 ## Testing Expectations
 
@@ -89,7 +89,7 @@ The CLI command guide explains terminal commands like `aios init` and `aios crea
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/reference/commands-folder.md` (new), `website/astro.config.mjs` (sidebar), `website/src/content/docs/guides/building-blocks.md` (added link)
+- Tests run: `npm run build` (Starlight build successful, 17 pages generated)
+- Acceptance criteria status: All 6 criteria met.
+- Risks: None known.
