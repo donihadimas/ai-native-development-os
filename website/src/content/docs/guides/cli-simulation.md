@@ -138,12 +138,12 @@ aios next
 
 Once the CLI has prepared your workspace, the next step is to open an AI coding agent and ask it to fill the document stubs. The agent reads the skills, templates, and prompts from `.aios/` and follows the workflow.
 
-See the [Using with AI Agents](/guides/ai-agents) guide for what to ask your agent after CLI setup.
+See the [AI Agent Simulation](/guides/ai-agent-simulation) guide for what to ask your agent after CLI setup.
 
 ## Related Pages
 
 - [Command Guide](/guides/command-guide) - Choose the right command for your situation
 - [CLI Reference](/reference/cli) - Full command syntax and options
-- [Using with AI Agents](/guides/ai-agents) - Agent setup and delivery modes
+- [AI Agent Simulation](/guides/ai-agent-simulation) - What to ask your agent next
 - [Project Structure](/reference/structure) - File and folder layout
 - [Building Blocks](/guides/building-blocks) - What each artifact type does

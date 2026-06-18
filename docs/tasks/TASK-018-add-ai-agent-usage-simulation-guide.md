@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -62,14 +62,14 @@ The CLI creates the files and workflow structure, but the AI agent performs the 
 
 ## Acceptance Criteria
 
-- [ ] The guide clearly separates AI agent responsibilities from CLI responsibilities.
-- [ ] The guide starts after CLI setup and references the CLI simulation guide for setup.
-- [ ] The guide includes copy-ready prompts for product discovery, PRD generation, architecture/ADR, task breakdown, implementation planning, task implementation, review, and validation.
-- [ ] The guide tells the user to review product vision before PRD generation.
-- [ ] The guide tells the user to review PRD/architecture decisions before implementation tasks.
-- [ ] The guide tells the agent to read the active task before coding.
-- [ ] The guide reinforces one-task-at-a-time implementation.
-- [ ] The guide is discoverable from the sidebar.
+- [x] The guide clearly separates AI agent responsibilities from CLI responsibilities.
+- [x] The guide starts after CLI setup and references the CLI simulation guide for setup.
+- [x] The guide includes copy-ready prompts for product discovery, PRD generation, architecture/ADR, task breakdown, implementation planning, task implementation, review, and validation.
+- [x] The guide tells the user to review product vision before PRD generation.
+- [x] The guide tells the user to review PRD/architecture decisions before implementation tasks.
+- [x] The guide tells the agent to read the active task before coding.
+- [x] The guide reinforces one-task-at-a-time implementation.
+- [x] The guide is discoverable from the sidebar.
 
 ## Testing Expectations
 
@@ -91,7 +91,7 @@ The CLI creates the files and workflow structure, but the AI agent performs the 
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/guides/ai-agent-simulation.md` (new), `website/astro.config.mjs` (sidebar), `website/src/content/docs/guides/cli-simulation.md` (updated link)
+- Tests run: `npm run build` (Starlight build successful, 16 pages generated)
+- Acceptance criteria status: All 8 criteria met.
+- Risks: None known.

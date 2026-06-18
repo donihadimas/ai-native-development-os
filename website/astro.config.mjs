@@ -28,6 +28,7 @@ export default defineConfig({
             { label: 'Concept & How It Works', link: '/guides/how-it-works' },
             { label: 'Command Guide', link: '/guides/command-guide' },
             { label: 'CLI Simulation', link: '/guides/cli-simulation' },
+            { label: 'AI Agent Simulation', link: '/guides/ai-agent-simulation' },
             { label: 'Skills', link: '/guides/skills' },
             { label: 'Templates', link: '/guides/templates' },
             { label: 'Integrations', link: '/guides/integrations' },
