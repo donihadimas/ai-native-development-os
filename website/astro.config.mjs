@@ -16,6 +16,7 @@ export default defineConfig({
           label: 'Setup',
           items: [
             { label: 'Getting Started', link: '/getting-started' },
+            { label: 'Building Blocks', link: '/guides/building-blocks' },
             { label: 'Recommended Workflow', link: '/guides/workflow' },
             { label: 'Using with AI Agents', link: '/guides/ai-agents' },
           ],
