@@ -28,7 +28,7 @@ You can reuse the same `.aios/` workflow kit across projects. Each project keeps
 | **Workflows** | Step-by-step flows that orchestrate skills and templates for a lifecycle phase. | `new-feature.workflow.md` |
 | **References** | Stable engineering principles the agent should follow. They stay constant across tasks. | `testing-principles.md` |
 | **Project Docs** | Product vision, architecture, ADRs, tasks, reviews, and context maps in `docs/`. | `docs/product/prd.md` |
-| **Native Agent Folders** | Agent-specific skill copies (optional). The Markdown source remains canonical. | `.codex/skills/` |
+| **Native Agent Folders** | Agent-specific skill copies (optional). The Markdown source remains canonical. | `.agents/skills/`, `.qwen/skills/`, `.opencode/skills/`, `.agent/skills/` |
 
 ## CLI Commands vs Prompts vs Skills
 
@@ -42,7 +42,7 @@ These three are easy to confuse:
 
 | I Want To... | Use This |
 | --- | --- |
-| Start a new project | `aios init` or `aios create project` |
+| Start a new project | `aios init <project-name>` or `aios starter <starter-name> <project-name>` |
 | Understand how AIOS works | This guide and [How It Works](/guides/how-it-works) |
 | Clarify a raw product idea | `product-discovery` skill or prompt `00-discover-product.md` |
 | Write a PRD | `prd-generator` skill or prompt `01-generate-prd.md` |

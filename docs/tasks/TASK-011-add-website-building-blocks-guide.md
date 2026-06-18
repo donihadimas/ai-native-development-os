@@ -82,7 +82,7 @@ The website already has separate pages for getting started, skills, templates, w
 
 ## Done Summary
 
-- Files changed: `website/src/content/docs/guides/building-blocks.md`, `website/astro.config.mjs`
-- Tests run: `npm run build` (Starlight build successful, 12 pages generated)
+- Files changed: `website/src/content/docs/guides/building-blocks.md` (new), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 12 pages generated). Manual local dev server verification not performed yet.
 - Acceptance criteria status: All 7 criteria met.
-- Risks: None known.
+- Risks: Manual UX/mobile wrapping check pending. Run `npm run dev` and open `/guides/building-blocks` to verify links, headings, tables, and mobile layout.

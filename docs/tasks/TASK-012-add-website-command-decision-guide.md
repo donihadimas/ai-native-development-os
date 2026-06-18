@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -56,13 +56,13 @@ The existing CLI reference lists commands accurately, but it is reference-first.
 
 ## Acceptance Criteria
 
-- [ ] Users can answer "which command should I run?" without reading the full CLI reference first.
-- [ ] The guide includes separate paths for `aios`, `aios init`, `aios starter`, and `aios adopt`.
-- [ ] The guide explains that `aios next` is read-only.
-- [ ] The guide explains that `aios create ...` creates document stubs, not application code.
-- [ ] The guide explains native versus portable skill installation at command level.
-- [ ] Integration commands are described as optional and rules-first.
-- [ ] The full CLI reference remains available and linked for complete syntax.
+- [x] Users can answer "which command should I run?" without reading the full CLI reference first.
+- [x] The guide includes separate paths for `aios`, `aios init`, `aios starter`, and `aios adopt`.
+- [x] The guide explains that `aios next` is read-only.
+- [x] The guide explains that `aios create ...` creates document stubs, not application code.
+- [x] The guide explains native versus portable skill installation at command level.
+- [x] Integration commands are described as optional and rules-first.
+- [x] The full CLI reference remains available and linked for complete syntax.
 
 ## Testing Expectations
 
@@ -87,7 +87,7 @@ The existing CLI reference lists commands accurately, but it is reference-first.
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/guides/command-guide.md` (new), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 13 pages generated)
+- Acceptance criteria status: All 7 criteria met.
+- Risks: Manual UX/mobile wrapping check pending. Run `npm run dev` and open `/guides/command-guide` to verify links, headings, tables, and mobile layout.
