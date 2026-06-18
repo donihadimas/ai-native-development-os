@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -78,16 +78,16 @@ The current Skills page lists available skills and their general use. For a comp
 
 ## Acceptance Criteria
 
-- [ ] Every current skill folder is listed and explained.
-- [ ] Each skill entry includes purpose, when to use, inputs, outputs, related templates, related workflows, related prompts/command prompts where applicable, and clarification/review notes.
-- [ ] Each skill entry includes one short example prompt showing how a user should ask an AI agent to use that skill.
-- [ ] Skills are grouped by lifecycle stage so users can understand where each skill belongs in the AIOS workflow.
-- [ ] The page explains which skills are generator/planning skills that may ask clarification questions before writing final artifacts.
-- [ ] The page explains which skills are execution/review skills that require an active task, diff, validation evidence, or review target.
-- [ ] The page explains native and portable skill delivery locations.
-- [ ] The page links skills to relevant prompts, templates, workflows, and AI agent simulation.
-- [ ] The page remains scannable and does not duplicate complete `SKILL.md` files.
-- [ ] The page is discoverable from the sidebar or existing Skills guide.
+- [x] Every current skill folder is listed and explained.
+- [x] Each skill entry includes purpose, when to use, inputs, outputs, related templates, related workflows, related prompts/command prompts where applicable, and clarification/review notes.
+- [x] Each skill entry includes one short example prompt showing how a user should ask an AI agent to use that skill.
+- [x] Skills are grouped by lifecycle stage so users can understand where each skill belongs in the AIOS workflow.
+- [x] The page explains which skills are generator/planning skills that may ask clarification questions before writing final artifacts.
+- [x] The page explains which skills are execution/review skills that require an active task, diff, validation evidence, or review target.
+- [x] The page explains native and portable skill delivery locations.
+- [x] The page links skills to relevant prompts, templates, workflows, and AI agent simulation.
+- [x] The page remains scannable and does not duplicate complete `SKILL.md` files.
+- [x] The page is discoverable from the sidebar or existing Skills guide.
 
 ## Testing Expectations
 
@@ -103,7 +103,7 @@ The current Skills page lists available skills and their general use. For a comp
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/reference/skills-folder.md` (new), `website/src/content/docs/guides/skills.md` (added links), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 23 pages generated)
+- Acceptance criteria status: All 10 criteria met.
+- Risks: None known.

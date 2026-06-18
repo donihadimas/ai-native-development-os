@@ -81,3 +81,11 @@ The important part is not the exact wording. The important part is that the agen
 - Give the agent the relevant docs, not the whole repository.
 - Record output in the expected docs folder when the skill produces an artifact.
 - Human review still owns product, architecture, security, and dependency decisions.
+
+## Related Pages
+
+- [Skills Folder](/reference/skills-folder) - Full catalog of all skills
+- [Prompts Folder](/reference/prompts-folder) - Numbered prompts that invoke skills
+- [Commands Folder](/reference/commands-folder) - Named prompts that invoke skills
+- [Templates Folder](/reference/templates-folder) - Document formats used by skills
+- [AI Agent Simulation](/guides/ai-agent-simulation) - How to prompt the agent through skills
