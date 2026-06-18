@@ -76,3 +76,10 @@ Include acceptance criteria, validation commands, and files likely to change.
 ## Keep Templates Stable
 
 Project teams can adapt templates, but avoid frequent churn. Templates are part of the workflow contract. If a template changes, update related skills, docs, and examples so agents keep producing compatible output.
+
+## Related Pages
+
+- [Templates Folder](/reference/templates-folder) - Full catalog of template files
+- [Commands Folder](/reference/commands-folder) - Named prompts that invoke templates
+- [Prompts Folder](/reference/prompts-folder) - Numbered prompts that route to templates
+- [Skills](/guides/skills) - Reusable procedures that fill templates

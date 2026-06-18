@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -67,12 +67,12 @@ The existing templates guide lists included templates, but it can be made more c
 
 ## Acceptance Criteria
 
-- [ ] Every current file in `templates/` is listed and explained.
-- [ ] Each template entry includes purpose, typical output location, related CLI command if any, related skill, and review expectation.
-- [ ] The page explains how templates differ from prompts, skills, and workflows.
-- [ ] The page links to command guide, skills, and AI agent simulation.
-- [ ] The page remains scannable and does not duplicate full template bodies.
-- [ ] The page is reachable from the sidebar or existing Templates guide.
+- [x] Every current file in `templates/` is listed and explained.
+- [x] Each template entry includes purpose, typical output location, related CLI command if any, related skill, and review expectation.
+- [x] The page explains how templates differ from prompts, skills, and workflows.
+- [x] The page links to command guide, skills, and AI agent simulation.
+- [x] The page remains scannable and does not duplicate full template bodies.
+- [x] The page is reachable from the sidebar or existing Templates guide.
 
 ## Testing Expectations
 
@@ -88,7 +88,7 @@ The existing templates guide lists included templates, but it can be made more c
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/reference/templates-folder.md` (new), `website/src/content/docs/guides/templates.md` (added links), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 22 pages generated)
+- Acceptance criteria status: All 6 criteria met.
+- Risks: None known.
