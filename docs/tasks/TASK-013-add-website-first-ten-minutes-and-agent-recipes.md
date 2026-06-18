@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -60,13 +60,13 @@ The current getting started and agent pages explain setup and prompting, but use
 
 ## Acceptance Criteria
 
-- [ ] The guide gives a complete first-run path for a new project.
-- [ ] The guide gives a complete first-run path for adopting an existing project.
-- [ ] The guide includes copy-ready prompts for the common AIOS lifecycle steps.
-- [ ] The guide explicitly tells the user when to review before continuing.
-- [ ] The guide keeps AIOS framework-agnostic and does not create stack-specific starters.
-- [ ] The guide uses real AIOS paths and commands that match current docs.
-- [ ] The sidebar exposes the guide near Getting Started or Recommended Workflow.
+- [x] The guide gives a complete first-run path for a new project.
+- [x] The guide gives a complete first-run path for adopting an existing project.
+- [x] The guide includes copy-ready prompts for the common AIOS lifecycle steps.
+- [x] The guide explicitly tells the user when to review before continuing.
+- [x] The guide keeps AIOS framework-agnostic and does not create stack-specific starters.
+- [x] The guide uses real AIOS paths and commands that match current docs.
+- [x] The sidebar exposes the guide near Getting Started or Recommended Workflow.
 
 ## Testing Expectations
 
@@ -84,7 +84,7 @@ The current getting started and agent pages explain setup and prompting, but use
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/guides/first-ten-minutes.md` (new), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 14 pages generated)
+- Acceptance criteria status: All 7 criteria met.
+- Risks: Manual UX/mobile wrapping check pending. Run `npm run dev` and open `/guides/first-ten-minutes` to verify.
