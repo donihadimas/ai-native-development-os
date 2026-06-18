@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Blocked
 
 ## Objective
 
@@ -50,13 +50,13 @@ The website is meant to be the public onboarding surface for AIOS. After adding 
 
 ## Acceptance Criteria
 
-- [ ] `npm run build` passes from `website/`.
-- [ ] Homepage renders without broken imports.
-- [ ] Starlight sidebar exposes the intended onboarding and reference pages.
-- [ ] Key internal links resolve.
-- [ ] Install command is visible on the homepage.
+- [x] `npm run build` passes from `website/`.
+- [x] Homepage renders without broken imports.
+- [x] Starlight sidebar exposes the intended onboarding and reference pages.
+- [x] Key internal links resolve.
+- [x] Install command is visible on the homepage.
 - [ ] Homepage and docs pages are readable on mobile and desktop widths.
-- [ ] No visible mojibake remains in the inspected pages.
+- [x] No visible mojibake remains in the inspected pages.
 - [ ] The final docs experience clearly explains setup, function, CLI commands, command prompt files, numbered prompts, skills, templates, integrations, references, workflows, CLI usage simulation, AI agent usage simulation, and next steps.
 
 ## Testing Expectations
@@ -74,7 +74,16 @@ The website is meant to be the public onboarding surface for AIOS. After adding 
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: None (validation only)
+- Tests run: `npm run build` (14 pages built successfully)
+- Acceptance criteria status: 6/8 met. 2 criteria blocked on TASK-017 through TASK-025.
+- Risks: Missing pages for commands folder, prompts folder, integrations folder, references folder, skills folder, templates folder, workflows folder, CLI simulation, and AI agent simulation. These are covered by TASK-017 through TASK-025. Mobile/desktop visual inspection pending.
+
+### Partial Validation Evidence
+
+- Build: `npm run build` passes, 14 pages generated
+- Sidebar: Setup (5 items), Guides (5 items), Reference (2 items) - beginner-friendly order
+- Homepage: Install command visible in Hero, LifecycleSection shows 8-step loop, SetupPaths shows 4 paths
+- Links verified: building-blocks.md (9 links), first-ten-minutes.md (6 links), command-guide.md (4 links) - all resolve
+- Mojibake: No matches found in website/src
+- Mobile: Responsive CSS media queries exist but browser inspection not performed
