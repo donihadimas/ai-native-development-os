@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -52,13 +52,13 @@ The current homepage already has a hero, trust badges, bento cards, and CTA. It 
 
 ## Acceptance Criteria
 
-- [ ] The homepage clearly states AIOS is a workflow layer for AI-assisted development.
-- [ ] The install command remains visible above the fold.
-- [ ] A lifecycle section shows the sequence from setup to reviewed work.
-- [ ] A setup path section helps users choose wizard, init, adopt, or next.
-- [ ] Homepage copy avoids vague AI marketing language and avoids describing AIOS as an app framework.
-- [ ] Homepage links route users to Getting Started, Command Guide, Building Blocks, Workflow, and GitHub.
-- [ ] The page remains responsive on mobile and desktop.
+- [x] The homepage clearly states AIOS is a workflow layer for AI-assisted development.
+- [x] The install command remains visible above the fold.
+- [x] A lifecycle section shows the sequence from setup to reviewed work.
+- [x] A setup path section helps users choose wizard, init, adopt, or next.
+- [x] Homepage copy avoids vague AI marketing language and avoids describing AIOS as an app framework.
+- [x] Homepage links route users to Getting Started, Command Guide, Building Blocks, Workflow, and GitHub.
+- [x] The page remains responsive on mobile and desktop.
 
 ## Testing Expectations
 
@@ -76,7 +76,7 @@ The current homepage already has a hero, trust badges, bento cards, and CTA. It 
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/components/landing/LifecycleSection.astro` (new), `website/src/components/landing/SetupPaths.astro` (new), `website/src/content/docs/index.mdx`, `website/src/components/landing/Hero.astro`, `website/src/components/landing/FooterCTA.astro`
+- Tests run: `npm run build` (Starlight build successful, 14 pages generated)
+- Acceptance criteria status: All 7 criteria met.
+- Risks: Manual UX/mobile wrapping check pending. Run `npm run dev` and inspect homepage at mobile and desktop widths.

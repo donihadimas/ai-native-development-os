@@ -6,6 +6,8 @@ template: splash
 
 import Hero from '../../components/landing/Hero.astro';
 import TrustBadges from '../../components/landing/TrustBadges.astro';
+import LifecycleSection from '../../components/landing/LifecycleSection.astro';
+import SetupPaths from '../../components/landing/SetupPaths.astro';
 import BentoGrid from '../../components/landing/BentoGrid.astro';
 import FeatureCard from '../../components/landing/FeatureCard.astro';
 import FooterCTA from '../../components/landing/FooterCTA.astro';
@@ -14,36 +16,34 @@ import FooterCTA from '../../components/landing/FooterCTA.astro';
 
 <TrustBadges />
 
+<LifecycleSection />
+
+<SetupPaths />
+
 <BentoGrid>
   <FeatureCard 
     title="Reusable Workflows"
     description="Use repeatable flows for product discovery, architecture, task breakdown, implementation, review, testing, release, security, and migrations."
-    icon="🔄"
   />
   <FeatureCard 
     title="Explicit Context"
     description="Route agents to PRDs, ADRs, templates, references, tasks, API contracts, and reviews instead of pasting a giant context dump into every chat."
-    icon="🧠"
   />
   <FeatureCard 
     title="Verifiable Tasks"
     description="Split work into small tasks with acceptance criteria, test evidence, review notes, and clear done conditions before moving on."
-    icon="✅"
   />
   <FeatureCard 
     title="CLI Assisted, Human Owned"
     description="The CLI creates, copies, numbers, validates, and recommends next steps. You still own architecture, dependencies, security, and release decisions."
-    icon="💻"
   />
   <FeatureCard
     title="Manual First, Automation Ready"
     description="V1 works by copying the skeleton and using Markdown skills directly. The published CLI adds assisted setup without turning AIOS into an app framework."
-    icon="🧭"
   />
   <FeatureCard
     title="Agent Friendly"
     description="Install skills into native folders for Codex, Qwen Code, OpenCode, Antigravity, or keep them portable inside .aios/skills for any agent."
-    icon="🤖"
   />
 </BentoGrid>
 
