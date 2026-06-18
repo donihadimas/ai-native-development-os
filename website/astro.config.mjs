@@ -40,6 +40,7 @@ export default defineConfig({
             { label: 'CLI Commands', link: '/reference/cli' },
             { label: 'Commands Folder', link: '/reference/commands-folder' },
             { label: 'Prompts Folder', link: '/reference/prompts-folder' },
+            { label: 'References Folder', link: '/reference/references-folder' },
             { label: 'Integrations Folder', link: '/reference/integrations-folder' },
             { label: 'Project Structure', link: '/reference/structure' },
           ],

@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -65,12 +65,12 @@ References are a core AIOS layer, but the website currently does not explain eac
 
 ## Acceptance Criteria
 
-- [ ] Every current file in `references/` is listed and explained.
-- [ ] The page explains when references should be read versus when task/PRD/ADR docs should be read.
-- [ ] Each reference entry includes purpose, when to use, related skills/workflows, and human-owned decisions.
-- [ ] The page warns against dumping every reference into context by default.
-- [ ] The page links to building blocks and AI agent simulation guides.
-- [ ] The page is discoverable from the sidebar.
+- [x] Every current file in `references/` is listed and explained.
+- [x] The page explains when references should be read versus when task/PRD/ADR docs should be read.
+- [x] Each reference entry includes purpose, when to use, related skills/workflows, and human-owned decisions.
+- [x] The page warns against dumping every reference into context by default.
+- [x] The page links to building blocks and AI agent simulation guides.
+- [x] The page is discoverable from the sidebar.
 
 ## Testing Expectations
 
@@ -87,7 +87,7 @@ References are a core AIOS layer, but the website currently does not explain eac
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `website/src/content/docs/reference/references-folder.md` (new), `website/astro.config.mjs` (sidebar)
+- Tests run: `npm run build` (Starlight build successful, 20 pages generated)
+- Acceptance criteria status: All 6 criteria met.
+- Risks: None known.
