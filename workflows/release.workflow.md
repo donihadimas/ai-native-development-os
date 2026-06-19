@@ -16,6 +16,17 @@
 - If RTK is enabled, use it for noisy test, build, diff, and changelog output unless exact full output is required.
 - If Caveman is enabled, use concise style for operational updates only; keep release notes, rollback, and approval evidence complete.
 
+## Workflow Handoffs
+
+Use this workflow when work is complete and the next step is release notes, changelog, deployment or publish checks, rollback planning, or post-release verification.
+
+- Require completed tasks, test evidence, and `.aios/workflows/review.workflow.md` or code-review evidence before release planning.
+- Use `.aios/workflows/security-review.workflow.md` before release when included changes touch auth, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or sensitive data.
+- Use `.aios/workflows/database-migration.workflow.md` when release scope includes migration rollout, rollback, or data repair.
+- Use `release-management` for release notes, changelog, rollback notes, deployment checklist, and post-release checks.
+- Return to the relevant feature, bugfix, refactor, security, or migration workflow if release readiness finds missing evidence or blockers.
+- Do not deploy or publish automatically; record the human approval requirement.
+
 ## Process
 
 1. Resolve `.aios/config.json`; use `docsRoot` for release documentation.
@@ -50,7 +61,7 @@
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select the release-management skill. Use `.aios/templates/` for release notes and changelog drafts. Use `.aios/references/` for release standards.
+Use `.aios/skill-router.md` to select this workflow when release preparation is the current step, then use the release-management skill. Use `.aios/templates/` for release notes and changelog drafts. Use `.aios/references/` for release standards.
 
 ## Lite Mode Flow
 

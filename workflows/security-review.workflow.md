@@ -15,6 +15,17 @@
 - If RTK is enabled, use it for noisy diffs, logs, and test output unless exact full output is required.
 - If Caveman is enabled, use concise style for progress updates only; keep security findings and residual risk complete.
 
+## Workflow Handoffs
+
+Use this workflow when a primary feature, bugfix, refactor, API contract, migration, review, or release workflow touches security-sensitive behavior.
+
+- Run this workflow before marking work done when changes touch authentication, authorization, permissions, validation, secrets, payments, billing, subscriptions, checkout, webhooks, personally sensitive data, or trust boundaries.
+- Use `security-review` with `.aios/references/security-principles.md` for standards and `.aios/templates/security-review-report.template.md` for the report.
+- Route to `.aios/workflows/api-contract.workflow.md` when security findings require contract changes for auth, errors, webhooks, or integration boundaries.
+- Route to `.aios/workflows/database-migration.workflow.md` when findings require data model, retention, access, seed, or rollback changes.
+- Return to the primary feature, bugfix, refactor, API, or migration workflow when blocking findings require implementation changes.
+- Continue to `.aios/workflows/review.workflow.md` or `.aios/workflows/release.workflow.md` only after blocking security findings are resolved or residual risk is explicitly accepted.
+
 ## Process
 
 1. Resolve `.aios/config.json`; use `docsRoot` for review documentation.
@@ -42,7 +53,7 @@
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select the security-review skill. Use `.aios/references/security-principles.md` for standards. Use `.aios/templates/security-review-report.template.md` for report creation.
+Use `.aios/skill-router.md` to select this workflow when security review is the current step, then use the security-review skill. Use `.aios/references/security-principles.md` for standards. Use `.aios/templates/security-review-report.template.md` for report creation.
 
 ## Lite Mode Flow
 

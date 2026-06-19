@@ -16,6 +16,17 @@
 - If RTK is enabled, use it for noisy diffs or generated artifact comparisons unless exact full output is required.
 - If Caveman is enabled, use concise style for operational updates only; keep design artifacts complete.
 
+## Workflow Handoffs
+
+Use this workflow when the primary feature or new-project workflow includes user-facing UI, product-facing interactions, user flows, screens, states, accessibility, or frontend design decisions.
+
+- Start from `.aios/workflows/new-feature.workflow.md` or `.aios/workflows/new-project.workflow.md` when the UI belongs to broader product scope; return there after design review.
+- Use `ui-ux-design` with `.aios/references/frontend-principles.md` and `.aios/templates/design.template.md` for the design artifact.
+- Route to `.aios/workflows/api-contract.workflow.md` when screens depend on request, response, error, auth, or integration behavior.
+- Route to `.aios/workflows/security-review.workflow.md` when the UI handles auth, permissions, secrets, payments, billing, checkout, sensitive data, or risky user actions.
+- Use `task-breakdown` only after design is reviewed; frontend or product-facing tasks should link back to the accepted design.
+- Use `implementation-planner`, `task-implementation`, `testing`, and `.aios/workflows/review.workflow.md` for each implementation task after design approval.
+
 ## Process
 
 1. Resolve `.aios/config.json`; use `docsRoot` and `projectShape`.
@@ -45,7 +56,7 @@
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select the ui-ux-design skill. Use `.aios/templates/design.template.md` for design creation. Use `.aios/references/frontend-principles.md` for standards.
+Use `.aios/skill-router.md` to select this workflow when UI/UX design is the current step, then use the ui-ux-design skill. Use `.aios/templates/design.template.md` for design creation. Use `.aios/references/frontend-principles.md` for standards.
 
 ## Lite Mode Flow
 
