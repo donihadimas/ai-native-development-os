@@ -14,7 +14,7 @@ Run `aios config` first when path locations, project shape, selected agents, or 
 6. Implement one task at a time.
 7. Review, test, and prepare release notes before marking work done.
 
-If native agent skills are installed, use the agent skill system first. If portable mode is active, use `.aios/skill-router.md` to open the matching `.aios/skills/*/SKILL.md`.
+In full mode, read `.aios/skill-router.md` before choosing a workflow. If `skillDelivery` is `native`, use the matching native agent skill and stop to report any missing required skill. If `skillDelivery` is `portable`, open and follow the matching `.aios/skills/<skill-name>/SKILL.md`. If `skillDelivery` is `both`, prefer the native skill and use the portable skill file as fallback. In lite mode, follow the same workflow sequence manually with the available project docs.
 
 Generator workflows may ask clarification questions before writing PRD, architecture, ADR, task, API, migration, security, test, or release documents. Answering those questions is part of the normal AIOS flow and helps avoid generic artifacts.
 

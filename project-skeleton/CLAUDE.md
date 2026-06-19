@@ -13,8 +13,13 @@ This file mirrors the repository's AI workflow for Claude-compatible agents. `AG
 ## Operating Rules
 
 - Read `AGENTS.md` first.
-- Read `.aios/config.json` if present and resolve `docsRoot`.
+- Treat `AGENTS.md` as the primary rule source and follow its AIOS managed section when there is any conflict.
+- Read `.aios/config.json` if present and resolve `mode`, `docsRoot`, `projectShape`, `skillDelivery`, selected skills, and integrations.
 - Use `<docsRoot>/context/context-map.md` for context routing.
+- In full mode, read `.aios/skill-router.md` before choosing a workflow, command, prompt, template, reference, or skill.
+- Use native skills when `skillDelivery` is `native`; stop and report missing required native skills instead of bypassing AIOS.
+- Use `.aios/skills/<skill-name>/SKILL.md` when `skillDelivery` is `portable`, and as fallback when `skillDelivery` is `both`.
+- Follow `.aios/commands/`, `.aios/prompts/`, `.aios/templates/`, `.aios/references/`, and `.aios/workflows/` when the router or user request selects them.
 - Work from one active task in `<docsRoot>/tasks/`.
 - Keep implementation changes small and verifiable.
 - Report changed files, tests run, acceptance criteria status, and risks.

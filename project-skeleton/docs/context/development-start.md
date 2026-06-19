@@ -34,7 +34,7 @@ If `.aios/config.json` is missing, treat the project as lite mode and use `docs`
 - ADRs done: create design/API/migration plans when needed, then break work into small tasks.
 - Task ready: implement one task, then test and review.
 
-If native agent skills are installed, use the agent's skill system first. If portable mode is active in full mode, use `.aios/skill-router.md` to open the matching `.aios/skills/*/SKILL.md`. In lite mode, follow the same workflow sequence manually with the available project docs.
+In full mode, read `.aios/skill-router.md` before choosing a workflow. If `skillDelivery` is `native`, use the matching native agent skill and stop to report any missing required skill. If `skillDelivery` is `portable`, open and follow the matching `.aios/skills/<skill-name>/SKILL.md`. If `skillDelivery` is `both`, prefer the native skill and use the portable skill file as fallback. In lite mode, follow the same workflow sequence manually with the available project docs.
 
 Generator workflows may ask clarification questions before writing PRD, design, architecture, ADR, task, API, migration, security, test, or release documents. Answering those questions is part of the normal AIOS flow and helps avoid generic artifacts.
 
