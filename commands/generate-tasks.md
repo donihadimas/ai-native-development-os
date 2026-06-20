@@ -13,10 +13,10 @@ Read:
 
 Before creating task files, apply the skill's Clarification Gate. If scope, ownership, acceptance criteria, dependencies, or tests are unclear, ask focused questions first.
 
-Create small implementation-ready tasks in `<docsRoot>/tasks/` with acceptance criteria and testing expectations.
+Create small implementation-ready tasks directly under `<docsRoot>/tasks/` with acceptance criteria and testing expectations. Do not create new work in `<docsRoot>/tasks/done/`; that folder is only for completed-task archive.
 
 End with:
 
 - the recommended first task,
 - what the user should review before implementation,
-- the next step after user approval: plan one selected task with `implementation-planner`, then implement it with `task-implementation`.
+- the next step after user approval: plan one selected task with `implementation-planner`, then implement it with `task-implementation`, and archive it to `<docsRoot>/tasks/done/` only after completion.

@@ -48,7 +48,7 @@ Step-by-step process:
 
 1. Resolve `.aios/config.json` when present, including `mode`, `docsRoot`, `projectShape`, and `skillDelivery`.
 2. Read `AGENTS.md` and `<docsRoot>/context/context-map.md`.
-3. Resolve the active task without reading every task body: use an explicit task ID/path first, then IDE or conversation context, then task filenames, then a narrow heading/status search with user-request terms.
+3. Resolve the active task without reading every task body: use an explicit task ID/path first, then IDE or conversation context, then direct task filenames under `<docsRoot>/tasks/`, then a narrow heading/status search with user-request terms. Exclude `<docsRoot>/tasks/done/` unless completed-task history is requested.
 4. Read the single active task file before implementation; if no clear task exists, ask which task is active or whether to create one.
 5. Read related ADRs when the task mentions them.
 6. Use `implementation-planner` first when no usable plan exists.
@@ -61,6 +61,8 @@ Step-by-step process:
     - set `## Status` to `Done` when that section exists,
     - check completed acceptance criteria when the task uses checkboxes,
     - fill `## Done Summary` with files changed, tests run, acceptance criteria status, and risks,
+    - move the task file to `<docsRoot>/tasks/done/` without renaming it,
+    - move any related implementation plan from `<docsRoot>/plans/` to `<docsRoot>/plans/done/` without renaming it when the task or task range it governs is complete,
     - leave status open and explain blockers when criteria are not satisfied.
 13. End with what the user should review and the next recommended action.
 
@@ -69,7 +71,7 @@ Step-by-step process:
 Hard rules:
 
 - Do not implement before reading the active task.
-- Do not open every file in `<docsRoot>/tasks/` just to discover the active task.
+- Do not open every file in `<docsRoot>/tasks/` just to discover the active task, and do not search `<docsRoot>/tasks/done/` for active work.
 - Do not modify unrelated files.
 - Do not introduce dependencies without approval.
 - Do not claim tests passed unless they were run.
@@ -79,7 +81,8 @@ Hard rules:
 
 ## Task Status Guidance
 
-Use the task's existing structure first. If the task has only `## Done Summary`, fill it at completion instead of adding a new section.
+Use the task's existing structure first. If the task has only `## Done Summary`, fill it at completion instead of adding a new section. Completed task files should be archived under `<docsRoot>/tasks/done/` after status and summary are updated.
+Related implementation plans should be archived under `<docsRoot>/plans/done/` after the task or task range they govern is complete.
 
 Recommended completed summary:
 
@@ -93,6 +96,9 @@ Recommended completed summary:
 ```
 
 For partial work, do not mark the task done. Record what passed, what remains, and the blocker in the final response. Update the task only if the repository's task format already supports partial status.
+
+Do not rename completed tasks while archiving them. Preserve the original `TASK-XXX-title.md` filename so references from PRDs, ADRs, release notes, and reviews remain stable.
+Do not rename archived plans. Preserve the original `TASK-XXX-title-plan.md` filename so task, review, and release references remain stable.
 
 ## Quality Checklist
 
@@ -115,6 +121,8 @@ Watch out for:
 - using broad refactors to solve a narrow task,
 - updating status before validation,
 - leaving task checkboxes stale after completion,
+- leaving completed tasks in the active queue,
+- leaving completed implementation plans in the active plan queue,
 - hiding test gaps in a positive final summary.
 
 ## Example Prompt

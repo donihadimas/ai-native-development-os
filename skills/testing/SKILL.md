@@ -55,7 +55,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Resolve the active task without reading every task body when acceptance criteria are not already provided.
+1. Resolve the active task without reading every task body when acceptance criteria are not already provided. Use direct task filenames under `docs/tasks/` and exclude `docs/tasks/done/` unless completed-task history is requested.
 2. Read only the selected active task or stated acceptance criteria.
 3. Map acceptance criteria to observable behavior.
 4. Inspect existing tests and test conventions.
@@ -85,7 +85,7 @@ Hard rules:
 
 - Test behavior, not private implementation details.
 - Tie tests to acceptance criteria.
-- Do not open every task file to discover acceptance criteria.
+- Do not open every task file to discover acceptance criteria, and do not search `docs/tasks/done/` for active work.
 - Do not claim unrun tests passed.
 - Do not ignore error paths for risky behavior.
 - Do not treat coverage percentage as proof of correctness.

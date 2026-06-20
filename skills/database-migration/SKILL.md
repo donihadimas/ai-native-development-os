@@ -57,7 +57,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Resolve the active task without reading every task body when a feature PRD or task file is not explicit.
+1. Resolve the active task without reading every task body when a feature PRD or task file is not explicit. Use direct task filenames under `docs/tasks/` and exclude `docs/tasks/done/` unless completed-task history is requested.
 2. Read only the selected active task, stated feature PRD section, or acceptance criteria.
 3. Identify schema, data, index, seed, and compatibility impact.
 4. Search existing migration or schema patterns before proposing changes.
@@ -71,7 +71,7 @@ Step-by-step process:
 Hard rules:
 
 - Do not apply a migration before the plan and rollback path are clear.
-- Do not open every task file to discover the migration target.
+- Do not open every task file to discover the migration target, and do not search `docs/tasks/done/` for active work.
 - Do not assume destructive changes are safe without compatibility notes.
 - Do not ignore existing production data.
 - Do not hide index, constraint, seed, or backfill impact.

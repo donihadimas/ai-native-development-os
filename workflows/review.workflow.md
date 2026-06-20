@@ -60,4 +60,4 @@ Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, the diff, active task, and
 
 ## After This Flow
 
-If blocking findings exist, fix them and re-run review. If approved, update the task done summary and move to release planning when user-visible behavior changed.
+If blocking findings exist, fix them and re-run review. If approved, update the task Done Summary, archive the completed task to `<docsRoot>/tasks/done/`, and move to release planning when user-visible behavior changed.

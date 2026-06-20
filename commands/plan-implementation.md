@@ -9,10 +9,10 @@ Read:
 - relevant PRD or ADR only when needed
 - affected files and nearby tests
 
-If the active task is not explicit, list task filenames first and open only the top 1-3 likely candidates. Do not open every task file to discover the active task.
+If the active task is not explicit, list direct task filenames in `<docsRoot>/tasks/` first and open only the top 1-3 likely candidates. Do not open every task file or search `<docsRoot>/tasks/done/` to discover active work.
 
 Before writing the plan, apply the skill's Clarification Gate. If acceptance criteria or behavior expectations are missing or contradictory, ask focused questions first.
 
-Write a short implementation plan before editing files.
+Write a short implementation plan before editing files. If saving a persistent plan, create it directly under `<docsRoot>/plans/`. Do not create active plans in `<docsRoot>/plans/done/`.
 
-End with what the user should review and the next step: approve the plan, then implement only the selected task.
+End with what the user should review and the next step: approve the plan, then implement only the selected task. After the task is completed and archived, move the related plan to `<docsRoot>/plans/done/` without renaming it.

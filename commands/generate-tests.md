@@ -8,7 +8,7 @@ Read:
 - affected implementation files
 - nearby existing tests
 
-If the active task is not explicit, list task filenames first and open only the top 1-3 likely candidates. Do not open every task file to discover the active task.
+If the active task is not explicit, list direct task filenames in `<docsRoot>/tasks/` first and open only the top 1-3 likely candidates. Do not open every task file or search `<docsRoot>/tasks/done/` to discover active work.
 
 Before creating tests, apply the skill's Clarification Gate. If expected behavior, pass/fail criteria, or test conventions are unclear, ask focused questions first.
 

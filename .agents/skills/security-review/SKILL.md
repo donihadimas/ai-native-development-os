@@ -57,7 +57,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Resolve the active task or review target without reading every task body when the target is not explicit.
+1. Resolve the active task or review target without reading every task body when the target is not explicit. Use direct task filenames under `docs/tasks/` and exclude `docs/tasks/done/` unless reviewing completed work.
 2. Read only the selected active task or review target, affected files, and relevant contracts.
 3. Identify trust boundaries, roles, inputs, secrets, and external integrations.
 4. Review authentication, authorization, validation, output encoding, rate limits, and audit needs.
@@ -71,7 +71,7 @@ Step-by-step process:
 Hard rules:
 
 - Do not approve security-sensitive work without checking auth and validation.
-- Do not open every task file to discover the security review target.
+- Do not open every task file to discover the security review target, and do not search `docs/tasks/done/` unless reviewing completed work.
 - Do not store secrets in source code.
 - Do not expose internal errors or sensitive data in responses.
 - Do not assume client-side checks replace server-side enforcement.

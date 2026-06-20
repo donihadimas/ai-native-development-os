@@ -9,7 +9,7 @@ Read:
 - existing schema or migration notes
 - `.aios/templates/migration-plan.template.md` when available
 
-If the active task or feature PRD is not explicit, list task filenames first and open only the top 1-3 likely candidates. Do not open every task file to discover the migration target.
+If the active task or feature PRD is not explicit, list direct task filenames in `<docsRoot>/tasks/` first and open only the top 1-3 likely candidates. Do not open every task file or search `<docsRoot>/tasks/done/` to discover the migration target.
 
 Before creating the migration plan, apply the skill's Clarification Gate. If current state, desired change, compatibility, rollout, rollback, or validation is unclear, ask focused questions first.
 

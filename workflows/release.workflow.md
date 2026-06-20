@@ -2,7 +2,8 @@
 
 ## Input
 
-- Completed tasks.
+- Completed task summaries from `<docsRoot>/tasks/done/`.
+- Selected completed implementation plan summaries from `<docsRoot>/plans/done/` when traceability is needed.
 - Test summary.
 - Review summary.
 - Deployment target or release context.
@@ -12,7 +13,7 @@
 
 - Resolve `.aios/config.json` when it exists.
 - Full mode: use `.aios/skill-router.md`, `.aios/workflows/release.workflow.md`, and release/changelog templates.
-- Lite mode or missing config: use `AGENTS.md`, `<docsRoot>/context/context-map.md`, completed task summaries, review evidence, and available release templates.
+- Lite mode or missing config: use `AGENTS.md`, `<docsRoot>/context/context-map.md`, selected completed task summaries from `<docsRoot>/tasks/done/`, selected completed plan summaries from `<docsRoot>/plans/done/` when needed, review evidence, and available release templates.
 - If RTK is enabled, use it for noisy test, build, diff, and changelog output unless exact full output is required.
 - If Caveman is enabled, use concise style for operational updates only; keep release notes, rollback, and approval evidence complete.
 
@@ -20,7 +21,7 @@
 
 Use this workflow when work is complete and the next step is release notes, changelog, deployment or publish checks, rollback planning, or post-release verification.
 
-- Require completed tasks, test evidence, and `.aios/workflows/review.workflow.md` or code-review evidence before release planning.
+- Require completed tasks archived under `<docsRoot>/tasks/done/`, related plans archived under `<docsRoot>/plans/done/` when persistent plans exist, test evidence, and `.aios/workflows/review.workflow.md` or code-review evidence before release planning.
 - Use `.aios/workflows/security-review.workflow.md` before release when included changes touch auth, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or sensitive data.
 - Use `.aios/workflows/database-migration.workflow.md` when release scope includes migration rollout, rollback, or data repair.
 - Use `release-management` for release notes, changelog, rollback notes, deployment checklist, and post-release checks.
@@ -31,7 +32,7 @@ Use this workflow when work is complete and the next step is release notes, chan
 ## Process
 
 1. Resolve `.aios/config.json`; use `docsRoot` for release documentation.
-2. Confirm all included tasks are done.
+2. Confirm all included tasks are done and archived under `<docsRoot>/tasks/done/`; confirm related persistent plans are archived under `<docsRoot>/plans/done/` when they exist.
 3. Confirm acceptance criteria and tests are reported.
 4. Summarize user-visible changes.
 5. Summarize technical changes and risks.
@@ -66,7 +67,7 @@ Use `.aios/skill-router.md` to select this workflow when release preparation is 
 
 ## Lite Mode Flow
 
-Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, completed task summaries, review evidence, and available release templates. Do not assume `.aios/templates/` or `.aios/skill-router.md` exist. Follow the same release checklist manually.
+Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, selected completed task summaries from `<docsRoot>/tasks/done/`, selected completed plan summaries from `<docsRoot>/plans/done/` when needed, review evidence, and available release templates. Do not assume `.aios/templates/` or `.aios/skill-router.md` exist. Follow the same release checklist manually.
 
 ## After This Flow
 

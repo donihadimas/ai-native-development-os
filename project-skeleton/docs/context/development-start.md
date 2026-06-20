@@ -22,7 +22,7 @@ If `.aios/config.json` is missing, treat the project as lite mode and use `docs`
 7. Review the architecture and design, then create ADRs when technical decisions need a durable record.
 8. After architecture, design, and ADRs are accepted, create implementation tasks in `<docsRoot>/tasks/`.
 9. Implement one task at a time.
-10. Review, test, and prepare release notes before marking work done.
+10. Review, test, fill the task Done Summary, archive completed tasks in `<docsRoot>/tasks/done/`, archive related plans in `<docsRoot>/plans/done/`, and prepare release notes before marking work done.
 
 ## Flow Checkpoints
 
@@ -88,6 +88,6 @@ Include acceptance criteria, risks, open questions, a Mermaid product flow, a re
 
 ```text
 Read AGENTS.md, docs/context/context-map.md, docs/product/prd.md, and docs/architecture/architecture.md if it exists.
-Create or update small implementation tasks in docs/tasks/.
+Create or update small implementation tasks directly under docs/tasks/. Keep active implementation plans in docs/plans/. Archive completed tasks in docs/tasks/done/ and related plans in docs/plans/done/ after validation and Done Summary.
 End with the recommended first task, what I should review, and the next step before coding.
 ```

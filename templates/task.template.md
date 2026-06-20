@@ -59,3 +59,5 @@ Briefly explain why this task exists.
 - Tests run:
 - Acceptance criteria status:
 - Risks:
+
+After completion, move this file to `<docsRoot>/tasks/done/` without renaming it. Keep active or blocked tasks directly under `<docsRoot>/tasks/`.

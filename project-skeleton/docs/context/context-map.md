@@ -23,7 +23,10 @@ Before routing, read `.aios/config.json` if it exists:
 - System design: `<docsRoot>/architecture/architecture.md`.
 - UI/UX design: `<docsRoot>/design/design.md`.
 - Technical decisions: `<docsRoot>/adr/`.
-- Active work: `<docsRoot>/tasks/`.
+- Active work: direct task files in `<docsRoot>/tasks/`.
+- Completed task archive: `<docsRoot>/tasks/done/`.
+- Active implementation plans: direct plan files in `<docsRoot>/plans/`.
+- Completed implementation plan archive: `<docsRoot>/plans/done/`.
 - Review evidence: `<docsRoot>/reviews/`.
 - API contracts and integration notes: `<docsRoot>/api/`.
 - Local AIOS workflow kit: `.aios/` in full mode only.
@@ -35,11 +38,26 @@ When a workflow requires an active task:
 
 1. Use a task ID, task title, or task file path from the user request when provided.
 2. Otherwise use the IDE active file or recent conversation when it clearly points to one task.
-3. Otherwise list filenames in `<docsRoot>/tasks/` first; do not read every task body.
+3. Otherwise list filenames directly under `<docsRoot>/tasks/` first; do not read every task body and do not include `<docsRoot>/tasks/done/`.
 4. Search task headings or status lines with terms from the user request only when filenames are not enough, then open only the top 1-3 likely candidates.
 5. Ask the user to choose the active task, or ask whether to create a new task, when no confident match exists.
 
-Do not scan full task contents just to discover the active task. Do not pick a `Done` task unless the user asks to review or continue it.
+Do not scan full task contents just to discover the active task. Do not pick a task from `<docsRoot>/tasks/done/` unless the user asks to review, audit, release, or continue completed work.
+
+## Task Lifecycle
+
+- Create implementation tasks directly under `<docsRoot>/tasks/`.
+- Keep completed work in `<docsRoot>/tasks/done/`, preserving the original filename.
+- Move a task to `<docsRoot>/tasks/done/` only after `## Status` is `Done`, `## Done Summary` is filled, acceptance criteria are verified, and relevant validation is recorded.
+- Release planning may read completed task summaries from `<docsRoot>/tasks/done/`.
+
+## Plan Discovery And Lifecycle
+
+- Create implementation plans directly under `<docsRoot>/plans/`.
+- Use direct plan filenames under `<docsRoot>/plans/` when looking for an active plan; do not include `<docsRoot>/plans/done/`.
+- Move a plan to `<docsRoot>/plans/done/` only after the task or task range it governs is complete and archived.
+- Preserve the original plan filename while archiving.
+- Read `<docsRoot>/plans/done/` only for historical audit, completed-task review, or release traceability.
 
 ## Task Routing
 

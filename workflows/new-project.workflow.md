@@ -41,7 +41,7 @@ Use this workflow as the primary route for a raw idea, new project setup, first 
 10. User reviews design before frontend or product-facing implementation tasks are treated as ready.
 11. Break the reviewed PRD, architecture, ADRs, API contracts, and design into small tasks using `task-breakdown`.
 12. Initialize app code with the chosen stack outside the AIOS core when needed.
-13. Plan one task at a time using `implementation-planner`, then implement and close status with `task-implementation`.
+13. Plan one task at a time using `implementation-planner`, then implement, close status, and archive completed tasks with `task-implementation`.
 14. Add or update tests using `testing`.
 15. Review each change using `code-review`.
 
@@ -54,7 +54,7 @@ Use this workflow as the primary route for a raw idea, new project setup, first 
 - After ADRs: design UI/UX for user-facing work and create API contracts or migration plans when needed.
 - After design/API/migration planning: generate small implementation tasks.
 - After task generation: implement one task at a time.
-- After implementation: test and review before marking done.
+- After implementation: test, review, complete the Done Summary, then archive the task under `<docsRoot>/tasks/done/`.
 
 ## Output
 

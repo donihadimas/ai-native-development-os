@@ -65,9 +65,10 @@ Step-by-step process:
 5. Add testable acceptance criteria.
 6. Add testing expectations tied to behavior.
 7. Add review notes so the user can confirm the task list order and scope.
-8. End with the next workflow step: user chooses one task, uses `implementation-planner` before coding, then uses `task-implementation` to execute and close status.
+8. End with the next workflow step: user chooses one task, uses `implementation-planner` before coding, then uses `task-implementation` to execute, close status, and archive the completed task.
 9. Use `templates/task.template.md` for structure.
 10. Flag tasks that need ADR or API contract work first.
+11. Create new tasks directly under `docs/tasks/`; never create new work in `docs/tasks/done/`.
 
 ## Rules
 
@@ -78,6 +79,7 @@ Hard rules:
 - Do not hide backend work inside a frontend task or vice versa when complexity is high.
 - Do not call a task implementation-ready without acceptance criteria and testing expectations.
 - Do not tell the agent to implement every generated task in one session.
+- Do not create new active tasks inside `docs/tasks/done/`; that folder is only for completed-task archive.
 
 ## Quality Checklist
 
@@ -100,6 +102,7 @@ Watch out for:
 - missing API contract work,
 - acceptance criteria that describe implementation details,
 - tasks that cannot be verified,
+- creating new work in the completed-task archive,
 - ending without a clear first task recommendation.
 
 ## Example Prompt

@@ -26,7 +26,7 @@ Use this workflow when the primary feature or new-project workflow includes user
 - Route to `.aios/workflows/security-review.workflow.md` when the UI handles auth, permissions, secrets, payments, billing, checkout, sensitive data, or risky user actions.
 - Read `.aios/prompts/13-design-ui-ux.md`, `.aios/references/frontend-principles.md`, `.aios/references/api-standards.md` when data exchange matters, and `.aios/templates/design.template.md` when available.
 - Use `task-breakdown` only after design is reviewed; frontend or product-facing tasks should link back to the accepted design.
-- Use `implementation-planner`, `task-implementation`, `testing`, and `.aios/workflows/review.workflow.md` for each implementation task after design approval.
+- Use `implementation-planner`, `task-implementation`, `testing`, and `.aios/workflows/review.workflow.md` for each implementation task after design approval; archive completed implementation tasks under `<docsRoot>/tasks/done/`.
 
 ## Process
 

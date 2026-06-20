@@ -34,3 +34,5 @@ Describe the intended behavior before coding.
 ## Rollback Notes
 
 Describe how to safely revert or disable the change if needed.
+
+After the related task or task range is complete and archived, move this plan to `<docsRoot>/plans/done/` without renaming it. Keep active plans directly under `<docsRoot>/plans/`.

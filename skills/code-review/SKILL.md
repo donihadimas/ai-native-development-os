@@ -52,7 +52,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Resolve the active task or stated intent without reading every task body when acceptance criteria are not already provided.
+1. Resolve the active task or stated intent without reading every task body when acceptance criteria are not already provided. Use direct task filenames under `docs/tasks/` and exclude `docs/tasks/done/` unless reviewing completed work.
 2. Read only the selected task acceptance criteria or stated expected behavior.
 3. Inspect the diff and changed files.
 4. Check correctness and behavioral regressions.
@@ -67,7 +67,7 @@ Hard rules:
 
 - Findings come before summary.
 - Do not approve when acceptance criteria are unmet.
-- Do not open every task file to discover acceptance criteria.
+- Do not open every task file to discover acceptance criteria, and do not search `docs/tasks/done/` unless reviewing completed work.
 - Do not ignore missing tests for behavior changes.
 - Do not request broad unrelated refactors.
 - Do not assume security-sensitive changes are safe without evidence.

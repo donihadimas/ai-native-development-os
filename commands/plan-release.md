@@ -4,7 +4,8 @@ Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/workf
 
 Read:
 
-- completed tasks
+- completed task summaries from `<docsRoot>/tasks/done/`
+- selected completed implementation plan summaries from `<docsRoot>/plans/done/` when traceability is needed
 - review reports
 - test evidence
 - changelog or release notes if present

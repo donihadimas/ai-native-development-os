@@ -17,7 +17,7 @@
 Use this workflow as the primary route for bugs, regressions, failing tests, crashes, incorrect behavior, flaky behavior, broken builds, and production incidents. Keep the bugfix workflow as primary even when the affected feature is payment, auth, API, database, or UI behavior.
 
 - Use `testing` first when reproduction requires a failing check, regression test, or test evidence review.
-- Use `implementation-planner`, then `task-implementation`, for the smallest safe fix.
+- Use `implementation-planner`, then `task-implementation`, for the smallest safe fix; archive completed bugfix tasks under `<docsRoot>/tasks/done/`.
 - Use `.aios/workflows/api-contract.workflow.md` and `api-contract-design` when the bug reveals a missing, incorrect, or incompatible API contract.
 - Use `.aios/workflows/database-migration.workflow.md` and `database-migration` when the fix requires schema, data repair, index, seed, or rollback planning.
 - Use `.aios/workflows/security-review.workflow.md` and `security-review` before marking work done when the bug touches authentication, authorization, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or personally sensitive data.

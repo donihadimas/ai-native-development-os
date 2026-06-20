@@ -23,7 +23,7 @@ Use this workflow as the primary route for new product behavior, including payme
 - Use `.aios/workflows/database-migration.workflow.md` and `database-migration` before implementation when the feature changes schema, indexes, seed data, retention, rollback, or persisted state.
 - Use `.aios/workflows/ui-design.workflow.md` and `ui-ux-design` before frontend implementation when the feature has user-facing screens, flows, states, or accessibility concerns.
 - Use `.aios/workflows/security-review.workflow.md` and `security-review` before marking work done when the feature touches authentication, authorization, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or personally sensitive data.
-- Use `task-breakdown`, then `implementation-planner`, then `task-implementation` for one implementation task at a time.
+- Use `task-breakdown`, then `implementation-planner`, then `task-implementation` for one implementation task at a time; archive completed tasks under `<docsRoot>/tasks/done/`.
 - For the current selected skill only, read the prompt first, then use `skill-router.md` Artifact Routing to add references or templates only when they govern the artifact being created.
 - Use `testing` to define or evaluate validation evidence, then `.aios/workflows/review.workflow.md` and `code-review` before completion.
 
