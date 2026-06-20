@@ -4,7 +4,7 @@
   "description": "Small CLI for AI-Native Development OS.",
   "type": "module",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/donihadimas/ai-native-development-os#readme",
+  "homepage": "https://donihadimas.github.io/ai-native-development-os/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/donihadimas/ai-native-development-os.git",
