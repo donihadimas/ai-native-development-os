@@ -1,6 +1,6 @@
 # Command: Plan Migration
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/10-plan-database-migration.md` and the `database-migration` skill through `.aios/skill-router.md`. In lite mode, use available database standards and migration guidance without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/workflows/database-migration.workflow.md`, `.aios/prompts/10-plan-database-migration.md`, and the `database-migration` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing and Active Task Discovery before opening task files. In lite mode, use available database standards and migration guidance without assuming `.aios/` exists.
 
 Read:
 
@@ -8,6 +8,8 @@ Read:
 - related architecture and ADRs
 - existing schema or migration notes
 - `.aios/templates/migration-plan.template.md` when available
+
+If the active task or feature PRD is not explicit, read `<docsRoot>/tasks/index.md` first when it exists. If the index is missing or stale, list direct task filenames in `<docsRoot>/tasks/` and open only the top 1-3 likely candidates. Do not open every task file or search `<docsRoot>/tasks/done/` to discover the migration target.
 
 Before creating the migration plan, apply the skill's Clarification Gate. If current state, desired change, compatibility, rollout, rollback, or validation is unclear, ask focused questions first.
 

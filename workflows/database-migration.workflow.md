@@ -15,6 +15,18 @@
 - If RTK is enabled, use it for noisy schema diffs, migration logs, or test output unless exact full output is required.
 - If Caveman is enabled, use concise style for operational updates only; keep migration plans complete.
 
+## Workflow Handoffs
+
+Use this workflow when the primary feature, bugfix, API contract, or refactor workflow needs a database change. It plans schema, data, index, seed, retention, rollout, and rollback work before implementation.
+
+- Return to `.aios/workflows/new-feature.workflow.md` or `.aios/workflows/bugfix.workflow.md` after the migration plan is reviewed.
+- Use `database-migration` for migration planning and `.aios/references/database-standards.md` for standards.
+- Use `.aios/workflows/api-contract.workflow.md` and `api-contract-design` when schema changes affect request, response, webhook, or compatibility behavior.
+- Use `.aios/workflows/security-review.workflow.md` and `security-review` when persisted data is sensitive or affects auth, permissions, payments, billing, subscriptions, or personally sensitive data.
+- Use `implementation-planner`, then `task-implementation`, only after rollout, rollback, and validation checks are clear; archive completed migration tasks under `<docsRoot>/tasks/done/`.
+- Read `.aios/prompts/10-plan-database-migration.md`, `.aios/references/database-standards.md`, and `.aios/templates/migration-plan.template.md` when available.
+- Use `testing` and `.aios/workflows/review.workflow.md` to verify pre-migration and post-migration behavior.
+
 ## Process
 
 1. Resolve `.aios/config.json`; use `docsRoot` for documentation paths.
@@ -42,7 +54,7 @@
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select the database-migration skill. Use `.aios/references/database-standards.md` for standards. Use `.aios/templates/migration-plan.template.md` for migration plan creation.
+Use `.aios/skill-router.md` to select this workflow when data change planning is the current step, then use the database-migration skill. Read `.aios/prompts/10-plan-database-migration.md`, `.aios/references/database-standards.md`, and `.aios/templates/migration-plan.template.md` for migration plan creation. Return to the primary workflow after review.
 
 ## Lite Mode Flow
 

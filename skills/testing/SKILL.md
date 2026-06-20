@@ -55,14 +55,16 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Map acceptance criteria to observable behavior.
-2. Inspect existing tests and test conventions.
-3. Choose the smallest test level that proves each behavior using the Test Level Decision Guide.
-4. Include happy path, error path, and edge cases when relevant.
-5. Add regression tests for bugfixes.
-6. Avoid assertions tied only to implementation details.
-7. Record commands run and gaps.
-8. Use `templates/test-plan.template.md` when writing a persistent plan.
+1. Resolve the active task without reading every task body when acceptance criteria are not already provided. Use `docs/tasks/index.md` when available, then direct task filenames under `docs/tasks/`, and exclude `docs/tasks/done/` unless completed-task history is requested.
+2. Read only the selected active task or stated acceptance criteria.
+3. Map acceptance criteria to observable behavior.
+4. Inspect existing tests and test conventions.
+5. Choose the smallest test level that proves each behavior using the Test Level Decision Guide.
+6. Include happy path, error path, and edge cases when relevant.
+7. Add regression tests for bugfixes.
+8. Avoid assertions tied only to implementation details.
+9. Record commands run and gaps.
+10. Use `templates/test-plan.template.md` when writing a persistent plan.
 
 ## Test Level Decision Guide
 
@@ -83,6 +85,7 @@ Hard rules:
 
 - Test behavior, not private implementation details.
 - Tie tests to acceptance criteria.
+- Do not open every task file to discover acceptance criteria, and do not search `docs/tasks/done/` for active work.
 - Do not claim unrun tests passed.
 - Do not ignore error paths for risky behavior.
 - Do not treat coverage percentage as proof of correctness.
@@ -106,6 +109,7 @@ Before finishing, verify:
 Watch out for:
 
 - brittle implementation-detail tests,
+- reading all task files to find acceptance criteria,
 - missing negative cases,
 - unverified manual assumptions,
 - tests that duplicate mocks instead of behavior,

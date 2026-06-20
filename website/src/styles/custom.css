@@ -1,56 +1,87 @@
 :root {
-  --color-bg: #f8fafc;
-  --color-bg-soft: #eef2ff;
-  --color-surface: #ffffff;
-  --color-surface-soft: #f1f5f9;
+  --color-bg: #F7F8FA;
+  --color-bg-soft: #EEF2F5;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #EEF2F5;
 
-  --color-border: rgba(15, 23, 42, 0.12);
-  --color-border-strong: rgba(15, 23, 42, 0.22);
+  --color-border: #D8DEE7;
+  --color-border-strong: #B8C4D3;
 
-  --color-text: #0f172a;
-  --color-text-muted: #475569;
-  --color-text-soft: #334155;
+  --color-text: #111827;
+  --color-text-muted: #5F6B7A;
+  --color-text-soft: #374151;
 
-  --color-accent: #2563eb;
-  --color-accent-hover: #1d4ed8;
+  --color-primary: #047857;
+  --color-primary-hover: #065F46;
+  --color-primary-contrast: #ffffff;
+  --color-primary-soft: rgba(4, 120, 87, 0.10);
+
+  --color-secondary: #2563EB;
+  --color-secondary-hover: #1D4ED8;
+  --color-secondary-soft: rgba(37, 99, 235, 0.10);
+
+  --color-warning: #B7791F;
+  --color-warning-soft: rgba(183, 121, 31, 0.10);
+
+  --color-danger: #C2413D;
+  --color-danger-soft: rgba(194, 65, 61, 0.10);
+
+  --color-accent: #047857;
+  --color-accent-hover: #065F46;
   --color-accent-contrast: #ffffff;
-  --color-accent-2: #0f766e;
-  --color-accent-soft: rgba(37, 99, 235, 0.12);
+  --color-accent-2: #2563EB;
+  --color-accent-soft: rgba(4, 120, 87, 0.10);
   --color-focus: rgba(37, 99, 235, 0.55);
+
   --color-card-start: rgba(255, 255, 255, 0.96);
   --color-card-end: rgba(241, 245, 249, 0.88);
   --color-code-bg: rgba(15, 23, 42, 0.06);
   --color-badge-bg: rgba(15, 23, 42, 0.04);
-  --color-shadow: rgba(15, 23, 42, 0.12);
+  --color-shadow: rgba(15, 23, 42, 0.08);
 }
 
 :root[data-theme='dark'] {
-  --color-bg: #070a12;
-  --color-bg-soft: #0b1020;
-  --color-surface: #111827;
-  --color-surface-soft: #151b2d;
+  --color-bg: #0B0F14;
+  --color-bg-soft: #0E1318;
+  --color-surface: #111820;
+  --color-surface-soft: #17212B;
 
-  --color-border: rgba(255, 255, 255, 0.12);
-  --color-border-strong: rgba(255, 255, 255, 0.22);
+  --color-border: #253241;
+  --color-border-strong: #344256;
 
-  --color-text: #f8fafc;
-  --color-text-muted: #a8b5c7;
-  --color-text-soft: #d7e0ec;
+  --color-text: #E6EDF3;
+  --color-text-muted: #9BA8B7;
+  --color-text-soft: #C4CED8;
 
-  --color-accent: #7c3aed;
-  --color-accent-hover: #6d28d9;
+  --color-primary: #3DDC97;
+  --color-primary-hover: #2FBF82;
+  --color-primary-contrast: #ffffff;
+  --color-primary-soft: rgba(61, 220, 151, 0.12);
+
+  --color-secondary: #7AA2F7;
+  --color-secondary-hover: #5C8AE6;
+  --color-secondary-soft: rgba(122, 162, 247, 0.12);
+
+  --color-warning: #F4C95D;
+  --color-warning-soft: rgba(244, 201, 93, 0.12);
+
+  --color-danger: #F97066;
+  --color-danger-soft: rgba(249, 112, 102, 0.12);
+
+  --color-accent: #3DDC97;
+  --color-accent-hover: #2FBF82;
   --color-accent-contrast: #ffffff;
-  --color-accent-2: #22d3ee;
-  --color-accent-soft: rgba(124, 58, 237, 0.18);
-  --color-focus: rgba(34, 211, 238, 0.7);
-  --color-card-start: rgba(255, 255, 255, 0.075);
-  --color-card-end: rgba(255, 255, 255, 0.035);
-  --color-code-bg: rgba(0, 0, 0, 0.34);
-  --color-badge-bg: rgba(255, 255, 255, 0.045);
-  --color-shadow: rgba(0, 0, 0, 0.42);
+  --color-accent-2: #7AA2F7;
+  --color-accent-soft: rgba(61, 220, 151, 0.12);
+  --color-focus: rgba(122, 162, 247, 0.55);
+
+  --color-card-start: rgba(255, 255, 255, 0.06);
+  --color-card-end: rgba(255, 255, 255, 0.025);
+  --color-code-bg: #0A0D11;
+  --color-badge-bg: rgba(255, 255, 255, 0.04);
+  --color-shadow: rgba(0, 0, 0, 0.36);
 }
 
-/* Starlight Theme Variables Override for Dark Premium Style */
 :root[data-theme='dark'] {
   --sl-color-bg: var(--color-bg);
   --sl-color-bg-nav: var(--color-bg);
@@ -69,19 +100,11 @@
 }
 
 html[data-theme='dark'] body {
-  background: 
-    radial-gradient(circle at 20% 10%, rgba(139, 92, 246, 0.18), transparent 32%),
-    radial-gradient(circle at 80% 0%, rgba(34, 211, 238, 0.12), transparent 30%),
-    var(--color-bg);
-  background-attachment: fixed;
+  background: var(--color-bg);
 }
 
 html[data-theme='light'] body {
-  background:
-    radial-gradient(circle at 14% 4%, rgba(37, 99, 235, 0.12), transparent 30%),
-    radial-gradient(circle at 86% 0%, rgba(20, 184, 166, 0.1), transparent 26%),
-    var(--color-bg);
-  background-attachment: fixed;
+  background: var(--color-bg);
 }
 
 html,
@@ -103,4 +126,142 @@ main:has(.hero-section) .sl-container {
 
 .sl-markdown-content :is(p, li) {
   text-wrap: pretty;
+}
+
+/* Tables */
+.sl-markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin: 1.5rem 0;
+}
+.sl-markdown-content th,
+.sl-markdown-content td {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+.sl-markdown-content th {
+  background: var(--color-surface-soft);
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+.sl-markdown-content td {
+  color: var(--color-text-soft);
+}
+.sl-markdown-content tr:hover td {
+  background: var(--color-surface-soft);
+}
+
+/* Code blocks */
+.sl-markdown-content pre {
+  background: var(--color-code-bg) !important;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 1.25rem 0;
+}
+.sl-markdown-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.85em;
+}
+.sl-markdown-content :not(pre) > code {
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  color: var(--color-accent);
+}
+
+/* Headings */
+.sl-markdown-content h2 {
+  margin-top: 2.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.sl-markdown-content h3 {
+  margin-top: 2rem;
+}
+
+/* Links */
+.sl-markdown-content a {
+  color: var(--color-secondary);
+  text-decoration: underline;
+  text-decoration-color: rgba(37, 99, 235, 0.3);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+.sl-markdown-content a:hover {
+  text-decoration-color: var(--color-secondary);
+}
+
+/* Badges and inline labels */
+.sl-markdown-content :not(pre) > code {
+  font-weight: 500;
+}
+
+/* Lists */
+.sl-markdown-content ul, .sl-markdown-content ol {
+  padding-left: 1.5rem;
+}
+.sl-markdown-content li {
+  margin-bottom: 0.375rem;
+  line-height: 1.6;
+}
+
+/* Blockquotes / callouts */
+.sl-markdown-content blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding: 0.75rem 1rem;
+  margin: 1.25rem 0;
+  background: var(--color-accent-soft);
+  border-radius: 0 0.375rem 0.375rem 0;
+  color: var(--color-text-soft);
+}
+
+/* Horizontal rules */
+.sl-markdown-content hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}
+
+/* Table overflow on mobile */
+@media (max-width: 768px) {
+  .sl-markdown-content table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Starlight sidebar focus states */
+.sl-sidebar-nav a:focus-visible,
+.sl-sidebar a:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Starlight navbar link hover */
+.sl-nav a:hover {
+  color: var(--color-accent);
+}
+
+/* Starlight search box */
+.sl-search-results a:hover,
+.sl-search-results li:hover {
+  background: var(--color-surface-soft);
+}
+
+/* Focus ring for all interactive elements */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }

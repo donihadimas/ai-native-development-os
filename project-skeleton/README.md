@@ -12,7 +12,12 @@ This skeleton is a generic AI-native project shell. `aios init` can keep it full
 - `<docsRoot>/design/` - UI/UX design notes for user flows, screens, states, and accessibility.
 - `<docsRoot>/architecture/` - system architecture.
 - `<docsRoot>/adr/` - architecture decision records.
-- `<docsRoot>/tasks/` - small implementation-ready tasks.
+- `<docsRoot>/tasks/` - active implementation-ready tasks.
+- `<docsRoot>/tasks/index.md` - lightweight task routing index.
+- `<docsRoot>/tasks/done/` - completed task archive with original filenames preserved.
+- `<docsRoot>/plans/` - active implementation plans.
+- `<docsRoot>/plans/index.md` - lightweight plan routing index.
+- `<docsRoot>/plans/done/` - completed implementation plan archive with original filenames preserved.
 - `<docsRoot>/reviews/` - review reports for implemented tasks or changes.
 - `<docsRoot>/api/` - API contracts or integration notes.
 - `<docsRoot>/context/context-map.md` - context routing guide.
@@ -29,8 +34,8 @@ This skeleton is a generic AI-native project shell. `aios init` can keep it full
 5. Generate or write `<docsRoot>/architecture/architecture.md`.
 6. Generate or write `<docsRoot>/design/design.md` when the project has user-facing UI.
 7. Record important technical decisions in `<docsRoot>/adr/`.
-8. Create small tasks in `<docsRoot>/tasks/`.
+8. Create small active tasks directly under `<docsRoot>/tasks/`.
 9. Ask the agent to implement one task at a time.
-10. Save review evidence in `<docsRoot>/reviews/` before marking work done.
+10. Save review evidence in `<docsRoot>/reviews/`, fill Done Summary, then move completed tasks to `<docsRoot>/tasks/done/` and related plans to `<docsRoot>/plans/done/` before release planning.
 
 Run `aios next` from the project root to see the next recommended step.

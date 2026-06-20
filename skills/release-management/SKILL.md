@@ -23,7 +23,8 @@ Use this skill when:
 
 Expected inputs:
 
-- completed task list,
+- completed task list or summaries from `docs/tasks/done/`,
+- selected completed implementation plan summaries from `docs/plans/done/` when traceability is needed,
 - review and test evidence,
 - changed public behavior or command list,
 - known risks and deferred work,
@@ -57,7 +58,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Confirm included scope and excluded scope.
+1. Confirm included scope and excluded scope from completed task summaries, usually under `docs/tasks/done/`; read selected completed plan summaries from `docs/plans/done/` only when release traceability needs them.
 2. Confirm tests, review, and acceptance criteria status.
 3. Summarize user-visible and developer-visible changes.
 4. Create release notes using `templates/release-note.template.md`.
@@ -70,6 +71,8 @@ Step-by-step process:
 Hard rules:
 
 - Do not release without test and review evidence.
+- Do not treat active tasks in `docs/tasks/` as completed release scope unless their status and Done Summary are complete.
+- Do not read every archived plan when only selected completed plan summaries are needed.
 - Do not publish automatically from the reusable OS guidance in V2.x.
 - Do not hide breaking changes or migration needs.
 - Do not mark deferred work as complete.
@@ -91,6 +94,8 @@ Before finishing, verify:
 Watch out for:
 
 - release notes that omit CLI behavior changes,
+- reading every historical task when only selected completed task summaries are needed,
+- reading every historical plan when only selected completed plan summaries are needed,
 - missing rollback notes,
 - changelog entries that overclaim completion,
 - publish steps that bypass npm dry-run,

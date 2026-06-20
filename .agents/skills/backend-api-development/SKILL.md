@@ -42,20 +42,22 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Read the active backend task and API contract.
-2. Confirm endpoint behavior maps to acceptance criteria.
-3. Identify validation, authorization, persistence, and side effects.
-4. Search existing backend patterns before adding new abstractions.
-5. Implement behavior behind clear module or service boundaries.
-6. Return responses and errors that match the contract.
-7. Add tests for happy path, error path, and authorization or validation boundaries.
-8. Report contract alignment and any drift.
+1. Resolve the active backend task without reading every task body. Use `docs/tasks/index.md` when available, then direct task filenames under `docs/tasks/`, and exclude `docs/tasks/done/` unless reviewing completed work.
+2. Read only the selected active backend task and API contract.
+3. Confirm endpoint behavior maps to acceptance criteria.
+4. Identify validation, authorization, persistence, and side effects.
+5. Search existing backend patterns before adding new abstractions.
+6. Implement behavior behind clear module or service boundaries.
+7. Return responses and errors that match the contract.
+8. Add tests for happy path, error path, and authorization or validation boundaries.
+9. Report contract alignment and any drift.
 
 ## Rules
 
 Hard rules:
 
 - Do not implement an endpoint from guessed frontend needs.
+- Do not open every task file to discover the active backend task.
 - Do not bypass server-side validation or authorization.
 - Do not leak secrets or internal error details.
 - Do not introduce framework-specific architecture into reusable OS docs.
@@ -78,6 +80,7 @@ Before finishing, verify:
 Watch out for:
 
 - controller-only logic with no clear boundary,
+- reading all task files before choosing the backend task,
 - success-only endpoint tests,
 - frontend and backend schema drift,
 - unvalidated input,

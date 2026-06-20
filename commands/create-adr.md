@@ -1,6 +1,6 @@
 # Command: Create ADR
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/03-generate-adr.md` and the `adr-generator` skill through `.aios/skill-router.md`. In lite mode, use available ADR instructions and templates without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use the active workflow that created the decision, `.aios/prompts/03-generate-adr.md`, and the `adr-generator` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing for matching references and templates. In lite mode, use available ADR instructions and templates without assuming `.aios/` exists.
 
 Read:
 

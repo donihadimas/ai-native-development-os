@@ -1,10 +1,11 @@
 # Command: Plan Release
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/12-plan-release.md` and the `release-management` skill through `.aios/skill-router.md`. In lite mode, use available release guidance and templates without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/workflows/release.workflow.md`, `.aios/prompts/12-plan-release.md`, and the `release-management` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing for matching references and templates. In lite mode, use available release guidance and templates without assuming `.aios/` exists.
 
 Read:
 
-- completed tasks
+- completed task summaries from `<docsRoot>/tasks/done/`
+- selected completed implementation plan summaries from `<docsRoot>/plans/done/` when traceability is needed
 - review reports
 - test evidence
 - changelog or release notes if present

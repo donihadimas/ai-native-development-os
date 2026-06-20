@@ -12,6 +12,20 @@
 - If RTK is enabled, use it for noisy test output and large diffs unless exact full output is required.
 - If Caveman is enabled, use concise style for progress updates only; keep review evidence complete.
 
+## Workflow Handoffs
+
+Use this workflow as the primary route for architecture-preserving cleanup, restructuring, maintainability work, performance tuning without product behavior change, or dependency-free simplification.
+
+- Switch to `.aios/workflows/new-feature.workflow.md` if the requested change adds product behavior or user-visible capability.
+- Switch to `.aios/workflows/bugfix.workflow.md` if the requested change fixes incorrect behavior or a failing test.
+- Use `implementation-planner` before edits and keep scope/non-goals explicit.
+- Use `testing` before and after the refactor when feasible to prove behavior stayed stable.
+- Use `.aios/workflows/api-contract.workflow.md` only when the refactor exposes or changes API boundaries; otherwise do not redesign contracts.
+- Use `.aios/workflows/database-migration.workflow.md` only when persistence structure must change; otherwise avoid data changes.
+- Use `.aios/workflows/security-review.workflow.md` when the refactor touches auth, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or sensitive data paths.
+- For the current refactor step only, read the selected prompt first, then use `skill-router.md` Artifact Routing to add references or templates only when they govern the artifact being created.
+- Use `.aios/workflows/review.workflow.md` and `code-review` to check for accidental behavior changes before completion.
+
 ## Process
 
 1. Define safe scope and non-goals.
@@ -41,7 +55,7 @@
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select implementation-planning, testing, and code-review skills. Use `.aios/templates/` for task documents. Use `.aios/references/` for engineering guidance.
+Use `.aios/skill-router.md` to select this workflow first, then use implementation-planning, testing, security review, API contract, migration, and code-review skills only as the refactor requires. Use `skill-router.md` Artifact Routing just-in-time: read the selected step's prompt first, add references only when they govern the decision, and add templates only when creating or updating the artifact.
 
 ## Lite Mode Flow
 

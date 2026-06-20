@@ -32,6 +32,7 @@ Examples:
 - `0.2.1`: fix README, validation report, package metadata, or a CLI bug without changing behavior.
 - `0.3.0`: add a new command, skill, template, workflow, or non-breaking skeleton capability.
 - `0.3.1`: add npm metadata, clarify README onboarding, or fix release documentation after `0.3.0`.
+- `0.4.1`: fix npm package contents after `0.4.0` so bundled AIOS lifecycle assets match the repository.
 - `1.0.0`: stable public API and workflow contract after real-project usage proves the system is ready for stronger compatibility expectations.
 
 ### 📌 Current Release Version
@@ -39,15 +40,16 @@ Examples:
 The current CLI release should use:
 
 ```text
-0.3.1
+0.4.1
 ```
 
 Reason:
 
 - V1 manual workflow already exists.
 - V2 assisted CLI workflow is implemented.
-- V2.x ready-to-use workflow setup, guided CLI, native agent skills, and optional RTK/Caveman integrations are implemented.
-- `0.3.1` is a patch release for npm metadata and README onboarding clarity after the `0.3.0` guided setup release.
+- V2.x ready-to-use workflow setup, guided CLI, native agent skills, optional RTK/Caveman integrations, and artifact lifecycle routing are implemented.
+- `0.4.0` is already published and tagged.
+- `0.4.1` is a patch release to publish the latest artifact lifecycle, task/plan index, and summary-first routing assets in the npm package.
 
 ## 🏷️ Release Types
 
@@ -164,32 +166,37 @@ installed-package smoke test: passed
 
 9. Publish the GitHub release.
 
-### 🔄 Current `v0.3.1` GitHub Release
+### 🔄 Current `v0.4.1` GitHub Release
 
 Recommended release title:
 
 ```text
-v0.3.1 - npm Metadata and Guided Setup Docs
+v0.4.1 - Artifact Lifecycle Bundle Fix
 ```
 
 Recommended release notes:
 
 ````md
-## v0.3.1 - npm Metadata and Guided Setup Docs
+## v0.4.1 - Artifact Lifecycle Bundle Fix
 
-Patch release for npm package metadata and README onboarding clarity.
+Patch release to ensure npm installs include the latest AIOS artifact lifecycle and context-efficiency assets.
 
 ### Changed
-- Added npm metadata for homepage, repository, issue tracker, and author.
-- Updated root and CLI README onboarding so guided setup is the primary path after install.
-- Reframed command examples as a non-interactive command quickstart.
+- Synced bundled npm assets so generated projects include task and plan indexes in the project skeleton.
+- Synced bundled `.aios` kit assets so projects receive the artifact lifecycle reference and stricter workflow routing.
+- Updated release guidance for the current patch release.
+
+### Fixed
+- Fixed the npm package contents after `0.4.0` so the published bundle includes the latest artifact lifecycle, index-first task/plan discovery, and summary-first routing guidance.
 
 ### Breaking Changes
 None.
 
 ### Validation
-- `npm test`: 41 passed, 0 failed.
+- `npm test`: 77 passed, 0 failed.
 - `npm pack --dry-run`: passed.
+- `git diff --check`: passed.
+- Published `0.4.0` tarball check confirmed the lifecycle assets were missing, so this patch release is required.
 - Package name: `@donihadimas/aios`.
 
 ### Install

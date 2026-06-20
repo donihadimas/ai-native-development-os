@@ -1,6 +1,6 @@
 # Command: Generate PRD
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/01-generate-prd.md` and the `prd-generator` skill through `.aios/skill-router.md`. In lite mode, use available PRD instructions and templates without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/workflows/new-project.workflow.md` or `.aios/workflows/new-feature.workflow.md` as appropriate, `.aios/prompts/01-generate-prd.md`, and the `prd-generator` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing for matching references and templates. In lite mode, use available PRD instructions and templates without assuming `.aios/` exists.
 
 Read:
 

@@ -1,6 +1,6 @@
 # Command: Design UI
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/13-design-ui-ux.md` and the `ui-ux-design` skill through `.aios/skill-router.md`. In lite mode, use available design guidance and templates without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/workflows/ui-design.workflow.md`, `.aios/prompts/13-design-ui-ux.md`, and the `ui-ux-design` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing for matching references and templates. In lite mode, use available design guidance and templates without assuming `.aios/` exists.
 
 Read:
 

@@ -22,28 +22,52 @@ import FooterCTA from '../../components/landing/FooterCTA.astro';
 
 <BentoGrid>
   <FeatureCard 
-    title="Reusable Workflows"
-    description="Use repeatable flows for product discovery, architecture, task breakdown, implementation, review, testing, release, security, and migrations."
+    path=".aios/config.json"
+    title="Project Config"
+    description="Single source of truth for mode, docsRoot, projectShape, and integration flags. Controls how your agent reads context."
+    href="/reference/structure"
   />
   <FeatureCard 
-    title="Explicit Context"
-    description="Route agents to PRDs, ADRs, templates, references, tasks, API contracts, and reviews instead of pasting a giant context dump into every chat."
+    path="skills/"
+    title="Agent Skills"
+    description="Reusable Markdown workflows for product discovery, PRD generation, architecture, task breakdown, code review, and more."
+    href="/reference/skills-folder"
   />
   <FeatureCard 
+    path="templates/"
+    title="Document Templates"
+    description="Starter structures for PRDs, ADRs, architecture docs, migration plans, and release notes."
+    href="/reference/templates-folder"
+  />
+  <FeatureCard 
+    path="workflows/"
+    title="Workflow Sequences"
+    description="Ordered steps that chain skills together: discovery → PRD → architecture → tasks → implementation → review."
+    href="/reference/workflows-folder"
+  />
+  <FeatureCard 
+    path="docs/tasks/"
     title="Verifiable Tasks"
-    description="Split work into small tasks with acceptance criteria, test evidence, review notes, and clear done conditions before moving on."
+    description="Small work units with acceptance criteria, affected files, dependencies, and done conditions before moving on."
+    href="/reference/structure"
   />
   <FeatureCard 
-    title="CLI Assisted, Human Owned"
-    description="The CLI creates, copies, numbers, validates, and recommends next steps. You still own architecture, dependencies, security, and release decisions."
+    path="docs/adr/"
+    title="Architecture Decisions"
+    description="Record trade-offs, constraints, and decisions as ADRs so agents and humans share the same rationale."
+    href="/guides/skills"
   />
-  <FeatureCard
-    title="Manual First, Automation Ready"
-    description="V1 works by copying the skeleton and using Markdown skills directly. The published CLI adds assisted setup without turning AIOS into an app framework."
+  <FeatureCard 
+    path="context/"
+    title="Context Maps"
+    description="Entry points that tell agents which documents to read before planning, implementing, or reviewing."
+    href="/guides/how-it-works"
   />
-  <FeatureCard
-    title="Agent Friendly"
-    description="Install skills into native folders for Codex, Qwen Code, OpenCode, Antigravity, or keep them portable inside .aios/skills for any agent."
+  <FeatureCard 
+    path="commands/"
+    title="CLI Commands"
+    description="Helper commands that create, copy, validate, and recommend next steps. Human-owned decisions stay human."
+    href="/reference/commands-folder"
   />
 </BentoGrid>
 

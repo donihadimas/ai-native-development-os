@@ -1,12 +1,14 @@
 # Command: Generate Tests
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/08-generate-tests.md` and the `testing` skill through `.aios/skill-router.md`. In lite mode, use available testing guidance without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use the selected primary workflow, `.aios/prompts/08-generate-tests.md`, and the `testing` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing and Active Task Discovery before opening task files. In lite mode, use available testing guidance without assuming `.aios/` exists.
 
 Read:
 
 - active task acceptance criteria
 - affected implementation files
 - nearby existing tests
+
+If the active task is not explicit, read `<docsRoot>/tasks/index.md` first when it exists. If the index is missing or stale, list direct task filenames in `<docsRoot>/tasks/` and open only the top 1-3 likely candidates. Do not open every task file or search `<docsRoot>/tasks/done/` to discover active work.
 
 Before creating tests, apply the skill's Clarification Gate. If expected behavior, pass/fail criteria, or test conventions are unclear, ask focused questions first.
 

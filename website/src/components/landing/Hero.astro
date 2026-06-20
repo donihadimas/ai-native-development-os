@@ -4,10 +4,10 @@ import TerminalPreview from './TerminalPreview.astro';
 
 <section class="hero-section">
   <div class="hero-content">
-    <div class="badge">AI-Native Development OS</div>
+    <div class="badge">Operating System for AI-Assisted Development</div>
     <h1 class="hero-title">AI-Native Development OS</h1>
     <p class="hero-subtitle">
-      A reusable workflow foundation for building software with AI coding agents. Move from idea to product docs, architecture, tasks, and implementation with explicit context.
+      A workflow layer that gives your AI coding agent explicit context, skills, tasks, and review criteria — instead of starting from scratch every session.
     </p>
     <div class="install-command" aria-label="Install AIOS CLI">
       <span class="prompt">$</span>
@@ -17,6 +17,15 @@ import TerminalPreview from './TerminalPreview.astro';
       <a href="/guides/first-ten-minutes" class="btn btn-primary">First Ten Minutes</a>
       <a href="/guides/building-blocks" class="btn btn-secondary">Building Blocks</a>
       <a href="https://github.com/donihadimas/ai-native-development-os" class="btn btn-secondary">GitHub</a>
+    </div>
+    <div class="workflow-preview">
+      <span class="step"><code>aios init</code> Setup</span>
+      <span class="divider">→</span>
+      <span class="step"><code>aios adopt</code> Context</span>
+      <span class="divider">→</span>
+      <span class="step"><code>aios next</code> Tasks</span>
+      <span class="divider">→</span>
+      <span class="step"><code>aios kit</code> Review</span>
     </div>
   </div>
   <div class="hero-visual">
@@ -42,25 +51,27 @@ import TerminalPreview from './TerminalPreview.astro';
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     background: var(--color-accent-soft);
-    color: var(--color-accent-2);
-    font-size: 0.875rem;
+    color: var(--color-accent);
+    font-size: 0.8rem;
     margin-bottom: 1.5rem;
     border: 1px solid var(--color-border);
+    font-weight: 500;
+    letter-spacing: 0.02em;
   }
   .hero-title {
-    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
     font-weight: 800;
     line-height: 1;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     color: var(--color-text);
     text-wrap: balance;
   }
   .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     color: var(--color-text-muted);
     margin-bottom: 1.25rem;
     line-height: 1.6;
-    max-width: 600px;
+    max-width: 560px;
     text-wrap: pretty;
   }
   .install-command {
@@ -68,49 +79,47 @@ import TerminalPreview from './TerminalPreview.astro';
     max-width: 100%;
     align-items: center;
     gap: 0.625rem;
-    margin-bottom: 1.5rem;
-    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    padding: 0.625rem 1rem;
     border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
     background: var(--color-code-bg);
     color: var(--color-text-soft);
-    box-shadow: 0 14px 30px var(--color-shadow);
   }
   .install-command code {
     min-width: 0;
     overflow-wrap: anywhere;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    font-size: 0.925rem;
+    font-size: 0.875rem;
   }
   .prompt {
-    color: var(--color-accent-2);
+    color: var(--color-accent);
     font-weight: 700;
   }
   .hero-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
+    margin-bottom: 1.5rem;
   }
   .btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
     font-weight: 600;
+    font-size: 0.9rem;
     text-decoration: none;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-  }
-  .btn:hover {
-    transform: translateY(-1px);
-  }
-  .btn:focus-visible {
-    outline: 3px solid var(--color-focus);
-    outline-offset: 3px;
-  }
-  .btn-primary {
-    background: var(--color-accent);
-    color: var(--color-accent-contrast);
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
   .btn-primary:hover {
     background: var(--color-accent-hover);
+    color: var(--color-accent-contrast);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .btn-primary {
+    background: var(--color-accent);
     color: var(--color-accent-contrast);
   }
   .btn-secondary {
@@ -119,7 +128,34 @@ import TerminalPreview from './TerminalPreview.astro';
     border: 1px solid var(--color-border);
   }
   .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-surface-soft);
+  }
+  .workflow-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+  .workflow-preview code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+    padding: 0.15rem 0.4rem;
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    color: var(--color-accent);
+  }
+  .workflow-preview .step {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+  .divider {
+    color: var(--color-border-strong);
+    font-size: 0.7rem;
   }
   @media (max-width: 768px) {
     .hero-section {
@@ -138,6 +174,9 @@ import TerminalPreview from './TerminalPreview.astro';
       width: 100%;
       justify-content: flex-start;
       text-align: left;
+    }
+    .workflow-preview {
+      justify-content: center;
     }
   }
 </style>

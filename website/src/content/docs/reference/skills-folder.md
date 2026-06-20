@@ -3,7 +3,33 @@ title: Skills Folder
 description: Catalog of AIOS skills and when to use each one.
 ---
 
-The `skills/` folder contains reusable operating procedures for AI agents. Each skill defines inputs, process, outputs, quality checks, and clarification gates for a specific job.
+| | |
+|---|---|
+| **Purpose** | Reusable operating procedures for AI agents |
+| **Location** | `skills/`, `.aios/skills/`, `.agents/skills/` (native) |
+| **Use When** | Agent needs a repeatable, quality-checked process |
+| **Related Artifacts** | [Templates](/reference/templates-folder), [Prompts](/reference/prompts-folder), [Commands](/reference/commands-folder), [Workflows](/reference/workflows-folder) |
+| **Next Step** | [Skills Guide](/guides/skills) |
+
+```
+skills/
+├── adr-generator/SKILL.md
+├── api-contract-design/SKILL.md
+├── architecture-design/SKILL.md
+├── backend-api-development/SKILL.md
+├── code-review/SKILL.md
+├── context-management/SKILL.md
+├── database-migration/SKILL.md
+├── implementation-planner/SKILL.md
+├── prd-generator/SKILL.md
+├── product-discovery/SKILL.md
+├── release-management/SKILL.md
+├── security-review/SKILL.md
+├── task-breakdown/SKILL.md
+├── task-implementation/SKILL.md
+├── testing/SKILL.md
+└── ui-ux-design/SKILL.md
+```
 
 ## What Skills Are
 
