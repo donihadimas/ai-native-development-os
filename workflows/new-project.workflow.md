@@ -23,6 +23,7 @@ Use this workflow as the primary route for a raw idea, new project setup, first 
 - Use `.aios/workflows/api-contract.workflow.md` and `api-contract-design` when initial tasks require app integration, provider/client boundaries, webhooks, or external services.
 - Use `.aios/workflows/database-migration.workflow.md` and `database-migration` when initial scope requires persistence design, migration plans, or seed data.
 - Use `.aios/workflows/security-review.workflow.md` when initial scope includes auth, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or sensitive data.
+- For the current lifecycle step only, read the selected prompt first, then use `skill-router.md` Artifact Routing to add references or templates only when they govern the artifact being created.
 - Use `task-breakdown` to create small tasks only after the relevant PRD, architecture, ADR, design, API, migration, and security inputs are reviewed.
 - Use `.aios/workflows/new-feature.workflow.md` for the first feature implementation after the project foundation is accepted.
 
@@ -75,7 +76,7 @@ Use this workflow as the primary route for a raw idea, new project setup, first 
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow first, then use skills and adjacent workflows from the handoff list above at each stage. Use `.aios/prompts/` for discovery, PRD, and architecture triggers. Use `.aios/templates/` for all document creation. Use `.aios/references/` for engineering guidance. Use `.aios/workflows/` for end-to-end sequencing.
+Use `.aios/skill-router.md` to select this workflow first, then use skills and adjacent workflows from the handoff list above one lifecycle step at a time. Use `skill-router.md` Artifact Routing just-in-time: read the selected step's prompt first, add references only when they govern the decision, and add templates only when creating or updating the artifact. Use `.aios/workflows/` for end-to-end sequencing.
 
 ## Lite Mode Flow
 

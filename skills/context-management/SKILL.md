@@ -41,20 +41,22 @@ Expected outputs:
 Step-by-step process:
 
 1. Identify the task type: new feature, bugfix, refactor, review, testing, or documentation.
-2. Read the active task first when one exists.
-3. Use `docs/context/context-map.md` to choose supporting docs.
-4. Read PRD only when user value or acceptance criteria are unclear.
-5. Read design docs when the task changes user-facing flows, screens, states, or accessibility.
-6. Read architecture or ADRs only when the task touches design decisions or cross-cutting behavior.
-7. Read API docs when frontend/backend integration is involved.
-8. Search affected code before proposing new abstractions.
-9. Stop reading once the plan can be made safely.
+2. Resolve the active task without reading every task body: use an explicit task ID/path first, then IDE or conversation context, then task filenames, then a narrow heading/status search with user-request terms.
+3. Read the active task first when one clear task exists; if no clear task exists, ask which task is active or whether to create one.
+4. Use `docs/context/context-map.md` to choose supporting docs.
+5. Read PRD only when user value or acceptance criteria are unclear.
+6. Read design docs when the task changes user-facing flows, screens, states, or accessibility.
+7. Read architecture or ADRs only when the task touches design decisions or cross-cutting behavior.
+8. Read API docs when frontend/backend integration is involved.
+9. Search affected code before proposing new abstractions.
+10. Stop reading once the plan can be made safely.
 
 ## Rules
 
 Hard rules:
 
 - Do not read the whole repository by default.
+- Do not open every file in `docs/tasks/` just to discover the active task.
 - Do not read every ADR unless the task explicitly requires it.
 - Do not use stale docs as stronger evidence than verified behavior.
 - Do not continue implementation when acceptance criteria are missing or contradictory.
@@ -74,6 +76,7 @@ Before finishing, verify:
 Watch out for:
 
 - context dumping,
+- reading all task files to find one active task,
 - ignoring task-specific instructions,
 - over-reading product docs for a small code task,
 - missing an ADR that changes constraints,

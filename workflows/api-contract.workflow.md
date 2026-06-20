@@ -25,6 +25,7 @@ Use this workflow when the primary workflow needs an API contract. It is usually
 - Use `security-review` when the contract touches auth, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or personally sensitive data.
 - Use `database-migration` when the contract requires persisted data or schema changes.
 - Use `backend-api-development` for provider behavior after the contract is accepted.
+- Read `.aios/prompts/09-design-api-contract.md`, `.aios/references/api-standards.md`, `.aios/references/backend-api-standards.md`, and `.aios/templates/openapi.template.yaml` when available.
 - Use `testing` and `code-review` to prove provider/client compatibility before completion.
 
 ## Process
@@ -59,7 +60,7 @@ Use this workflow when the primary workflow needs an API contract. It is usually
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow when API design is the current step, then use `api-contract-design`. Use `.aios/references/api-standards.md` for standards. Use `.aios/templates/openapi.template.yaml` for contract creation. Return to the primary workflow after review.
+Use `.aios/skill-router.md` to select this workflow when API design is the current step, then use `api-contract-design`. Read `.aios/prompts/09-design-api-contract.md`, `.aios/references/api-standards.md`, `.aios/references/backend-api-standards.md`, and `.aios/templates/openapi.template.yaml` for contract creation. Return to the primary workflow after review.
 
 ## Lite Mode Flow
 

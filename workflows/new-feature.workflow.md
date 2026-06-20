@@ -24,6 +24,7 @@ Use this workflow as the primary route for new product behavior, including payme
 - Use `.aios/workflows/ui-design.workflow.md` and `ui-ux-design` before frontend implementation when the feature has user-facing screens, flows, states, or accessibility concerns.
 - Use `.aios/workflows/security-review.workflow.md` and `security-review` before marking work done when the feature touches authentication, authorization, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or personally sensitive data.
 - Use `task-breakdown`, then `implementation-planner`, then `task-implementation` for one implementation task at a time.
+- For the current selected skill only, read the prompt first, then use `skill-router.md` Artifact Routing to add references or templates only when they govern the artifact being created.
 - Use `testing` to define or evaluate validation evidence, then `.aios/workflows/review.workflow.md` and `code-review` before completion.
 
 Example: for "implement payment", keep this workflow as the primary route, add or update the feature PRD, define the payment API or webhook contract, create migration/security plans when needed, split frontend/backend/provider tasks, implement one task at a time, test, then review.
@@ -70,7 +71,7 @@ Example: for "implement payment", keep this workflow as the primary route, add o
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow first, then use supporting skills and adjacent workflows from the handoff list above. Use `.aios/prompts/` for known workflow triggers. Use `.aios/templates/` when creating or updating PRD, ADR, design, API, migration, security, or task documents. Use `.aios/references/` for engineering guidance. Follow `.aios/workflows/` for end-to-end sequencing.
+Use `.aios/skill-router.md` to select this workflow first, then use supporting skills and adjacent workflows from the handoff list above one step at a time. Use `skill-router.md` Artifact Routing just-in-time: read the selected step's prompt first, add references only when they govern the decision, and add templates only when creating or updating the artifact. Follow `.aios/workflows/` for end-to-end sequencing.
 
 ## Lite Mode Flow
 

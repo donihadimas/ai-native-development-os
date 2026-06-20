@@ -23,6 +23,7 @@ Use this workflow when a primary feature, bugfix, refactor, API contract, migrat
 - Use `security-review` with `.aios/references/security-principles.md` for standards and `.aios/templates/security-review-report.template.md` for the report.
 - Route to `.aios/workflows/api-contract.workflow.md` when security findings require contract changes for auth, errors, webhooks, or integration boundaries.
 - Route to `.aios/workflows/database-migration.workflow.md` when findings require data model, retention, access, seed, or rollback changes.
+- Read `.aios/prompts/11-review-security.md`, `.aios/references/security-principles.md`, and `.aios/templates/security-review-report.template.md` when available.
 - Return to the primary feature, bugfix, refactor, API, or migration workflow when blocking findings require implementation changes.
 - Continue to `.aios/workflows/review.workflow.md` or `.aios/workflows/release.workflow.md` only after blocking security findings are resolved or residual risk is explicitly accepted.
 
@@ -53,7 +54,7 @@ Use this workflow when a primary feature, bugfix, refactor, API contract, migrat
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow when security review is the current step, then use the security-review skill. Use `.aios/references/security-principles.md` for standards. Use `.aios/templates/security-review-report.template.md` for report creation.
+Use `.aios/skill-router.md` to select this workflow when security review is the current step, then use the security-review skill. Read `.aios/prompts/11-review-security.md`, `.aios/references/security-principles.md`, and `.aios/templates/security-review-report.template.md` for report creation.
 
 ## Lite Mode Flow
 

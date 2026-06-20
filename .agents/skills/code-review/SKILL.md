@@ -52,13 +52,14 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Read the task acceptance criteria.
-2. Inspect the diff and changed files.
-3. Check correctness and behavioral regressions.
-4. Check security, architecture, duplication, maintainability, performance, tests, and docs.
-5. Verify test evidence matches the change.
-6. Separate blocking findings from minor suggestions.
-7. Use `templates/review-report.template.md` for structure when writing a persistent report.
+1. Resolve the active task or stated intent without reading every task body when acceptance criteria are not already provided.
+2. Read only the selected task acceptance criteria or stated expected behavior.
+3. Inspect the diff and changed files.
+4. Check correctness and behavioral regressions.
+5. Check security, architecture, duplication, maintainability, performance, tests, and docs.
+6. Verify test evidence matches the change.
+7. Separate blocking findings from minor suggestions.
+8. Use `templates/review-report.template.md` for structure when writing a persistent report.
 
 ## Rules
 
@@ -66,6 +67,7 @@ Hard rules:
 
 - Findings come before summary.
 - Do not approve when acceptance criteria are unmet.
+- Do not open every task file to discover acceptance criteria.
 - Do not ignore missing tests for behavior changes.
 - Do not request broad unrelated refactors.
 - Do not assume security-sensitive changes are safe without evidence.
@@ -87,6 +89,7 @@ Before finishing, verify:
 Watch out for:
 
 - style-only reviews,
+- reading all task files to find acceptance criteria,
 - vague findings without action,
 - approving untested behavior,
 - ignoring docs/API drift,

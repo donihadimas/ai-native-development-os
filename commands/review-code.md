@@ -1,6 +1,6 @@
 # Command: Review Code
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/07-review-code.md` and the `code-review` skill through `.aios/skill-router.md`. In lite mode, use available review guidance without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/workflows/review.workflow.md`, `.aios/prompts/07-review-code.md`, and the `code-review` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing and Active Task Discovery before opening task files. In lite mode, use available review guidance without assuming `.aios/` exists.
 
 Read:
 
@@ -8,6 +8,8 @@ Read:
 - active task acceptance criteria
 - related ADRs when relevant
 - testing evidence
+
+If the active task is not explicit, list task filenames first and open only the top 1-3 likely candidates. Do not open every task file to discover the active task.
 
 Before writing the review, apply the skill's Clarification Gate. If the diff, task intent, acceptance criteria, or test evidence are missing, ask for the missing inputs or clearly label the review as limited.
 

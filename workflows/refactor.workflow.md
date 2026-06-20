@@ -23,6 +23,7 @@ Use this workflow as the primary route for architecture-preserving cleanup, rest
 - Use `.aios/workflows/api-contract.workflow.md` only when the refactor exposes or changes API boundaries; otherwise do not redesign contracts.
 - Use `.aios/workflows/database-migration.workflow.md` only when persistence structure must change; otherwise avoid data changes.
 - Use `.aios/workflows/security-review.workflow.md` when the refactor touches auth, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or sensitive data paths.
+- For the current refactor step only, read the selected prompt first, then use `skill-router.md` Artifact Routing to add references or templates only when they govern the artifact being created.
 - Use `.aios/workflows/review.workflow.md` and `code-review` to check for accidental behavior changes before completion.
 
 ## Process
@@ -54,7 +55,7 @@ Use this workflow as the primary route for architecture-preserving cleanup, rest
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow first, then use implementation-planning, testing, security review, API contract, migration, and code-review skills only as the refactor requires. Use `.aios/templates/` for task documents. Use `.aios/references/` for engineering guidance.
+Use `.aios/skill-router.md` to select this workflow first, then use implementation-planning, testing, security review, API contract, migration, and code-review skills only as the refactor requires. Use `skill-router.md` Artifact Routing just-in-time: read the selected step's prompt first, add references only when they govern the decision, and add templates only when creating or updating the artifact.
 
 ## Lite Mode Flow
 

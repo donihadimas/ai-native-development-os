@@ -1,6 +1,6 @@
 # Command: Discover Product Vision
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/00-discover-product.md` and the `product-discovery` skill through `.aios/skill-router.md`. In lite mode, use available product discovery guidance and templates without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/workflows/new-project.workflow.md`, `.aios/prompts/00-discover-product.md`, and the `product-discovery` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing for matching references and templates. In lite mode, use available product discovery guidance and templates without assuming `.aios/` exists.
 
 Use this before PRD generation when the user only has a rough idea.
 

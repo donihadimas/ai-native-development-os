@@ -5,7 +5,7 @@ Use this file to choose the smallest useful context set for each task.
 Before routing, read `.aios/config.json` if it exists:
 
 - Use `mode` to decide workflow access:
-  - `full`: use `.aios/skill-router.md`, `.aios/prompts/`, `.aios/templates/`, `.aios/references/`, and `.aios/workflows/`.
+  - `full`: read `.aios/skill-router.md`, then open only the specific prompt, template, reference, and workflow files selected for the current lifecycle step. Do not preload whole `.aios/` folders.
   - `lite`: use project docs, `AGENTS.md`, and root or agent-provided AIOS instructions when available. Do not assume `.aios/` exists.
 - Use `docsRoot` as the documentation root. If missing, use `docs`.
 - Use `projectShape` to decide code areas:
@@ -29,11 +29,23 @@ Before routing, read `.aios/config.json` if it exists:
 - Local AIOS workflow kit: `.aios/` in full mode only.
 - Code context: affected files and nearby tests in the code areas implied by `projectShape`.
 
+## Active Task Discovery
+
+When a workflow requires an active task:
+
+1. Use a task ID, task title, or task file path from the user request when provided.
+2. Otherwise use the IDE active file or recent conversation when it clearly points to one task.
+3. Otherwise list filenames in `<docsRoot>/tasks/` first; do not read every task body.
+4. Search task headings or status lines with terms from the user request only when filenames are not enough, then open only the top 1-3 likely candidates.
+5. Ask the user to choose the active task, or ask whether to create a new task, when no confident match exists.
+
+Do not scan full task contents just to discover the active task. Do not pick a `Done` task unless the user asks to review or continue it.
+
 ## Task Routing
 
 ### New Feature
 
-Read the active task, relevant PRD section, design docs if the feature is user-facing, related ADRs, API docs if app integration is involved, the new-feature workflow when available, and affected modules.
+Read the active task, the relevant PRD section only when acceptance criteria are unclear, the selected new-feature workflow when available, design docs only for user-facing changes, API docs only for integration boundaries, related ADRs only when they govern the change, and affected modules.
 
 ### Bugfix
 
@@ -41,15 +53,15 @@ Read the bugfix task, affected files, related tests, and related ADR only if the
 
 ### UI/UX Design
 
-Read the relevant PRD or feature PRD, product vision if design intent is unclear, architecture/API notes when data dependencies matter, `<docsRoot>/design/design.md` if updating, and the UI/UX design workflow when available.
+Read the relevant PRD or feature PRD section, product vision only when design intent is unclear, architecture/API notes only when data dependencies matter, `<docsRoot>/design/design.md` if updating, and the UI/UX design workflow when available.
 
 ### Refactor
 
-Read the refactor task, architecture document, related ADRs, affected modules, and existing tests.
+Read the refactor task, affected modules, existing tests, architecture sections only when the refactor touches boundaries or cross-cutting behavior, and related ADRs only when they govern the affected area.
 
 ### Review
 
-Read the diff, active task acceptance criteria, relevant ADRs, testing evidence, the skill router when available, and changed files.
+Read the diff, active task acceptance criteria, testing evidence, the skill router when available, changed files, and relevant ADRs only when the diff touches decisions they govern.
 
 ## Next Step Rule
 

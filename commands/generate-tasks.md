@@ -1,6 +1,6 @@
 # Command: Generate Tasks
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/04-generate-tasks.md` and the `task-breakdown` skill through `.aios/skill-router.md`. In lite mode, use available task breakdown instructions and templates without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use the selected primary workflow, `.aios/prompts/04-generate-tasks.md`, and the `task-breakdown` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing for matching references and templates. In lite mode, use available task breakdown instructions and templates without assuming `.aios/` exists.
 
 Read:
 

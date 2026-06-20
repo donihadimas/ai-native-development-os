@@ -24,6 +24,7 @@ Use this workflow when work is complete and the next step is release notes, chan
 - Use `.aios/workflows/security-review.workflow.md` before release when included changes touch auth, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or sensitive data.
 - Use `.aios/workflows/database-migration.workflow.md` when release scope includes migration rollout, rollback, or data repair.
 - Use `release-management` for release notes, changelog, rollback notes, deployment checklist, and post-release checks.
+- Read `.aios/prompts/12-plan-release.md`, `.aios/templates/release-note.template.md`, `.aios/templates/changelog.template.md`, and relevant testing/review evidence before drafting release artifacts.
 - Return to the relevant feature, bugfix, refactor, security, or migration workflow if release readiness finds missing evidence or blockers.
 - Do not deploy or publish automatically; record the human approval requirement.
 
@@ -61,7 +62,7 @@ Use this workflow when work is complete and the next step is release notes, chan
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow when release preparation is the current step, then use the release-management skill. Use `.aios/templates/` for release notes and changelog drafts. Use `.aios/references/` for release standards.
+Use `.aios/skill-router.md` to select this workflow when release preparation is the current step, then use the release-management skill. Read `.aios/prompts/12-plan-release.md`, `.aios/templates/release-note.template.md`, `.aios/templates/changelog.template.md`, `.aios/references/engineering-principles.md`, and `.aios/references/testing-principles.md` for release standards.
 
 ## Lite Mode Flow
 

@@ -47,26 +47,29 @@ Expected outputs:
 Step-by-step process:
 
 1. Resolve `.aios/config.json` when present, including `mode`, `docsRoot`, `projectShape`, and `skillDelivery`.
-2. Read `AGENTS.md`, `<docsRoot>/context/context-map.md`, and the active task file before implementation.
-3. Read related ADRs when the task mentions them.
-4. Use `implementation-planner` first when no usable plan exists.
-5. Search existing implementation and nearby tests before creating new abstractions.
-6. Identify affected files and state a short implementation plan.
-7. Implement only the active task.
-8. Run the smallest relevant tests, checks, or manual validation that prove the acceptance criteria.
-9. Verify each acceptance criterion and record any unmet criteria honestly.
-10. When all acceptance criteria are satisfied, update the task file:
+2. Read `AGENTS.md` and `<docsRoot>/context/context-map.md`.
+3. Resolve the active task without reading every task body: use an explicit task ID/path first, then IDE or conversation context, then task filenames, then a narrow heading/status search with user-request terms.
+4. Read the single active task file before implementation; if no clear task exists, ask which task is active or whether to create one.
+5. Read related ADRs when the task mentions them.
+6. Use `implementation-planner` first when no usable plan exists.
+7. Search existing implementation and nearby tests before creating new abstractions.
+8. Identify affected files and state a short implementation plan.
+9. Implement only the active task.
+10. Run the smallest relevant tests, checks, or manual validation that prove the acceptance criteria.
+11. Verify each acceptance criterion and record any unmet criteria honestly.
+12. When all acceptance criteria are satisfied, update the task file:
     - set `## Status` to `Done` when that section exists,
     - check completed acceptance criteria when the task uses checkboxes,
     - fill `## Done Summary` with files changed, tests run, acceptance criteria status, and risks,
     - leave status open and explain blockers when criteria are not satisfied.
-11. End with what the user should review and the next recommended action.
+13. End with what the user should review and the next recommended action.
 
 ## Rules
 
 Hard rules:
 
 - Do not implement before reading the active task.
+- Do not open every file in `<docsRoot>/tasks/` just to discover the active task.
 - Do not modify unrelated files.
 - Do not introduce dependencies without approval.
 - Do not claim tests passed unless they were run.
@@ -108,6 +111,7 @@ Before finishing, verify:
 Watch out for:
 
 - coding from the plan without rereading the task,
+- reading all task files before choosing the active task,
 - using broad refactors to solve a narrow task,
 - updating status before validation,
 - leaving task checkboxes stale after completion,

@@ -21,6 +21,7 @@ Use this workflow as the primary route for bugs, regressions, failing tests, cra
 - Use `.aios/workflows/api-contract.workflow.md` and `api-contract-design` when the bug reveals a missing, incorrect, or incompatible API contract.
 - Use `.aios/workflows/database-migration.workflow.md` and `database-migration` when the fix requires schema, data repair, index, seed, or rollback planning.
 - Use `.aios/workflows/security-review.workflow.md` and `security-review` before marking work done when the bug touches authentication, authorization, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or personally sensitive data.
+- For the current selected skill only, read the prompt first, then use `skill-router.md` Artifact Routing to add references or templates only when they govern the artifact being created.
 - Use `.aios/workflows/review.workflow.md` and `code-review` after tests or manual verification.
 
 ## Process
@@ -57,7 +58,7 @@ Use this workflow as the primary route for bugs, regressions, failing tests, cra
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow first, then use testing, implementation planning, task implementation, security review, API contract, database migration, and code-review skills as the bug requires. Use `.aios/templates/` for task, security, migration, contract, and review documents. Use `.aios/references/` for engineering guidance.
+Use `.aios/skill-router.md` to select this workflow first, then use testing, implementation planning, task implementation, security review, API contract, database migration, and code-review skills as the bug requires. Use `skill-router.md` Artifact Routing just-in-time: read the selected step's prompt first, add references only when they govern the decision, and add templates only when creating or updating the artifact.
 
 ## Lite Mode Flow
 

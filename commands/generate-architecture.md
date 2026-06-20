@@ -1,6 +1,6 @@
 # Command: Generate Architecture
 
-Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/prompts/02-generate-architecture.md` and the `architecture-design` skill through `.aios/skill-router.md`. In lite mode, use available architecture instructions and templates without assuming `.aios/` exists.
+Resolve `.aios/config.json` first when it exists. In full mode, use `.aios/workflows/new-project.workflow.md` or `.aios/workflows/new-feature.workflow.md` as appropriate, `.aios/prompts/02-generate-architecture.md`, and the `architecture-design` skill through `.aios/skill-router.md`; read `skill-router.md` Artifact Routing for matching references and templates. In lite mode, use available architecture instructions and templates without assuming `.aios/` exists.
 
 Read:
 

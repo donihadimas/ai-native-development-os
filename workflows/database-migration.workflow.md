@@ -24,6 +24,7 @@ Use this workflow when the primary feature, bugfix, API contract, or refactor wo
 - Use `.aios/workflows/api-contract.workflow.md` and `api-contract-design` when schema changes affect request, response, webhook, or compatibility behavior.
 - Use `.aios/workflows/security-review.workflow.md` and `security-review` when persisted data is sensitive or affects auth, permissions, payments, billing, subscriptions, or personally sensitive data.
 - Use `implementation-planner`, then `task-implementation`, only after rollout, rollback, and validation checks are clear.
+- Read `.aios/prompts/10-plan-database-migration.md`, `.aios/references/database-standards.md`, and `.aios/templates/migration-plan.template.md` when available.
 - Use `testing` and `.aios/workflows/review.workflow.md` to verify pre-migration and post-migration behavior.
 
 ## Process
@@ -53,7 +54,7 @@ Use this workflow when the primary feature, bugfix, API contract, or refactor wo
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow when data change planning is the current step, then use the database-migration skill. Use `.aios/references/database-standards.md` for standards. Use `.aios/templates/migration-plan.template.md` for migration plan creation. Return to the primary workflow after review.
+Use `.aios/skill-router.md` to select this workflow when data change planning is the current step, then use the database-migration skill. Read `.aios/prompts/10-plan-database-migration.md`, `.aios/references/database-standards.md`, and `.aios/templates/migration-plan.template.md` for migration plan creation. Return to the primary workflow after review.
 
 ## Lite Mode Flow
 

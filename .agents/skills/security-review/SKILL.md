@@ -57,19 +57,21 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Read the active task, affected files, and relevant contracts.
-2. Identify trust boundaries, roles, inputs, secrets, and external integrations.
-3. Review authentication, authorization, validation, output encoding, rate limits, and audit needs.
-4. Create a report using `templates/security-review-report.template.md`.
-5. Mark findings by severity and link them to concrete remediation.
-6. Record residual risk and whether release should proceed.
-7. Escalate architecture, dependency, or policy decisions to the human owner.
+1. Resolve the active task or review target without reading every task body when the target is not explicit.
+2. Read only the selected active task or review target, affected files, and relevant contracts.
+3. Identify trust boundaries, roles, inputs, secrets, and external integrations.
+4. Review authentication, authorization, validation, output encoding, rate limits, and audit needs.
+5. Create a report using `templates/security-review-report.template.md`.
+6. Mark findings by severity and link them to concrete remediation.
+7. Record residual risk and whether release should proceed.
+8. Escalate architecture, dependency, or policy decisions to the human owner.
 
 ## Rules
 
 Hard rules:
 
 - Do not approve security-sensitive work without checking auth and validation.
+- Do not open every task file to discover the security review target.
 - Do not store secrets in source code.
 - Do not expose internal errors or sensitive data in responses.
 - Do not assume client-side checks replace server-side enforcement.
@@ -91,6 +93,7 @@ Before finishing, verify:
 Watch out for:
 
 - missing role checks,
+- reading all task files before choosing the review target,
 - trusting client input,
 - leaking stack traces or tokens,
 - webhook or payment replay risks,

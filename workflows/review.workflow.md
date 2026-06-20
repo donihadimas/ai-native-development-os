@@ -23,6 +23,7 @@ Use this workflow after feature, bugfix, refactor, migration, security, or API w
 - Route to `.aios/workflows/security-review.workflow.md` when review uncovers security-sensitive behavior without adequate security evidence.
 - Route to `.aios/workflows/api-contract.workflow.md` or `.aios/workflows/database-migration.workflow.md` when review finds missing contract or migration planning.
 - Use `testing` when validation evidence is missing or does not prove the acceptance criteria.
+- Read `.aios/prompts/07-review-code.md`, `.aios/templates/review-report.template.md`, `.aios/references/engineering-principles.md`, `.aios/references/testing-principles.md`, and `.aios/references/security-principles.md` when sensitive behavior is involved.
 - Continue to `.aios/workflows/release.workflow.md` only after blocking findings are resolved and the user-facing or releasable scope is clear.
 
 ## Process
@@ -51,7 +52,7 @@ Use this workflow after feature, bugfix, refactor, migration, security, or API w
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow when review is the current step, then use the code-review skill. Use `.aios/templates/review-report.template.md` for the review report. Use `.aios/references/` for review standards.
+Use `.aios/skill-router.md` to select this workflow when review is the current step, then use the code-review skill. Read `.aios/prompts/07-review-code.md`, `.aios/templates/review-report.template.md`, `.aios/references/engineering-principles.md`, `.aios/references/testing-principles.md`, and `.aios/references/security-principles.md` when sensitive behavior is involved.
 
 ## Lite Mode Flow
 
