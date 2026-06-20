@@ -8,6 +8,31 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.4.1
+
+Patch release focused on publishing the latest AIOS artifact lifecycle and context-efficiency assets in the npm package.
+
+### Changed
+
+- Synced bundled npm assets so generated projects include task and plan indexes in the project skeleton.
+- Synced bundled `.aios` kit assets so projects receive the artifact lifecycle reference and stricter workflow routing.
+- Updated release guidance for the current `0.4.1` patch release.
+
+### Fixed
+
+- Fixed the npm package contents after `0.4.0` so the published bundle includes the latest artifact lifecycle, index-first task/plan discovery, and summary-first routing guidance.
+
+### Breaking Changes
+
+- None.
+
+### Validation
+
+- `npm test`: 77 passed, 0 failed.
+- `npm pack --dry-run`: passed.
+- `git diff --check`: passed.
+- Published `0.4.0` tarball check confirmed the lifecycle assets were missing, so this patch release is required.
+
 ## 0.4.0
 
 Feature release focused on safe project updates, workflow kit acceptance, and broader AIOS workflow coverage.
