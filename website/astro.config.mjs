@@ -6,6 +6,9 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://donihadimas.github.io',
+  base: '/ai-native-development-os',
+
   integrations: [
     starlight({
       title: 'AIOS',
