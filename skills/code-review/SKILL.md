@@ -52,7 +52,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Resolve the active task or stated intent without reading every task body when acceptance criteria are not already provided. Use direct task filenames under `docs/tasks/` and exclude `docs/tasks/done/` unless reviewing completed work.
+1. Resolve the active task or stated intent without reading every task body when acceptance criteria are not already provided. Use `docs/tasks/index.md` when available, then direct task filenames under `docs/tasks/`, and exclude `docs/tasks/done/` unless reviewing completed work.
 2. Read only the selected task acceptance criteria or stated expected behavior.
 3. Inspect the diff and changed files.
 4. Check correctness and behavioral regressions.

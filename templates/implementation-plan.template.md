@@ -35,4 +35,4 @@ Describe the intended behavior before coding.
 
 Describe how to safely revert or disable the change if needed.
 
-After the related task or task range is complete and archived, move this plan to `<docsRoot>/plans/done/` without renaming it. Keep active plans directly under `<docsRoot>/plans/`.
+After the related task or task range is complete and archived, move this plan to `<docsRoot>/plans/done/` without renaming it. Keep active plans directly under `<docsRoot>/plans/`. Update `<docsRoot>/plans/index.md` whenever this plan is created, completed, reopened, or archived.

@@ -53,7 +53,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Resolve the active task without reading every task body: use an explicit task ID/path first, then IDE or conversation context, then direct task filenames under `docs/tasks/`, then a narrow heading/status search with user-request terms. Exclude `docs/tasks/done/` unless completed-task history is requested.
+1. Resolve the active task without reading every task body: use an explicit task ID/path first, then IDE or conversation context, then `docs/tasks/index.md` when available, then direct task filenames under `docs/tasks/`, then a narrow heading/status search with user-request terms. Exclude `docs/tasks/done/` unless completed-task history is requested.
 2. Read the single active task and acceptance criteria; if no clear task exists, ask which task is active or whether to create one.
 3. Route context using the context map.
 4. Search existing implementation and nearby tests.
@@ -62,7 +62,7 @@ Step-by-step process:
 7. List risks and dependency concerns.
 8. Define tests or manual checks.
 9. Use `templates/implementation-plan.template.md` for structure when writing a persistent plan.
-10. Save persistent implementation plans directly under `docs/plans/`; never create active plans in `docs/plans/done/`.
+10. Save persistent implementation plans directly under `docs/plans/`; update `docs/plans/index.md` when available; never create active plans in `docs/plans/done/`.
 
 ## Rules
 

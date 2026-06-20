@@ -23,6 +23,7 @@ This file mirrors the repository's AI workflow for Claude-compatible agents. `AG
 - Work from one active task directly under `<docsRoot>/tasks/`.
 - Treat `<docsRoot>/tasks/done/` as completed-task archive; use it only for release planning, audit, or completed-task review.
 - Keep active implementation plans directly under `<docsRoot>/plans/`; treat `<docsRoot>/plans/done/` as completed-plan archive.
+- Read `<docsRoot>/tasks/index.md` and `<docsRoot>/plans/index.md` before opening task or plan bodies when those indexes exist.
 - When a task is complete, set status to `Done`, fill `Done Summary`, verify acceptance criteria, then move the task file to `<docsRoot>/tasks/done/` without renaming it.
 - When a task or task range is complete, move the related implementation plan to `<docsRoot>/plans/done/` without renaming it.
 - Keep implementation changes small and verifiable.

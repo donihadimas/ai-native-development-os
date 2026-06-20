@@ -13,8 +13,10 @@ This skeleton is a generic AI-native project shell. `aios init` can keep it full
 - `<docsRoot>/architecture/` - system architecture.
 - `<docsRoot>/adr/` - architecture decision records.
 - `<docsRoot>/tasks/` - active implementation-ready tasks.
+- `<docsRoot>/tasks/index.md` - lightweight task routing index.
 - `<docsRoot>/tasks/done/` - completed task archive with original filenames preserved.
 - `<docsRoot>/plans/` - active implementation plans.
+- `<docsRoot>/plans/index.md` - lightweight plan routing index.
 - `<docsRoot>/plans/done/` - completed implementation plan archive with original filenames preserved.
 - `<docsRoot>/reviews/` - review reports for implemented tasks or changes.
 - `<docsRoot>/api/` - API contracts or integration notes.

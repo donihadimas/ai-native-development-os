@@ -42,7 +42,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Resolve the active backend task without reading every task body. Use direct task filenames under `docs/tasks/` and exclude `docs/tasks/done/` unless reviewing completed work.
+1. Resolve the active backend task without reading every task body. Use `docs/tasks/index.md` when available, then direct task filenames under `docs/tasks/`, and exclude `docs/tasks/done/` unless reviewing completed work.
 2. Read only the selected active backend task and API contract.
 3. Confirm endpoint behavior maps to acceptance criteria.
 4. Identify validation, authorization, persistence, and side effects.

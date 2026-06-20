@@ -79,38 +79,17 @@ After selecting the workflow and skill, read the prompt for the current lifecycl
 
 Use `.aios/references/context-budget.md` for large logs, diffs, test output, or generated artifacts. Use `.aios/references/response-style.md` only for concise operational updates when enabled by config.
 
-## Active Task Discovery
+## Artifact Indexes
 
-Use this sequence when implementation, testing, review, migration, release, or security work needs an active task:
-
-1. If the user names a task ID, task title, or task file path, open only that task file.
-2. If the IDE active file or recent conversation identifies a task file, use that file.
-3. If no task is identified, list task filenames directly under `<docsRoot>/tasks/` without reading every task body. Exclude `<docsRoot>/tasks/done/` unless the user asks for completed-task history.
-4. If filenames are not enough, search task headings or status lines with query terms from the user request and open only the top 1-3 likely candidates.
-5. If there is still no confident match, ask the user which task is active or whether a new task should be created.
-
-Do not open every file in `<docsRoot>/tasks/` to discover the active task. Do not choose a task from `<docsRoot>/tasks/done/` unless the user explicitly asks to review, audit, release, or continue completed work.
-
-## Task Lifecycle
-
-- Create new implementation tasks directly under `<docsRoot>/tasks/`.
-- Keep `<docsRoot>/tasks/` as the active queue: planned, ready, in-progress, blocked, or review-needed tasks only.
-- When a task is complete, set `## Status` to `Done`, fill `## Done Summary`, verify acceptance criteria and tests, then move the file to `<docsRoot>/tasks/done/` without renaming it.
-- Preserve the original `TASK-XXX-title.md` filename when archiving so links, release notes, and audit trails remain stable.
-- Read `<docsRoot>/tasks/done/` for release planning, historical audit, or explicit completed-task review only.
-
-## Plan Lifecycle
-
-- Create implementation plans directly under `<docsRoot>/plans/`.
-- Keep `<docsRoot>/plans/` as the active plan queue for tasks that are planned, in progress, blocked, or awaiting review.
-- When the related task is complete and archived, move its implementation plan to `<docsRoot>/plans/done/` without renaming it.
-- Preserve the original `TASK-XXX-title-plan.md` filename when archiving so task, review, and release references remain stable.
-- Multi-task plans stay in `<docsRoot>/plans/` until every task they govern is complete.
-- Read `<docsRoot>/plans/done/` for historical audit, completed-task review, or release traceability only.
+- Prefer `<docsRoot>/tasks/index.md` before opening task files.
+- Prefer `<docsRoot>/plans/index.md` before opening implementation plan files.
+- Use direct files under `<docsRoot>/tasks/` and `<docsRoot>/plans/` for active work.
+- Use `done/` archives only for release planning, audit, traceability, completed-task review, or explicit continuation.
+- Read `references/artifact-lifecycle.md` when creating, completing, archiving, reopening, or releasing task/plan artifacts.
 
 ## Rules
 
-- Prefer the active task and `<docsRoot>/context/context-map.md` before broader documents.
+- Prefer indexes, summaries, and `<docsRoot>/context/context-map.md` before broader documents.
 - Use only the matched workflow, supporting skills, and directly relevant references.
 - If more than one skill matches, keep the primary workflow fixed and run only the current prerequisite skill before implementation.
 - For generator skills, apply the skill's Clarification Gate before writing final files.

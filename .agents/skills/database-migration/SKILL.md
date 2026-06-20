@@ -57,7 +57,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Resolve the active task without reading every task body when a feature PRD or task file is not explicit. Use direct task filenames under `docs/tasks/` and exclude `docs/tasks/done/` unless completed-task history is requested.
+1. Resolve the active task without reading every task body when a feature PRD or task file is not explicit. Use `docs/tasks/index.md` when available, then direct task filenames under `docs/tasks/`, and exclude `docs/tasks/done/` unless completed-task history is requested.
 2. Read only the selected active task, stated feature PRD section, or acceptance criteria.
 3. Identify schema, data, index, seed, and compatibility impact.
 4. Search existing migration or schema patterns before proposing changes.

@@ -27,6 +27,8 @@ Before routing, read `.aios/config.json` if it exists:
 - Completed task archive: `<docsRoot>/tasks/done/`.
 - Active implementation plans: direct plan files in `<docsRoot>/plans/`.
 - Completed implementation plan archive: `<docsRoot>/plans/done/`.
+- Task routing index: `<docsRoot>/tasks/index.md`.
+- Plan routing index: `<docsRoot>/plans/index.md`.
 - Review evidence: `<docsRoot>/reviews/`.
 - API contracts and integration notes: `<docsRoot>/api/`.
 - Local AIOS workflow kit: `.aios/` in full mode only.
@@ -38,9 +40,10 @@ When a workflow requires an active task:
 
 1. Use a task ID, task title, or task file path from the user request when provided.
 2. Otherwise use the IDE active file or recent conversation when it clearly points to one task.
-3. Otherwise list filenames directly under `<docsRoot>/tasks/` first; do not read every task body and do not include `<docsRoot>/tasks/done/`.
-4. Search task headings or status lines with terms from the user request only when filenames are not enough, then open only the top 1-3 likely candidates.
-5. Ask the user to choose the active task, or ask whether to create a new task, when no confident match exists.
+3. Otherwise read `<docsRoot>/tasks/index.md` when it exists.
+4. If the index is missing or stale, list filenames directly under `<docsRoot>/tasks/`; do not read every task body and do not include `<docsRoot>/tasks/done/`.
+5. Search task headings or status lines with terms from the user request only when filenames are not enough, then open only the top 1-3 likely candidates.
+6. Ask the user to choose the active task, or ask whether to create a new task, when no confident match exists.
 
 Do not scan full task contents just to discover the active task. Do not pick a task from `<docsRoot>/tasks/done/` unless the user asks to review, audit, release, or continue completed work.
 
@@ -54,10 +57,16 @@ Do not scan full task contents just to discover the active task. Do not pick a t
 ## Plan Discovery And Lifecycle
 
 - Create implementation plans directly under `<docsRoot>/plans/`.
-- Use direct plan filenames under `<docsRoot>/plans/` when looking for an active plan; do not include `<docsRoot>/plans/done/`.
+- Use `<docsRoot>/plans/index.md` when looking for an active plan; fall back to direct plan filenames under `<docsRoot>/plans/` only when the index is missing or stale. Do not include `<docsRoot>/plans/done/`.
 - Move a plan to `<docsRoot>/plans/done/` only after the task or task range it governs is complete and archived.
 - Preserve the original plan filename while archiving.
 - Read `<docsRoot>/plans/done/` only for historical audit, completed-task review, or release traceability.
+
+## Summary-First Reading
+
+- Prefer indexes, summaries, headings, status, acceptance criteria, and relevant sections before reading full artifact bodies.
+- For PRDs, architecture docs, design docs, reviews, release notes, and long plans, read the summary or relevant headings first.
+- Read a full document only when selected sections are insufficient to plan, implement, test, or review safely.
 
 ## Task Routing
 
@@ -90,4 +99,4 @@ Every agent response at the end of a workflow should say what the user should re
 - Do not dump the whole repository into context.
 - Do not read all ADRs for a local code change.
 - Do not read the full PRD when the task already has clear acceptance criteria.
-- Do not treat stale documentation as stronger than verified code behavior.
+- Do not treat stale documentation or stale indexes as stronger than verified code behavior.

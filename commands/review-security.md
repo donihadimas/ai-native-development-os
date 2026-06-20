@@ -10,7 +10,7 @@ Read:
 - security principles
 - test and review evidence
 
-If the active task or review target is not explicit, list direct task filenames in `<docsRoot>/tasks/` first and open only the top 1-3 likely candidates. Do not open every task file or search `<docsRoot>/tasks/done/` unless reviewing completed work.
+If the active task or review target is not explicit, read `<docsRoot>/tasks/index.md` first when it exists. If the index is missing or stale, list direct task filenames in `<docsRoot>/tasks/` and open only the top 1-3 likely candidates. Do not open every task file or search `<docsRoot>/tasks/done/` unless reviewing completed work.
 
 Before creating the review, apply the skill's Clarification Gate. If trust boundaries, roles, sensitive data, inputs, auth, or validation evidence are unclear, ask focused questions first.
 

@@ -9,7 +9,7 @@ Read:
 - related ADRs when relevant
 - testing evidence
 
-If the active task is not explicit, list direct task filenames in `<docsRoot>/tasks/` first and open only the top 1-3 likely candidates. Do not open every task file or search `<docsRoot>/tasks/done/` unless reviewing completed work.
+If the active task is not explicit, read `<docsRoot>/tasks/index.md` first when it exists. If the index is missing or stale, list direct task filenames in `<docsRoot>/tasks/` and open only the top 1-3 likely candidates. Do not open every task file or search `<docsRoot>/tasks/done/` unless reviewing completed work.
 
 Before writing the review, apply the skill's Clarification Gate. If the diff, task intent, acceptance criteria, or test evidence are missing, ask for the missing inputs or clearly label the review as limited.
 

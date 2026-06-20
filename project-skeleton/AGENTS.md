@@ -17,6 +17,7 @@ You are an AI coding agent working in this repository.
 For implementation work, do not code before reading the active task file and routing the request through AIOS.
 Active task discovery must use direct files in `<docsRoot>/tasks/` only. Treat `<docsRoot>/tasks/done/` as completed-task archive, not active work, unless the user asks for release planning, audit, or completed-task review.
 Active plan discovery must use direct files in `<docsRoot>/plans/` only. Treat `<docsRoot>/plans/done/` as completed-plan archive, not active planning, unless the user asks for audit, traceability, or completed-task review.
+When task or plan indexes exist, read `<docsRoot>/tasks/index.md` or `<docsRoot>/plans/index.md` before listing or opening task/plan bodies.
 
 ## Context Routing
 
@@ -47,7 +48,7 @@ Every workflow response should end with what the user should review and the next
 3. Read related ADRs if the task mentions them.
 4. Use `<docsRoot>/context/context-map.md` to choose the smallest relevant context set.
 5. In full mode, read `.aios/skill-router.md`, select the matching command/workflow/skill, and follow that AIOS guidance before planning or editing.
-6. Read the relevant PRD or architecture sections only when acceptance criteria or constraints are unclear.
+6. Read summaries, headings, and relevant PRD or architecture sections only when acceptance criteria or constraints are unclear.
 7. Search existing code before creating new abstractions.
 8. Identify affected files.
 9. Make a short implementation plan.

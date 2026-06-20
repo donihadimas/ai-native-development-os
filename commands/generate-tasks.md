@@ -13,7 +13,7 @@ Read:
 
 Before creating task files, apply the skill's Clarification Gate. If scope, ownership, acceptance criteria, dependencies, or tests are unclear, ask focused questions first.
 
-Create small implementation-ready tasks directly under `<docsRoot>/tasks/` with acceptance criteria and testing expectations. Do not create new work in `<docsRoot>/tasks/done/`; that folder is only for completed-task archive.
+Create small implementation-ready tasks directly under `<docsRoot>/tasks/` with acceptance criteria and testing expectations, then update `<docsRoot>/tasks/index.md` when it exists. Do not create new work in `<docsRoot>/tasks/done/`; that folder is only for completed-task archive.
 
 End with:
 

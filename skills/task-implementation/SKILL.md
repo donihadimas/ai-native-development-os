@@ -48,7 +48,7 @@ Step-by-step process:
 
 1. Resolve `.aios/config.json` when present, including `mode`, `docsRoot`, `projectShape`, and `skillDelivery`.
 2. Read `AGENTS.md` and `<docsRoot>/context/context-map.md`.
-3. Resolve the active task without reading every task body: use an explicit task ID/path first, then IDE or conversation context, then direct task filenames under `<docsRoot>/tasks/`, then a narrow heading/status search with user-request terms. Exclude `<docsRoot>/tasks/done/` unless completed-task history is requested.
+3. Resolve the active task without reading every task body: use an explicit task ID/path first, then IDE or conversation context, then `<docsRoot>/tasks/index.md` when available, then direct task filenames under `<docsRoot>/tasks/`, then a narrow heading/status search with user-request terms. Exclude `<docsRoot>/tasks/done/` unless completed-task history is requested.
 4. Read the single active task file before implementation; if no clear task exists, ask which task is active or whether to create one.
 5. Read related ADRs when the task mentions them.
 6. Use `implementation-planner` first when no usable plan exists.
@@ -63,6 +63,7 @@ Step-by-step process:
     - fill `## Done Summary` with files changed, tests run, acceptance criteria status, and risks,
     - move the task file to `<docsRoot>/tasks/done/` without renaming it,
     - move any related implementation plan from `<docsRoot>/plans/` to `<docsRoot>/plans/done/` without renaming it when the task or task range it governs is complete,
+    - update `<docsRoot>/tasks/index.md` and `<docsRoot>/plans/index.md` when they exist,
     - leave status open and explain blockers when criteria are not satisfied.
 13. End with what the user should review and the next recommended action.
 

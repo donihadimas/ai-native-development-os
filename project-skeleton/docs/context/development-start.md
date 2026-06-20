@@ -88,6 +88,6 @@ Include acceptance criteria, risks, open questions, a Mermaid product flow, a re
 
 ```text
 Read AGENTS.md, docs/context/context-map.md, docs/product/prd.md, and docs/architecture/architecture.md if it exists.
-Create or update small implementation tasks directly under docs/tasks/. Keep active implementation plans in docs/plans/. Archive completed tasks in docs/tasks/done/ and related plans in docs/plans/done/ after validation and Done Summary.
+Create or update small implementation tasks directly under docs/tasks/ and keep docs/tasks/index.md current. Keep active implementation plans in docs/plans/ and keep docs/plans/index.md current. Archive completed tasks in docs/tasks/done/ and related plans in docs/plans/done/ after validation and Done Summary.
 End with the recommended first task, what I should review, and the next step before coding.
 ```

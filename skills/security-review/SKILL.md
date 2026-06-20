@@ -57,7 +57,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Resolve the active task or review target without reading every task body when the target is not explicit. Use direct task filenames under `docs/tasks/` and exclude `docs/tasks/done/` unless reviewing completed work.
+1. Resolve the active task or review target without reading every task body when the target is not explicit. Use `docs/tasks/index.md` when available, then direct task filenames under `docs/tasks/`, and exclude `docs/tasks/done/` unless reviewing completed work.
 2. Read only the selected active task or review target, affected files, and relevant contracts.
 3. Identify trust boundaries, roles, inputs, secrets, and external integrations.
 4. Review authentication, authorization, validation, output encoding, rate limits, and audit needs.

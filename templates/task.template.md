@@ -60,4 +60,4 @@ Briefly explain why this task exists.
 - Acceptance criteria status:
 - Risks:
 
-After completion, move this file to `<docsRoot>/tasks/done/` without renaming it. Keep active or blocked tasks directly under `<docsRoot>/tasks/`.
+After completion, move this file to `<docsRoot>/tasks/done/` without renaming it. Keep active or blocked tasks directly under `<docsRoot>/tasks/`. Update `<docsRoot>/tasks/index.md` whenever this task is created, blocked, completed, reopened, or archived.
