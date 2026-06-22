@@ -1085,7 +1085,7 @@ function commandVersion(command: string, args: string[] = ["--version"]): string
   }
 }
 
-function cavemanLocations(projectPath: string, homeDir = process.env.HOME ?? ""): string[] {
+function cavemanLocations(projectPath: string, homeDir = process.env.HOME ?? process.env.USERPROFILE ?? os.homedir()): string[] {
   return [
     path.join(projectPath, ".agents", "skills", "caveman"),
     path.join(projectPath, ".codex", "skills", "caveman"),
@@ -1149,6 +1149,25 @@ function disableIntegrationRule(projectPath: string, integration: IntegrationNam
   return disabled;
 }
 
+function windowsRtkInstallCommand(): string {
+  const script = [
+    "$ErrorActionPreference='Stop'",
+    "$bin=Join-Path $env:USERPROFILE '.local\\bin'",
+    "New-Item -ItemType Directory -Force $bin | Out-Null",
+    "$release=Invoke-RestMethod 'https://api.github.com/repos/rtk-ai/rtk/releases/latest'",
+    "$asset=$release.assets | Where-Object { $_.name -eq 'rtk-x86_64-pc-windows-msvc.zip' } | Select-Object -First 1",
+    "if (-not $asset) { throw 'RTK Windows release asset not found' }",
+    "$zip=Join-Path $env:TEMP 'rtk-x86_64-pc-windows-msvc.zip'",
+    "Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zip",
+    "Expand-Archive -Path $zip -DestinationPath $bin -Force",
+    "$userPath=[Environment]::GetEnvironmentVariable('Path','User')",
+    "$pathParts=($userPath -split ';') | Where-Object { $_ }",
+    "if ($pathParts -notcontains $bin) { [Environment]::SetEnvironmentVariable('Path', (($pathParts + $bin) -join ';'), 'User') }",
+    "Write-Host \"Installed RTK to $bin. Restart the terminal if rtk is not available in this session.\""
+  ].join("; ");
+  return `powershell -NoProfile -ExecutionPolicy Bypass -Command ${JSON.stringify(script)}`;
+}
+
 function installCommand(
   integration: IntegrationName,
   targetAgents: AgentTarget[] = ["codex"]
@@ -1156,9 +1175,9 @@ function installCommand(
   if (integration === "rtk") {
     if (os.platform() === "win32") {
       return {
-        command: "Download rtk.exe from the official RTK releases and add it to PATH.",
-        runnable: false,
-        note: "Windows auto-install is not supported by AIOS."
+        command: windowsRtkInstallCommand(),
+        runnable: true,
+        note: "Downloads the official Windows RTK release to %USERPROFILE%\\.local\\bin and adds that folder to the user PATH."
       };
     }
     if (commandExists("brew")) {
@@ -1178,8 +1197,8 @@ function installCommand(
   if (os.platform() === "win32") {
     return {
       command: targetedCommands || `npx -y skills add JuliusBrussee/caveman ${agentFlags} --yes`,
-      runnable: false,
-      note: "Windows auto-install is not run by AIOS; run this manually in PowerShell if trusted."
+      runnable: true,
+      note: `Targeted Caveman install for: ${targetAgents.join(", ")}. Requires Node >= 18 and runs through the Windows shell.`
     };
   }
   return {

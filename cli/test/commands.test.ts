@@ -396,19 +396,44 @@ test("integration doctor and repair report and restore local integration rules",
   assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "rtk.md")));
 });
 
+test("integration add offers runnable RTK installers on supported platforms", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+
+  const oldPath = process.env.PATH;
+  process.env.PATH = "";
+  try {
+    const output = run(["integration", "add", "rtk", "demo-project", "--install", "--dry-run"], { runtimePaths, cwd });
+    assert.doesNotMatch(output, /manual only on this platform/);
+    if (os.platform() === "win32") {
+      assert.match(output, /powershell -NoProfile -ExecutionPolicy Bypass/);
+      assert.match(output, /rtk-x86_64-pc-windows-msvc\.zip/);
+      assert.match(output, /%USERPROFILE%\\\.local\\bin/);
+    } else {
+      assert.match(output, /curl -fsSL https:\/\/raw\.githubusercontent\.com\/rtk-ai\/rtk\/refs\/heads\/master\/install\.sh \| sh/);
+    }
+  } finally {
+    process.env.PATH = oldPath;
+  }
+});
+
 test("integration install runs external commands from the target project path", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
   const bin = path.join(cwd, "bin");
   fs.mkdirSync(bin, { recursive: true });
-  const fakeNpx = path.join(bin, "npx");
+  const fakeNpx = path.join(bin, os.platform() === "win32" ? "npx.cmd" : "npx");
   fs.writeFileSync(
     fakeNpx,
-    "#!/usr/bin/env sh\nmkdir -p .agents/skills/caveman\nprintf installed > .agents/skills/caveman/SKILL.md\n",
+    os.platform() === "win32"
+      ? "@echo off\r\nmkdir .agents\\skills\\caveman\r\necho installed>.agents\\skills\\caveman\\SKILL.md\r\n"
+      : "#!/usr/bin/env sh\nmkdir -p .agents/skills/caveman\nprintf installed > .agents/skills/caveman/SKILL.md\n",
     "utf8"
   );
-  fs.chmodSync(fakeNpx, 0o755);
+  if (os.platform() !== "win32") {
+    fs.chmodSync(fakeNpx, 0o755);
+  }
 
   const oldPath = process.env.PATH;
   process.env.PATH = `${bin}${path.delimiter}${oldPath ?? ""}`;
@@ -417,13 +442,9 @@ test("integration install runs external commands from the target project path", 
       runtimePaths,
       cwd
     });
-    if (os.platform() === "win32") {
-      assert.match(output, /install: manual only on this platform/);
-    } else {
-      assert.match(output, /install: executed/);
-      assert.match(output, /caveman: ready/);
-      assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "caveman", "SKILL.md")));
-    }
+    assert.match(output, /install: executed/);
+    assert.match(output, /caveman: ready/);
+    assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "caveman", "SKILL.md")));
     assert.equal(fs.existsSync(path.join(cwd, ".agents", "skills", "caveman", "SKILL.md")), false);
   } finally {
     process.env.PATH = oldPath;
