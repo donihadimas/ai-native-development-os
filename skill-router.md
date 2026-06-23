@@ -20,6 +20,7 @@ Use this router before choosing a workflow. Match the user request to the smalle
 5. Resolve optional integrations from `integrations`:
    - `rtk.enabled`: read `.aios/integrations/rtk.md` before noisy terminal commands.
    - `caveman.enabled`: read `.aios/integrations/caveman.md` before status/debug-loop responses.
+   - `ponytail.enabled`: read `.aios/integrations/ponytail.md` before implementation, refactor, bugfix, or code-review work.
 
 ## Workflow Routing
 

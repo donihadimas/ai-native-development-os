@@ -26,6 +26,7 @@ Completed implementation plans live under `docs/plans/done/`. Read a completed p
 | TASK-010 | Done | `docs/plans/done/TASK-010-aios-update-accept-flow-plan.md` |
 | TASK-026 - TASK-031 | Done | `docs/plans/done/TASK-026-031-website-technical-field-manual-plan.md` |
 | TASK-036 | Done | `docs/plans/done/TASK-036-optimize-aios-context-artifact-lifecycle-plan.md` |
+| TASK-037 | Done | `docs/plans/done/TASK-037-add-ponytail-integration-plan.md` |
 
 ## Routing Rules
 

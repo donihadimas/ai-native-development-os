@@ -3,7 +3,7 @@ title: Integrations Folder
 description: Catalog of integration rule files in the .aios/integrations/ folder.
 ---
 
-The `integrations/` folder contains optional integration rules for external AI-native tools. These are Markdown files that tell your AI agent how to cooperate with external tools like RTK and Caveman.
+The `integrations/` folder contains optional integration rules for external AI-native tools. These are Markdown files that tell your AI agent how to cooperate with external tools like RTK, Caveman, and Ponytail.
 
 ## What Integrations Are
 
@@ -16,6 +16,7 @@ Integrations are rules-first. AIOS writes local guidance files without requiring
 | `README.md` | Overview of available integrations and usage |
 | `rtk.md` | Rules for compacting noisy terminal output |
 | `caveman.md` | Rules for concise response style |
+| `ponytail.md` | Rules for minimal correct implementation choices |
 
 ## Detailed Reference
 
@@ -87,6 +88,33 @@ aios integration repair
 ```
 
 **Safety boundaries:** Caveman style applies only to operational communication. Formal artifacts remain complete. Does not store secrets. External install requires explicit `--install` flag.
+
+### ponytail.md
+
+**Purpose:** Guide the agent to prefer the smallest correct implementation after understanding the task and affected code.
+
+**When to enable:** When you want coding work to avoid unnecessary abstractions, dependencies, scaffolding, or custom code that native platform features already cover.
+
+**Behavior change:** The agent uses Ponytail's minimal-correct-code ladder for implementation, refactor, bugfix, and over-engineering review work.
+
+**Must not be used for:**
+- Skipping task/context reading
+- Removing explicit acceptance criteria
+- Weakening validation, security, accessibility, or needed tests
+- Shrinking formal artifacts that need complete reasoning
+
+**Related CLI commands:**
+```bash
+aios integration list
+aios integration status
+aios integration add ponytail
+aios integration add ponytail --mode full
+aios integration remove ponytail
+aios integration doctor
+aios integration repair
+```
+
+**Safety boundaries:** Ponytail affects implementation choices only. Formal artifacts remain complete. Does not store secrets. External install requires explicit `--install` flag.
 
 ## Rules-First Behavior
 

@@ -31,7 +31,7 @@ ai-native-development-os/
 ├── templates/           # document/template stubs
 ├── references/          # stable engineering guidance
 ├── workflows/           # end-to-end process docs
-├── integrations/        # local RTK/Caveman rules
+├── integrations/        # local RTK/Caveman/Ponytail rules
 ├── project-skeleton/    # default generated/adopted docs and agent files
 ├── starters/            # AI docs only starter shells
 ├── cli/                 # npm package source
@@ -102,10 +102,11 @@ During adopt, existing user instructions are preserved below the managed section
 
 ## Integration Strategy
 
-RTK and Caveman are optional. AIOS stores integration intent in `.aios/config.json` and writes local rules under `.aios/integrations/`.
+RTK, Caveman, and Ponytail are optional. AIOS stores integration intent in `.aios/config.json` and writes local rules under `.aios/integrations/`.
 
 - RTK is for compacting noisy terminal output before it enters AI context.
 - Caveman is for concise operational updates and debug loops.
+- Ponytail is for minimal-correct-code implementation choices after task and code comprehension.
 - Formal artifacts such as PRDs, ADRs, architecture docs, migration plans, security reviews, and release notes must remain complete.
 - Windows external auto-install is intentionally conservative; manual guidance is preferred when installer execution is not safe or supported.
 

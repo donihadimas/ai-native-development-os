@@ -41,7 +41,7 @@ Use this project when you want to:
 - V2 assisted workflow is implemented as a focused Node.js CLI in `cli/`.
 - V2.x workflow extensions are implemented for AI docs only starters, database migration planning, security review, release preparation, OpenAPI generation, and GitHub Actions dry-run automation.
 - Ready-to-use project generation is implemented: `aios init`, `starter`, and `adopt` install a local `.aios/` workflow kit by default.
-- V3-lite setup is implemented for interactive CLI setup, configurable docs location, native agent skill install, and optional RTK/Caveman integration rules.
+- V3-lite setup is implemented for interactive CLI setup, configurable docs location, native agent skill install, and optional RTK/Caveman/Ponytail integration rules.
 - The CLI is published as `@donihadimas/aios`.
 
 ## 📦 What Is Included
@@ -88,14 +88,14 @@ The wizard can help you:
 - choose where project docs should live: `docs/`, `.aios/project-docs/`, or a custom path,
 - install selected AIOS skills into native agent folders for Codex, Qwen Code, OpenCode, Antigravity, or generic agents,
 - choose skill delivery: native agent folders, portable `.aios/skills`, or both,
-- optionally generate RTK/Caveman integration rules,
+- optionally generate RTK/Caveman/Ponytail integration rules,
 - review a setup summary before files are written.
 
 Use **Full AIOS setup** for most projects. It creates `.aios/` with prompts, references, templates, workflows, commands, integrations, config, and optionally skills. Use **Lite setup** only when you want project docs without the local workflow kit.
 
 Use **native skills** when your coding agent can read project skill folders, such as `.agents/skills`, `.qwen/skills`, `.opencode/skills`, or `.agent/skills`. Native delivery keeps `.aios/` compact. Use portable delivery when you want all skills to live inside `.aios/skills`.
 
-Optional integrations are rules-first. AIOS can generate local RTK/Caveman guidance without installing external tools. External installers only run after explicit confirmation.
+Optional integrations are rules-first. AIOS can generate local RTK/Caveman/Ponytail guidance without installing external tools. External installers only run after explicit confirmation.
 
 ## ⚡ Command Quickstart
 
@@ -230,7 +230,7 @@ Review the diff against the active task acceptance criteria. Findings first, the
 - `aios kit install [project-path]`: Installs or repairs the local `.aios/` workflow kit.
 - `aios agent list`: Lists supported native agent targets and available AIOS skills.
 - `aios agent install [project-path]`: Installs selected AIOS skills into native agent skill folders.
-- `aios integration list / status / add / remove / doctor / repair`: Manages optional external integrations like `rtk` and `caveman`.
+- `aios integration list / status / add / remove / doctor / repair`: Manages optional external integrations like `rtk`, `caveman`, and `ponytail`.
 - `aios config [project-path]`: Prints the resolved AIOS project config.
 - `aios prompt list / show`: Lists or prints portable AIOS command prompts.
 - `aios next [project-path]`: Prints the next recommended development step without changing files.

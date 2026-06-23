@@ -8,6 +8,7 @@ Supported integrations:
 
 - `rtk` - compact noisy terminal command output before it enters AI context.
 - `caveman` - use concise response style for status updates and debug loops.
+- `ponytail` - prefer minimal correct code and avoid unnecessary abstractions.
 
 Use:
 
@@ -15,5 +16,6 @@ Use:
 aios integration status
 aios integration add rtk
 aios integration add caveman --mode lite
+aios integration add ponytail --mode full
 ```
 

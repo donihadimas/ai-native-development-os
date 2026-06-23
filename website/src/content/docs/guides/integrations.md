@@ -1,11 +1,11 @@
 ---
 title: Integrations
-description: Optional RTK and Caveman integration rules for local AIOS workflows.
+description: Optional RTK, Caveman, and Ponytail integration rules for local AIOS workflows.
 ---
 
 Integrations are optional rules that help AIOS cooperate with external tools. They are rules-first: AIOS can add local guidance without installing external software.
 
-The current integration targets are RTK and Caveman.
+The current integration targets are RTK, Caveman, and Ponytail.
 
 ## What Integrations Are For
 
@@ -13,8 +13,9 @@ Use integrations when a project needs consistent local instructions for an exter
 
 - RTK for noisy command output and summarized operational traces.
 - Caveman-style brevity for short operational updates.
+- Ponytail for minimal-correct-code implementation choices.
 
-These integrations do not replace formal project documents. Do not use brevity rules for PRDs, ADRs, architecture docs, security reviews, migration plans, release artifacts, or acceptance criteria.
+These integrations do not replace formal project documents. Do not use brevity rules or minimal-code guidance to weaken PRDs, ADRs, architecture docs, security reviews, migration plans, release artifacts, acceptance criteria, validation, security, accessibility, or needed tests.
 
 ## List Supported Integrations
 
@@ -39,6 +40,13 @@ aios integration add rtk . --dry-run
 aios integration add rtk .
 ```
 
+Add Ponytail rules without installing the external skill/plugin:
+
+```bash
+aios integration add ponytail . --dry-run
+aios integration add ponytail . --mode full
+```
+
 Add all supported rules:
 
 ```bash
@@ -49,6 +57,7 @@ External install actions require explicit confirmation:
 
 ```bash
 aios integration add rtk . --install --yes
+aios integration add ponytail . --install --agents codex --yes
 ```
 
 ## Remove Or Repair Rules
@@ -57,6 +66,7 @@ Remove local rules:
 
 ```bash
 aios integration remove rtk . --scope project
+aios integration remove ponytail . --scope project
 ```
 
 Repair missing local rules for enabled integrations:
