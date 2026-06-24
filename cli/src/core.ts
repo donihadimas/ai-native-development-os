@@ -14,8 +14,9 @@ export type SkillDelivery = "portable" | "native" | "both";
 export type AgentTarget = "codex" | "qwen" | "opencode" | "antigravity" | "generic";
 export type AgentScope = "repo" | "user";
 export type ProjectShape = "fullstack" | "frontend" | "backend" | "mobile" | "library" | "docs";
-export type IntegrationName = "rtk" | "caveman";
+export type IntegrationName = "rtk" | "caveman" | "ponytail";
 export type CavemanMode = "lite" | "full" | "ultra";
+export type PonytailMode = "lite" | "full" | "ultra";
 
 export interface IntegrationConfig {
   rtk: {
@@ -26,6 +27,12 @@ export interface IntegrationConfig {
     enabled: boolean;
     mode: CavemanMode;
     responsePolicy: "concise-for-status-only";
+    targetAgents: AgentTarget[];
+  };
+  ponytail: {
+    enabled: boolean;
+    mode: PonytailMode;
+    codePolicy: "prefer-minimal-correct-code";
     targetAgents: AgentTarget[];
   };
 }
@@ -101,8 +108,21 @@ export const DELIVERY_SKILLS = ["task-implementation", "testing", "code-review",
 
 export const AGENT_TARGETS: AgentTarget[] = ["codex", "qwen", "opencode", "antigravity", "generic"];
 export const PROJECT_SHAPES: ProjectShape[] = ["fullstack", "frontend", "backend", "mobile", "library", "docs"];
-export const INTEGRATIONS: IntegrationName[] = ["rtk", "caveman"];
+export const INTEGRATION_REPO: Record<IntegrationName, string> = {
+  rtk: "https://github.com/rtk-ai/rtk",
+  caveman: "https://github.com/JuliusBrussee/caveman",
+  ponytail: "https://github.com/DietrichGebert/ponytail"
+};
+
+export const INTEGRATION_DESCRIPTION: Record<IntegrationName, string> = {
+  rtk: "compact noisy terminal output before it reaches AI context",
+  caveman: "concise agent response style for status/debug loops",
+  ponytail: "minimal-correct-code rules for coding tasks"
+};
+
+export const INTEGRATIONS: IntegrationName[] = ["rtk", "caveman", "ponytail"];
 export const CAVEMAN_MODES: CavemanMode[] = ["lite", "full", "ultra"];
+export const PONYTAIL_MODES: PonytailMode[] = ["lite", "full", "ultra"];
 
 export const REQUIRED_PROJECT_PATHS = ["AGENTS.md"];
 
@@ -279,6 +299,12 @@ export function defaultProjectConfig(overrides: Partial<ProjectConfig> = {}): Pr
       mode: "lite",
       responsePolicy: "concise-for-status-only",
       targetAgents: []
+    },
+    ponytail: {
+      enabled: false,
+      mode: "full",
+      codePolicy: "prefer-minimal-correct-code",
+      targetAgents: []
     }
   };
 
@@ -319,6 +345,10 @@ export function readProjectConfig(projectPath: string): ProjectConfig {
       caveman: {
         ...base.integrations.caveman,
         ...parsed.integrations?.caveman
+      },
+      ponytail: {
+        ...base.integrations.ponytail,
+        ...parsed.integrations?.ponytail
       }
     }
   };

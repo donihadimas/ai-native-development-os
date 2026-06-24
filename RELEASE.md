@@ -40,16 +40,17 @@ Examples:
 The current CLI release should use:
 
 ```text
-0.4.1
+0.5.0
 ```
 
 Reason:
 
 - V1 manual workflow already exists.
 - V2 assisted CLI workflow is implemented.
-- V2.x ready-to-use workflow setup, guided CLI, native agent skills, optional RTK/Caveman integrations, and artifact lifecycle routing are implemented.
+- V2.x ready-to-use workflow setup, guided CLI, native agent skills, optional RTK/Caveman/Ponytail integrations, and artifact lifecycle routing are implemented.
 - `0.4.0` is already published and tagged.
-- `0.4.1` is a patch release to publish the latest artifact lifecycle, task/plan index, and summary-first routing assets in the npm package.
+- `0.4.1` is already published and tagged.
+- `0.5.0` is a minor release because it adds Ponytail as a new optional integration and improves guided integration repository review links.
 
 ## 🏷️ Release Types
 
@@ -166,37 +167,39 @@ installed-package smoke test: passed
 
 9. Publish the GitHub release.
 
-### 🔄 Current `v0.4.1` GitHub Release
+### 🔄 Current `v0.5.0` GitHub Release
 
 Recommended release title:
 
 ```text
-v0.4.1 - Artifact Lifecycle Bundle Fix
+v0.5.0 - Ponytail Integration And Repo Link Guidance
 ```
 
 Recommended release notes:
 
 ````md
-## v0.4.1 - Artifact Lifecycle Bundle Fix
+## v0.5.0 - Ponytail Integration And Repo Link Guidance
 
-Patch release to ensure npm installs include the latest AIOS artifact lifecycle and context-efficiency assets.
+Minor release that adds Ponytail as an optional AIOS integration and makes upstream integration repositories visible during guided setup.
+
+### Added
+- Added Ponytail as a supported optional integration for `aios integration list`, `status`, `add`, `remove`, `doctor`, and `repair`.
+- Added local Ponytail integration rules and bundled CLI assets.
 
 ### Changed
-- Synced bundled npm assets so generated projects include task and plan indexes in the project skeleton.
-- Synced bundled `.aios` kit assets so projects receive the artifact lifecycle reference and stricter workflow routing.
-- Updated release guidance for the current patch release.
+- Guided integration setup and guided `aios integration add` now show repository links for RTK, Caveman, and Ponytail.
+- `aios integration list` now shows repository links for each supported optional integration.
 
 ### Fixed
-- Fixed the npm package contents after `0.4.0` so the published bundle includes the latest artifact lifecycle, index-first task/plan discovery, and summary-first routing guidance.
+- Improved external integration review guidance before optional installer approval.
 
 ### Breaking Changes
 None.
 
 ### Validation
-- `npm test`: 77 passed, 0 failed.
+- `npm test`: 79 passed, 0 failed.
 - `npm pack --dry-run`: passed.
 - `git diff --check`: passed.
-- Published `0.4.0` tarball check confirmed the lifecycle assets were missing, so this patch release is required.
 - Package name: `@donihadimas/aios`.
 
 ### Install

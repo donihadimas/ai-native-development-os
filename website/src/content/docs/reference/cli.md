@@ -63,9 +63,9 @@ Project shapes:
   Lists optional external integrations supported by AIOS.
 - `aios integration status [project-path]`
   Shows project config, local rules, and detected external tool status.
-- `aios integration add <rtk|caveman|all> [project-path] [--install] [--mode lite|full|ultra] [--agents <list>] [--dry-run] [--yes]`
+- `aios integration add <rtk|caveman|ponytail|all> [project-path] [--install] [--mode lite|full|ultra] [--agents <list>] [--dry-run] [--yes]`
   Enables optional integration rules. External install only runs with explicit confirmation.
-- `aios integration remove <rtk|caveman|all> [project-path] [--scope project|user|both] [--dry-run] [--yes]`
+- `aios integration remove <rtk|caveman|ponytail|all> [project-path] [--scope project|user|both] [--dry-run] [--yes]`
   Removes local rules or offers external uninstall.
 - `aios integration doctor [project-path]`
   Checks integration config, local rules, external detection, and recommended fixes.

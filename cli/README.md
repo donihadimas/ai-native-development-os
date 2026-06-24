@@ -65,7 +65,7 @@ When creating or adopting a project, the wizard asks for:
 - native agent targets: Codex, Qwen Code, OpenCode, Antigravity, or generic agent skills,
 - skill set: core, planning, delivery, all, or a custom checkbox selection,
 - skill delivery: native agent folders, portable `.aios/skills`, or both,
-- optional RTK/Caveman integration rules.
+- optional RTK/Caveman/Ponytail integration rules.
 
 Before writing files, AIOS prints a setup summary so you can confirm the target path, project shape, docs root, selected agents, selected skills, and skill delivery mode.
 
@@ -370,6 +370,7 @@ Supported integrations:
 
 - `rtk` - compact noisy terminal command output before it enters AI context.
 - `caveman` - concise agent response style for status and debug loops.
+- `ponytail` - minimal-correct-code rules for coding tasks.
 
 ### `aios integration status [project-path]`
 
@@ -384,10 +385,11 @@ Status checks are live:
 
 - RTK detection checks `rtk` on `PATH` and `rtk --version`.
 - Caveman detection checks common project and user skill/plugin locations.
+- Ponytail detection checks common project and user skill/plugin locations.
 - Detection results are not stored as permanent truth.
 - `rules-only` means AIOS local rules are enabled, but the external tool or native skill is not detected.
 
-### `aios integration add <rtk|caveman|all> [project-path]`
+### `aios integration add <rtk|caveman|ponytail|all> [project-path]`
 
 Enables local integration rules in `.aios/` and updates `.aios/config.json`.
 
@@ -395,6 +397,8 @@ Enables local integration rules in `.aios/` and updates `.aios/config.json`.
 aios integration add rtk .
 aios integration add caveman . --mode lite
 aios integration add caveman . --mode lite --agents codex,qwen
+aios integration add ponytail . --mode full
+aios integration add ponytail . --install --agents codex --yes
 aios integration add all my-saas --dry-run
 aios integration add rtk . --install
 aios integration add caveman . --install --agents codex --yes
@@ -408,15 +412,18 @@ Behavior:
 - `--dry-run` previews config/rule changes without writing files or running installers.
 - Caveman `--mode` accepts `lite`, `full`, or `ultra`; default is `lite`.
 - Caveman `--agents` accepts the same agent names as native skills and installs only those targeted agents.
+- Ponytail `--mode` accepts `lite`, `full`, or `ultra`; default is `full`.
+- Ponytail `--agents` accepts the same agent names as native skills and installs only those targeted agents.
 - External installers run from the target project path, so repo-scoped skills are installed into that project.
 
-### `aios integration remove <rtk|caveman|all> [project-path]`
+### `aios integration remove <rtk|caveman|ponytail|all> [project-path]`
 
 Disables local integration rules, offers user-computer uninstall actions, or both.
 
 ```bash
 aios integration remove rtk .
 aios integration remove caveman . --scope project
+aios integration remove ponytail . --scope project
 aios integration remove rtk . --scope user --dry-run
 aios integration remove all . --scope both --yes
 ```
@@ -426,7 +433,7 @@ Behavior:
 - Default `--scope project` disables config and renames local rules to `*.md.disabled`.
 - `--scope user` does not modify project config; it only plans or runs user-computer uninstall actions.
 - `--scope both` does both.
-- User-computer uninstall requires `--yes` before any external command or detected Caveman path removal runs.
+- User-computer uninstall requires `--yes` before any external command or detected Caveman/Ponytail path removal runs.
 - AIOS does not remove RTK binaries directly; RTK uninstall removes agent hooks and prints package-manager follow-up guidance.
 
 ### `aios integration doctor [project-path]`
@@ -449,7 +456,7 @@ aios integration repair
 aios integration repair my-saas --dry-run
 ```
 
-Repair does not install external tools. It only restores local AIOS integration rules and missing Caveman target-agent config.
+Repair does not install external tools. It only restores local AIOS integration rules and missing Caveman/Ponytail target-agent config.
 
 ### `aios config [project-path]`
 

@@ -5,8 +5,8 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import packageJson from "../package.json" with { type: "json" };
-import { run, detectSubprojectWarning } from "../src/index.js";
-import type { RuntimePaths } from "../src/core.js";
+import { run, detectSubprojectWarning, integrationReviewMessage } from "../src/index.js";
+import type { IntegrationName, RuntimePaths } from "../src/core.js";
 
 const osRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const runtimePaths: RuntimePaths = {
@@ -43,7 +43,7 @@ test("help explains the CLI purpose and available commands", () => {
   assert.match(output, /aios agent list/);
   assert.match(output, /aios integration list/);
   assert.match(output, /aios integration status \[project-path\]/);
-  assert.match(output, /aios integration add <rtk\|caveman\|all>.*\[--agents <list>\].*\[--yes\]/);
+  assert.match(output, /aios integration add <rtk\|caveman\|ponytail\|all>.*\[--agents <list>\].*\[--yes\]/);
   assert.match(output, /aios integration doctor \[project-path\]/);
   assert.match(output, /aios integration repair \[project-path\]/);
   assert.match(output, /aios config \[project-path\]/);
@@ -305,17 +305,31 @@ test("integration list and status expose optional external integrations", () => 
   run(["init", "demo-project"], { runtimePaths, cwd });
 
   const listOutput = run(["integration", "list"], { runtimePaths, cwd });
-  assert.match(listOutput, /rtk: compact noisy terminal command output/);
-  assert.match(listOutput, /caveman: concise agent response style/);
+  assert.match(listOutput, /rtk: compact noisy terminal output before it reaches AI context repo: https:\/\/github\.com\/rtk-ai\/rtk/);
+  assert.match(listOutput, /caveman: concise agent response style for status\/debug loops repo: https:\/\/github\.com\/JuliusBrussee\/caveman/);
+  assert.match(listOutput, /ponytail: minimal-correct-code rules for coding tasks repo: https:\/\/github\.com\/DietrichGebert\/ponytail/);
 
   const statusOutput = run(["integration", "status", "demo-project"], { runtimePaths, cwd });
   assert.match(statusOutput, /AIOS integration status/);
   assert.match(statusOutput, /rtk:/);
   assert.match(statusOutput, /caveman:/);
+  assert.match(statusOutput, /ponytail:/);
   assert.match(statusOutput, /state: disabled/);
 });
 
-test("integration add supports dry-run, RTK rules, Caveman mode, and all selection", () => {
+test("integration review message shows repo links for all supported integrations", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  // Test that review message includes repo links for all integrations
+  const reviewMessage = integrationReviewMessage(["rtk", "caveman", "ponytail"], project);
+  assert.match(reviewMessage, /Caveman repo: https:\/\/github\.com\/JuliusBrussee\/caveman/);
+  assert.match(reviewMessage, /Ponytail repo: https:\/\/github\.com\/DietrichGebert\/ponytail/);
+  assert.match(reviewMessage, /RTK repo: https:\/\/github\.com\/rtk-ai\/rtk/);
+});
+
+test("integration add supports dry-run, RTK rules, Caveman/Ponytail modes, and all selection", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
@@ -338,6 +352,13 @@ test("integration add supports dry-run, RTK rules, Caveman mode, and all selecti
   assert.deepEqual(config.integrations.caveman.targetAgents, ["codex"]);
   assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "caveman.md")));
 
+  run(["integration", "add", "ponytail", "demo-project", "--mode", "ultra", "--agents", "codex,qwen"], { runtimePaths, cwd });
+  config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  assert.equal(config.integrations.ponytail.enabled, true);
+  assert.equal(config.integrations.ponytail.mode, "ultra");
+  assert.deepEqual(config.integrations.ponytail.targetAgents, ["codex", "qwen"]);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "ponytail.md")));
+
   const cavemanDryRun = run(["integration", "add", "caveman", "demo-project", "--install", "--dry-run", "--agents", "codex,qwen"], {
     runtimePaths,
     cwd
@@ -346,11 +367,20 @@ test("integration add supports dry-run, RTK rules, Caveman mode, and all selecti
   assert.match(cavemanDryRun, /npx -y skills add JuliusBrussee\/caveman -a qwen-code --yes/);
   assert.match(cavemanDryRun, /targeted agents only/);
 
+  const ponytailDryRun = run(["integration", "add", "ponytail", "demo-project", "--install", "--dry-run", "--agents", "codex,qwen"], {
+    runtimePaths,
+    cwd
+  });
+  assert.match(ponytailDryRun, /npx -y skills add DietrichGebert\/ponytail -a codex --yes/);
+  assert.match(ponytailDryRun, /npx -y skills add DietrichGebert\/ponytail -a qwen-code --yes/);
+  assert.match(ponytailDryRun, /targeted agents only/);
+
   run(["integration", "remove", "all", "demo-project", "--scope", "project"], { runtimePaths, cwd });
   run(["integration", "add", "all", "demo-project"], { runtimePaths, cwd });
   config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
   assert.equal(config.integrations.rtk.enabled, true);
   assert.equal(config.integrations.caveman.enabled, true);
+  assert.equal(config.integrations.ponytail.enabled, true);
 });
 
 test("integration remove supports project, user dry-run, both dry-run, and validation", () => {
@@ -364,6 +394,11 @@ test("integration remove supports project, user dry-run, both dry-run, and valid
   assert.equal(JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8")).integrations.rtk.enabled, false);
   assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "rtk.md.disabled")));
 
+  const ponytailOutput = run(["integration", "remove", "ponytail", "demo-project", "--scope", "project"], { runtimePaths, cwd });
+  assert.match(ponytailOutput, /Scope: project/);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8")).integrations.ponytail.enabled, false);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "ponytail.md.disabled")));
+
   const userDryRun = run(["integration", "remove", "rtk", "demo-project", "--scope", "user", "--dry-run"], { runtimePaths, cwd });
   assert.match(userDryRun, /Scope: user/);
   assert.match(userDryRun, /user uninstall/);
@@ -374,6 +409,7 @@ test("integration remove supports project, user dry-run, both dry-run, and valid
   assert.match(bothDryRun, /user uninstall/);
 
   assert.throws(() => run(["integration", "add", "caveman", "demo-project", "--mode", "invalid"], { runtimePaths, cwd }), /Unknown Caveman mode/);
+  assert.throws(() => run(["integration", "add", "ponytail", "demo-project", "--mode", "invalid"], { runtimePaths, cwd }), /Unknown Ponytail mode/);
   assert.throws(() => run(["integration", "remove", "rtk", "demo-project", "--scope", "invalid"], { runtimePaths, cwd }), /Unknown integration remove scope/);
   assert.match(run(["validate"], { runtimePaths, cwd: project }), /AI-ready structure validated/);
 });
@@ -383,10 +419,13 @@ test("integration doctor and repair report and restore local integration rules",
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
   run(["integration", "add", "rtk", "demo-project"], { runtimePaths, cwd });
+  run(["integration", "add", "ponytail", "demo-project"], { runtimePaths, cwd });
   fs.rmSync(path.join(project, ".aios", "integrations", "rtk.md"));
+  fs.rmSync(path.join(project, ".aios", "integrations", "ponytail.md"));
 
   const doctor = run(["integration", "doctor", "demo-project"], { runtimePaths, cwd });
   assert.match(doctor, /rtk: enabled but local rule is missing/);
+  assert.match(doctor, /ponytail: enabled but local rule is missing/);
 
   const repairDryRun = run(["integration", "repair", "demo-project", "--dry-run"], { runtimePaths, cwd });
   assert.match(repairDryRun, /would ensure/);
@@ -394,6 +433,28 @@ test("integration doctor and repair report and restore local integration rules",
   const repair = run(["integration", "repair", "demo-project"], { runtimePaths, cwd });
   assert.match(repair, /Repaired AIOS integrations/);
   assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "rtk.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "ponytail.md")));
+});
+
+test("integration add offers runnable RTK installers on supported platforms", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+
+  const oldPath = process.env.PATH;
+  process.env.PATH = "";
+  try {
+    const output = run(["integration", "add", "rtk", "demo-project", "--install", "--dry-run"], { runtimePaths, cwd });
+    assert.doesNotMatch(output, /manual only on this platform/);
+    if (os.platform() === "win32") {
+      assert.match(output, /powershell -NoProfile -ExecutionPolicy Bypass/);
+      assert.match(output, /rtk-x86_64-pc-windows-msvc\.zip/);
+      assert.match(output, /%USERPROFILE%\\\.local\\bin/);
+    } else {
+      assert.match(output, /curl -fsSL https:\/\/raw\.githubusercontent\.com\/rtk-ai\/rtk\/refs\/heads\/master\/install\.sh \| sh/);
+    }
+  } finally {
+    process.env.PATH = oldPath;
+  }
 });
 
 test("integration install runs external commands from the target project path", () => {
@@ -402,13 +463,17 @@ test("integration install runs external commands from the target project path", 
   const project = path.join(cwd, "demo-project");
   const bin = path.join(cwd, "bin");
   fs.mkdirSync(bin, { recursive: true });
-  const fakeNpx = path.join(bin, "npx");
+  const fakeNpx = path.join(bin, os.platform() === "win32" ? "npx.cmd" : "npx");
   fs.writeFileSync(
     fakeNpx,
-    "#!/usr/bin/env sh\nmkdir -p .agents/skills/caveman\nprintf installed > .agents/skills/caveman/SKILL.md\n",
+    os.platform() === "win32"
+      ? "@echo off\r\nmkdir .agents\\skills\\caveman\r\necho installed>.agents\\skills\\caveman\\SKILL.md\r\n"
+      : "#!/usr/bin/env sh\nmkdir -p .agents/skills/caveman\nprintf installed > .agents/skills/caveman/SKILL.md\n",
     "utf8"
   );
-  fs.chmodSync(fakeNpx, 0o755);
+  if (os.platform() !== "win32") {
+    fs.chmodSync(fakeNpx, 0o755);
+  }
 
   const oldPath = process.env.PATH;
   process.env.PATH = `${bin}${path.delimiter}${oldPath ?? ""}`;
@@ -417,20 +482,16 @@ test("integration install runs external commands from the target project path", 
       runtimePaths,
       cwd
     });
-    if (os.platform() === "win32") {
-      assert.match(output, /install: manual only on this platform/);
-    } else {
-      assert.match(output, /install: executed/);
-      assert.match(output, /caveman: ready/);
-      assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "caveman", "SKILL.md")));
-    }
+    assert.match(output, /install: executed/);
+    assert.match(output, /caveman: ready/);
+    assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "caveman", "SKILL.md")));
     assert.equal(fs.existsSync(path.join(cwd, ".agents", "skills", "caveman", "SKILL.md")), false);
   } finally {
     process.env.PATH = oldPath;
   }
 });
 
-test("integration status detects mocked RTK and Caveman locations", () => {
+test("integration status detects mocked RTK, Caveman, and Ponytail locations", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
@@ -441,6 +502,7 @@ test("integration status detects mocked RTK and Caveman locations", () => {
   fs.chmodSync(fakeRtk, 0o755);
   const fakeHome = path.join(cwd, "home");
   fs.mkdirSync(path.join(fakeHome, ".agents", "skills", "caveman"), { recursive: true });
+  fs.mkdirSync(path.join(fakeHome, ".agents", "skills", "ponytail"), { recursive: true });
 
   const oldPath = process.env.PATH;
   const oldHome = process.env.HOME;
@@ -450,6 +512,7 @@ test("integration status detects mocked RTK and Caveman locations", () => {
     const status = run(["integration", "status", "demo-project"], { runtimePaths, cwd });
     assert.match(status, os.platform() === "win32" ? /rtk found|rtk 0\.0\.0-test/ : /rtk 0\.0\.0-test/);
     assert.match(status, /caveman location\(s\) found/);
+    assert.match(status, /ponytail location\(s\) found/);
   } finally {
     process.env.PATH = oldPath;
     process.env.HOME = oldHome;
@@ -718,12 +781,15 @@ test("repair restores enabled integration rules", () => {
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
   run(["integration", "add", "rtk", "demo-project"], { runtimePaths, cwd });
+  run(["integration", "add", "ponytail", "demo-project"], { runtimePaths, cwd });
 
   fs.rmSync(path.join(project, ".aios", "integrations", "rtk.md"));
+  fs.rmSync(path.join(project, ".aios", "integrations", "ponytail.md"));
 
   const output = run(["repair", "demo-project"], { runtimePaths, cwd });
   assert.match(output, /Repairing AIOS assets/);
   assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "rtk.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "ponytail.md")));
   assert.match(output, /Next step: run `aios validate`/);
 });
 

@@ -16,6 +16,8 @@ Completed task bodies live under `docs/tasks/done/`. Read a completed task only 
 | --- | --- | --- |
 | TASK-001 - TASK-015 | Done | `docs/tasks/done/` |
 | TASK-017 - TASK-036 | Done | `docs/tasks/done/` |
+| TASK-037 | Done | `docs/tasks/done/TASK-037-add-ponytail-integration.md` |
+| TASK-038 | Done | `docs/tasks/done/TASK-038-add-guided-integration-repo-links.md` |
 
 ## Routing Rules
 

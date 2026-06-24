@@ -8,6 +8,37 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.5.0
+
+Minor release focused on optional integration coverage and clearer external-tool review guidance.
+
+### Added
+
+- Added Ponytail as a supported optional AIOS integration alongside RTK and Caveman.
+- Added Ponytail local rule files in the AIOS integration assets and bundled CLI assets.
+- Added Ponytail config support with enabled state, mode, and target agents in `.aios/config.json`.
+- Added Ponytail support to `aios integration list`, `status`, `add`, `remove`, `doctor`, and `repair`.
+
+### Changed
+
+- Updated guided integration setup and guided `aios integration add` choices to show repository links for RTK, Caveman, and Ponytail.
+- Updated `aios integration list` to include repository links for each supported integration.
+- Updated README, CLI README, website integration docs, architecture notes, and AIOS routing guidance to mention Ponytail.
+
+### Fixed
+
+- Improved external integration review copy so users can inspect upstream repositories before approving optional installer execution.
+
+### Breaking Changes
+
+- None.
+
+### Validation
+
+- `npm test`: 79 passed, 0 failed.
+- `npm pack --dry-run`: passed.
+- `git diff --check`: passed.
+
 ## 0.4.1
 
 Patch release focused on publishing the latest AIOS artifact lifecycle and context-efficiency assets in the npm package.

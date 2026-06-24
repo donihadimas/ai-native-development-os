@@ -37,6 +37,7 @@ If `skillDelivery` is `both`, prefer the native skill and use `.aios/skills/<ski
 In lite mode, use `AGENTS.md`, `<docsRoot>/context/context-map.md`, active project docs, and any root-level AIOS skills/templates/references/workflows available to the agent. Do not assume `.aios/` exists.
 If `.aios/config.json` enables `integrations.rtk`, use `.aios/integrations/rtk.md` and `.aios/references/context-budget.md` for noisy command output unless exact full output is required.
 If `.aios/config.json` enables `integrations.caveman`, use `.aios/integrations/caveman.md` and `.aios/references/response-style.md` for concise operational updates and debug loops only. Keep formal PRDs, ADRs, architecture, security reviews, migration plans, and release notes complete.
+If `.aios/config.json` enables `integrations.ponytail`, use `.aios/integrations/ponytail.md` for minimal-correct-code implementation choices after reading the task and affected code.
 Use `projectShape` from `.aios/config.json` to decide whether code lives in `frontend/`, `backend/`, `mobile/`, `src/`, or docs only.
 When a generator skill has a Clarification Gate, ask focused questions before writing final files if the input is vague.
 Every workflow response should end with what the user should review and the next recommended action.

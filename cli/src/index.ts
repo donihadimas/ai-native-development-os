@@ -10,13 +10,17 @@ import {
   AIOS_KIT_ENTRIES,
   CAVEMAN_MODES,
   CORE_SKILLS,
+  INTEGRATION_DESCRIPTION,
+  INTEGRATION_REPO,
   INTEGRATIONS,
+  PONYTAIL_MODES,
   PROJECT_SHAPES,
   PROJECT_SHAPE_PATHS,
   type AgentScope,
   type AgentTarget,
   type CavemanMode,
   type IntegrationName,
+  type PonytailMode,
   adoptSkeleton,
   availableSkills,
   defaultProjectConfig,
@@ -107,7 +111,7 @@ function usage(): string {
   return `AI-Native Development OS CLI
 
 The CLI is only for setup, validation, and generating AIOS template files:
-docs, tasks, prompts, skills, workflow rules, and optional RTK/Caveman
+docs, tasks, prompts, skills, workflow rules, and optional RTK/Caveman/Ponytail
 integration rules. For AI-native development, use Codex or another AI
 agent directly inside the project. The agent should read AGENTS.md,
 .aios/config.json, project docs, skills, and workflows. The CLI does not
@@ -165,11 +169,11 @@ Advanced commands:
   aios integration status [project-path]
     Show project config, local rules, and detected external tool status.
 
-  aios integration add <rtk|caveman|all> [project-path] [--install] [--mode lite|full|ultra] [--agents <list>] [--dry-run] [--yes]
-    Enable optional RTK/Caveman rules in the local .aios kit.
+  aios integration add <rtk|caveman|ponytail|all> [project-path] [--install] [--mode lite|full|ultra] [--agents <list>] [--dry-run] [--yes]
+    Enable optional RTK/Caveman/Ponytail rules in the local .aios kit.
     With --install --yes, also runs the external installer when supported.
 
-  aios integration remove <rtk|caveman|all> [project-path] [--scope project|user|both] [--dry-run] [--yes]
+  aios integration remove <rtk|caveman|ponytail|all> [project-path] [--scope project|user|both] [--dry-run] [--yes]
     Disable local rules, offer user-computer uninstall, or both.
     External uninstall only runs with --yes.
 
@@ -1038,10 +1042,32 @@ function cavemanMode(value: string | undefined): CavemanMode {
   throw new Error(`Unknown Caveman mode: ${value}`);
 }
 
-function normalizeCavemanTargetAgents(config = defaultProjectConfig(), options: ParsedArgs = parseArgs([])): AgentTarget[] {
-  const requested = options.agents ?? config.integrations.caveman.targetAgents ?? config.selectedAgents;
+function ponytailMode(value: string | undefined): PonytailMode {
+  if (!value) {
+    return "full";
+  }
+  if (PONYTAIL_MODES.includes(value as PonytailMode)) {
+    return value as PonytailMode;
+  }
+  throw new Error(`Unknown Ponytail mode: ${value}`);
+}
+
+function normalizeIntegrationTargetAgents(
+  integration: "caveman" | "ponytail",
+  config = defaultProjectConfig(),
+  options: ParsedArgs = parseArgs([])
+): AgentTarget[] {
+  const requested = options.agents ?? config.integrations[integration].targetAgents ?? config.selectedAgents;
   const targets: AgentTarget[] = requested.length > 0 ? requested : ["codex"];
   return [...new Set(targets)].filter((agent) => AGENT_TARGETS.includes(agent));
+}
+
+function normalizeCavemanTargetAgents(config = defaultProjectConfig(), options: ParsedArgs = parseArgs([])): AgentTarget[] {
+  return normalizeIntegrationTargetAgents("caveman", config, options);
+}
+
+function normalizePonytailTargetAgents(config = defaultProjectConfig(), options: ParsedArgs = parseArgs([])): AgentTarget[] {
+  return normalizeIntegrationTargetAgents("ponytail", config, options);
 }
 
 function skillsCliAgentName(agent: AgentTarget): string {
@@ -1085,18 +1111,26 @@ function commandVersion(command: string, args: string[] = ["--version"]): string
   }
 }
 
-function cavemanLocations(projectPath: string, homeDir = process.env.HOME ?? ""): string[] {
+function cavemanLocations(projectPath: string, homeDir = process.env.HOME ?? process.env.USERPROFILE ?? os.homedir()): string[] {
+  return agentSkillLocations(projectPath, "caveman", homeDir);
+}
+
+function ponytailLocations(projectPath: string, homeDir = process.env.HOME ?? process.env.USERPROFILE ?? os.homedir()): string[] {
+  return agentSkillLocations(projectPath, "ponytail", homeDir);
+}
+
+function agentSkillLocations(projectPath: string, skillName: string, homeDir = process.env.HOME ?? process.env.USERPROFILE ?? os.homedir()): string[] {
   return [
-    path.join(projectPath, ".agents", "skills", "caveman"),
-    path.join(projectPath, ".codex", "skills", "caveman"),
-    path.join(projectPath, ".claude", "skills", "caveman"),
-    path.join(projectPath, ".qwen", "skills", "caveman"),
-    path.join(projectPath, ".opencode", "skills", "caveman"),
-    path.join(homeDir, ".agents", "skills", "caveman"),
-    path.join(homeDir, ".codex", "skills", "caveman"),
-    path.join(homeDir, ".claude", "skills", "caveman"),
-    path.join(homeDir, ".qwen", "skills", "caveman"),
-    path.join(homeDir, ".config", "opencode", "skills", "caveman")
+    path.join(projectPath, ".agents", "skills", skillName),
+    path.join(projectPath, ".codex", "skills", skillName),
+    path.join(projectPath, ".claude", "skills", skillName),
+    path.join(projectPath, ".qwen", "skills", skillName),
+    path.join(projectPath, ".opencode", "skills", skillName),
+    path.join(homeDir, ".agents", "skills", skillName),
+    path.join(homeDir, ".codex", "skills", skillName),
+    path.join(homeDir, ".claude", "skills", skillName),
+    path.join(homeDir, ".qwen", "skills", skillName),
+    path.join(homeDir, ".config", "opencode", "skills", skillName)
   ].filter(Boolean);
 }
 
@@ -1108,11 +1142,19 @@ function detectIntegration(projectPath: string, integration: IntegrationName): {
     return { detected: true, detail: commandVersion("rtk") ?? "rtk found" };
   }
 
-  const locations = cavemanLocations(projectPath).filter((location) => fs.existsSync(location));
-  if (locations.length === 0) {
-    return { detected: false, detail: "caveman skill/plugin not found in common locations", locations: [] };
+  if (integration === "caveman") {
+    const locations = cavemanLocations(projectPath).filter((location) => fs.existsSync(location));
+    if (locations.length === 0) {
+      return { detected: false, detail: "caveman skill/plugin not found in common locations", locations: [] };
+    }
+    return { detected: true, detail: `${locations.length} caveman location(s) found`, locations };
   }
-  return { detected: true, detail: `${locations.length} caveman location(s) found`, locations };
+
+  const locations = ponytailLocations(projectPath).filter((location) => fs.existsSync(location));
+  if (locations.length === 0) {
+    return { detected: false, detail: "ponytail skill/plugin not found in common locations", locations: [] };
+  }
+  return { detected: true, detail: `${locations.length} ponytail location(s) found`, locations };
 }
 
 function integrationRulePath(projectPath: string, integration: IntegrationName): string {
@@ -1149,6 +1191,25 @@ function disableIntegrationRule(projectPath: string, integration: IntegrationNam
   return disabled;
 }
 
+function windowsRtkInstallCommand(): string {
+  const script = [
+    "$ErrorActionPreference='Stop'",
+    "$bin=Join-Path $env:USERPROFILE '.local\\bin'",
+    "New-Item -ItemType Directory -Force $bin | Out-Null",
+    "$release=Invoke-RestMethod 'https://api.github.com/repos/rtk-ai/rtk/releases/latest'",
+    "$asset=$release.assets | Where-Object { $_.name -eq 'rtk-x86_64-pc-windows-msvc.zip' } | Select-Object -First 1",
+    "if (-not $asset) { throw 'RTK Windows release asset not found' }",
+    "$zip=Join-Path $env:TEMP 'rtk-x86_64-pc-windows-msvc.zip'",
+    "Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zip",
+    "Expand-Archive -Path $zip -DestinationPath $bin -Force",
+    "$userPath=[Environment]::GetEnvironmentVariable('Path','User')",
+    "$pathParts=($userPath -split ';') | Where-Object { $_ }",
+    "if ($pathParts -notcontains $bin) { [Environment]::SetEnvironmentVariable('Path', (($pathParts + $bin) -join ';'), 'User') }",
+    "Write-Host \"Installed RTK to $bin. Restart the terminal if rtk is not available in this session.\""
+  ].join("; ");
+  return `powershell -NoProfile -ExecutionPolicy Bypass -Command ${JSON.stringify(script)}`;
+}
+
 function installCommand(
   integration: IntegrationName,
   targetAgents: AgentTarget[] = ["codex"]
@@ -1156,9 +1217,9 @@ function installCommand(
   if (integration === "rtk") {
     if (os.platform() === "win32") {
       return {
-        command: "Download rtk.exe from the official RTK releases and add it to PATH.",
-        runnable: false,
-        note: "Windows auto-install is not supported by AIOS."
+        command: windowsRtkInstallCommand(),
+        runnable: true,
+        note: "Downloads the official Windows RTK release to %USERPROFILE%\\.local\\bin and adds that folder to the user PATH."
       };
     }
     if (commandExists("brew")) {
@@ -1171,21 +1232,23 @@ function installCommand(
     };
   }
 
+  const packageName = integration === "caveman" ? "JuliusBrussee/caveman" : "DietrichGebert/ponytail";
+  const displayName = integration === "caveman" ? "Caveman" : "Ponytail";
   const agentFlags = targetAgents.map((agent) => `-a ${skillsCliAgentName(agent)}`).join(" ");
   const targetedCommands = targetAgents
-    .map((agent) => `npx -y skills add JuliusBrussee/caveman -a ${skillsCliAgentName(agent)} --yes`)
+    .map((agent) => `npx -y skills add ${packageName} -a ${skillsCliAgentName(agent)} --yes`)
     .join(" && ");
   if (os.platform() === "win32") {
     return {
-      command: targetedCommands || `npx -y skills add JuliusBrussee/caveman ${agentFlags} --yes`,
-      runnable: false,
-      note: "Windows auto-install is not run by AIOS; run this manually in PowerShell if trusted."
+      command: targetedCommands || `npx -y skills add ${packageName} ${agentFlags} --yes`,
+      runnable: true,
+      note: `Targeted ${displayName} install for: ${targetAgents.join(", ")}. Requires Node >= 18 and runs through the Windows shell.`
     };
   }
   return {
-    command: targetedCommands || `npx -y skills add JuliusBrussee/caveman ${agentFlags} --yes`,
+    command: targetedCommands || `npx -y skills add ${packageName} ${agentFlags} --yes`,
     runnable: true,
-    note: `Targeted Caveman install for: ${targetAgents.join(", ")}. Requires Node >= 18.`
+    note: `Targeted ${displayName} install for: ${targetAgents.join(", ")}. Requires Node >= 18.`
   };
 }
 
@@ -1201,11 +1264,15 @@ function uninstallCommand(integration: IntegrationName, projectPath: string): { 
     };
   }
 
-  const paths = cavemanLocations(projectPath).filter((location) => fs.existsSync(location));
+  const paths =
+    integration === "caveman"
+      ? cavemanLocations(projectPath).filter((location) => fs.existsSync(location))
+      : ponytailLocations(projectPath).filter((location) => fs.existsSync(location));
+  const displayName = integration === "caveman" ? "Caveman" : "Ponytail";
   return {
-    command: paths.length > 0 ? `rm -rf ${paths.map((item) => JSON.stringify(item)).join(" ")}` : "No caveman paths detected",
+    command: paths.length > 0 ? `rm -rf ${paths.map((item) => JSON.stringify(item)).join(" ")}` : `No ${integration} paths detected`,
     runnable: paths.length > 0,
-    note: paths.length > 0 ? "Removes detected Caveman skill/plugin folders only." : "Caveman was not detected in common locations.",
+    note: paths.length > 0 ? `Removes detected ${displayName} skill/plugin folders only.` : `${displayName} was not detected in common locations.`,
     paths
   };
 }
@@ -1253,8 +1320,9 @@ function integrationSummary(projectPath: string, integrations: IntegrationName[]
 function commandIntegrationList(): string {
   return [
     "Optional AIOS integrations:",
-    "- rtk: compact noisy terminal command output before it reaches AI context (optional external)",
-    "- caveman: concise agent response style for status/debug loops (optional external)"
+    "- rtk: " + INTEGRATION_DESCRIPTION.rtk + " repo: " + INTEGRATION_REPO.rtk,
+    "- caveman: " + INTEGRATION_DESCRIPTION.caveman + " repo: " + INTEGRATION_REPO.caveman,
+    "- ponytail: " + INTEGRATION_DESCRIPTION.ponytail + " repo: " + INTEGRATION_REPO.ponytail
   ].join("\n");
 }
 
@@ -1290,23 +1358,27 @@ function commandIntegrationAdd(
 ): string {
   const integrations = expandIntegrationSelection(integrationArg);
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
-  const mode = cavemanMode(options.mode);
   const output = [options.dryRun ? "Planned AIOS integration add:" : `Updated AIOS integrations in ${projectPath}`];
   const config = readProjectConfig(projectPath);
   const cavemanTargets = normalizeCavemanTargetAgents(config, options);
+  const ponytailTargets = normalizePonytailTargetAgents(config, options);
   const executedInstallers: IntegrationName[] = [];
 
   for (const integration of integrations) {
     const detection = detectIntegration(projectPath, integration);
-    const installer = installCommand(integration, cavemanTargets);
+    const targetAgents = integration === "ponytail" ? ponytailTargets : cavemanTargets;
+    const installer = installCommand(integration, targetAgents);
     output.push("", `${integration}:`, `- external: ${detection.detected ? "detected" : "not detected"} (${detection.detail})`);
 
     if (!options.dryRun) {
       ensureIntegrationRule(ctx, projectPath, integration);
       config.integrations[integration].enabled = true;
       if (integration === "caveman") {
-        config.integrations.caveman.mode = mode;
+        config.integrations.caveman.mode = cavemanMode(options.mode);
         config.integrations.caveman.targetAgents = cavemanTargets;
+      } else if (integration === "ponytail") {
+        config.integrations.ponytail.mode = ponytailMode(options.mode);
+        config.integrations.ponytail.targetAgents = ponytailTargets;
       }
     }
 
@@ -1314,9 +1386,9 @@ function commandIntegrationAdd(
 
     if (options.install && !detection.detected) {
       output.push(`- installer: ${installer.command}`, `- install note: ${installer.note}`);
-      if (integration === "caveman") {
-        output.push(`- target agents: ${cavemanTargets.join(", ")}`);
-        output.push("- install scope: targeted agents only; AIOS does not use Caveman all-agent auto-detection");
+      if (integration === "caveman" || integration === "ponytail") {
+        output.push(`- target agents: ${targetAgents.join(", ")}`);
+        output.push(`- install scope: targeted agents only; AIOS does not use ${integration === "caveman" ? "Caveman" : "Ponytail"} all-agent auto-detection`);
       }
       if (installer.runnable && options.yes && !options.dryRun) {
         try {
@@ -1379,7 +1451,7 @@ function commandIntegrationRemove(
       const uninstall = uninstallCommand(integration, projectPath);
       output.push(`- user uninstall: ${uninstall.command}`, `- uninstall note: ${uninstall.note}`);
       if (uninstall.runnable && options.yes && !options.dryRun) {
-        if (integration === "caveman" && uninstall.paths) {
+        if ((integration === "caveman" || integration === "ponytail") && uninstall.paths) {
           for (const target of uninstall.paths) {
             fs.rmSync(target, { recursive: true, force: true });
           }
@@ -1420,6 +1492,9 @@ function integrationIssues(projectPath: string): string[] {
 
   if (config.integrations.caveman.enabled && config.integrations.caveman.targetAgents.length === 0) {
     issues.push("caveman: enabled without targetAgents; repair will default to selectedAgents or codex");
+  }
+  if (config.integrations.ponytail.enabled && config.integrations.ponytail.targetAgents.length === 0) {
+    issues.push("ponytail: enabled without targetAgents; repair will default to selectedAgents or codex");
   }
 
   return issues;
@@ -1465,6 +1540,11 @@ function commandIntegrationRepair(ctx: CommandContext, projectPathArg: string | 
     config.integrations.caveman.targetAgents = normalizeCavemanTargetAgents(config, options);
     writeProjectConfig(projectPath, config);
     output.push(`- caveman: targetAgents set to ${config.integrations.caveman.targetAgents.join(", ")}`);
+  }
+  if (config.integrations.ponytail.enabled && config.integrations.ponytail.targetAgents.length === 0 && !options.dryRun) {
+    config.integrations.ponytail.targetAgents = normalizePonytailTargetAgents(config, options);
+    writeProjectConfig(projectPath, config);
+    output.push(`- ponytail: targetAgents set to ${config.integrations.ponytail.targetAgents.join(", ")}`);
   }
 
   return output.join("\n");
@@ -1889,8 +1969,23 @@ function integrationReviewMessage(selected: IntegrationName[], projectPath: stri
     const targets = normalizeCavemanTargetAgents(config, { ...parseArgs([]), agents: config.selectedAgents });
     lines.push(`Caveman target agents: ${formatList(targets)}.`);
   }
+  if (selected.includes("ponytail")) {
+    const config = readProjectConfig(projectPath);
+    const targets = normalizePonytailTargetAgents(config, { ...parseArgs([]), agents: config.selectedAgents });
+    lines.push(`Ponytail target agents: ${formatList(targets)}.`);
+  }
   if (selected.includes("rtk")) {
     lines.push("RTK may install a user-level command-line tool.");
+  }
+  // Add repo links for each integration
+  if (selected.includes("caveman")) {
+    lines.push(`Caveman repo: ${INTEGRATION_REPO.caveman}`);
+  }
+  if (selected.includes("ponytail")) {
+    lines.push(`Ponytail repo: ${INTEGRATION_REPO.ponytail}`);
+  }
+  if (selected.includes("rtk")) {
+    lines.push(`RTK repo: ${INTEGRATION_REPO.rtk}`);
   }
   lines.push(`Commands will run from: ${projectPath}`);
   return lines.join(" ");
@@ -1898,13 +1993,15 @@ function integrationReviewMessage(selected: IntegrationName[], projectPath: stri
 
 function hasRunnableInstallers(selected: IntegrationName[], projectPath: string): boolean {
   const config = readProjectConfig(projectPath);
-  const targets = normalizeCavemanTargetAgents(config, { ...parseArgs([]), agents: config.selectedAgents });
 
   return selected.some((integration) => {
     const detection = detectIntegration(projectPath, integration);
     if (detection.detected) {
       return false;
     }
+    const targets = integration === "ponytail"
+      ? normalizePonytailTargetAgents(config, { ...parseArgs([]), agents: config.selectedAgents })
+      : normalizeCavemanTargetAgents(config, { ...parseArgs([]), agents: config.selectedAgents });
     return installCommand(integration, targets).runnable;
   });
 }
@@ -2015,8 +2112,9 @@ async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: 
   const selected = await checkbox<IntegrationName>({
     message: "Set up optional external integrations now?",
     choices: [
-      { name: "RTK: compact noisy terminal output", value: "rtk" },
-      { name: "Caveman: concise status/debug responses", value: "caveman" }
+      { name: `RTK: compact noisy terminal output (${INTEGRATION_REPO.rtk})`, value: "rtk" },
+      { name: `Caveman: concise status/debug responses (${INTEGRATION_REPO.caveman})`, value: "caveman" },
+      { name: `Ponytail: minimal correct coding rules (${INTEGRATION_REPO.ponytail})`, value: "ponytail" }
     ],
     required: false
   });
@@ -2026,9 +2124,9 @@ async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: 
   }
 
   const integrationArg = selected.length === INTEGRATIONS.length ? "all" : selected.join(",");
-  const mode = selected.includes("caveman")
-    ? await select<CavemanMode>({
-        message: "Caveman response mode:",
+  const mode = selected.includes("caveman") || selected.includes("ponytail")
+    ? await select({
+        message: selected.includes("ponytail") && !selected.includes("caveman") ? "Ponytail mode:" : "Integration mode:",
         choices: [
           { name: "Lite", value: "lite" },
           { name: "Full", value: "full" },
@@ -2181,17 +2279,18 @@ async function interactiveIntegration(ctx: CommandContext): Promise<string> {
   const selected = await checkbox<IntegrationName>({
     message: action === "add" ? "Enable which integrations?" : "Remove which integrations?",
     choices: [
-      { name: "RTK", value: "rtk" },
-      { name: "Caveman", value: "caveman" }
+      { name: `RTK (${INTEGRATION_REPO.rtk})`, value: "rtk" },
+      { name: `Caveman (${INTEGRATION_REPO.caveman})`, value: "caveman" },
+      { name: `Ponytail (${INTEGRATION_REPO.ponytail})`, value: "ponytail" }
     ],
     required: true
   });
   const integrationArg = selected.length === INTEGRATIONS.length ? "all" : selected.join(",");
 
   if (action === "add") {
-    const mode = selected.includes("caveman")
-      ? await select<CavemanMode>({
-          message: "Caveman response mode:",
+    const mode = selected.includes("caveman") || selected.includes("ponytail")
+      ? await select({
+          message: selected.includes("ponytail") && !selected.includes("caveman") ? "Ponytail mode:" : "Integration mode:",
           choices: [
             { name: "Lite", value: "lite" },
             { name: "Full", value: "full" },
@@ -2315,7 +2414,7 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
   }
 }
 
-export { detectSubprojectWarning };
+export { detectSubprojectWarning, integrationReviewMessage };
 
 export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }): string {
   const parsed = parseArgs(argv);

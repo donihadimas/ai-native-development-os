@@ -21,7 +21,7 @@ In full mode:
 - Use `.aios/templates/` when creating documents.
 - Use `.aios/references/` for durable engineering guidance.
 - Use `.aios/workflows/` for end-to-end flow steps.
-- If integrations are enabled, use `.aios/integrations/rtk.md` and `.aios/integrations/caveman.md` according to their rules.
+- If integrations are enabled, use `.aios/integrations/rtk.md`, `.aios/integrations/caveman.md`, and `.aios/integrations/ponytail.md` according to their rules.
 
 ## Lite Mode
 
@@ -41,6 +41,7 @@ When `.aios/config.json` enables integrations:
 - Use RTK for noisy command output unless the user needs exact full output or the compact result is ambiguous.
 - Use Caveman-style brevity for operational updates and debug loops.
 - Do not use Caveman-style brevity for formal artifacts such as PRDs, ADRs, architecture, security reviews, migration plans, release notes, or reports that need trade-offs and evidence.
+- Use Ponytail minimal-correct-code guidance for implementation choices after reading the active task and affected code; do not simplify away acceptance criteria, validation, security, accessibility, or needed tests.
 
 ## Required Next Step
 
