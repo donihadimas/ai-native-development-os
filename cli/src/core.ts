@@ -108,6 +108,18 @@ export const DELIVERY_SKILLS = ["task-implementation", "testing", "code-review",
 
 export const AGENT_TARGETS: AgentTarget[] = ["codex", "qwen", "opencode", "antigravity", "generic"];
 export const PROJECT_SHAPES: ProjectShape[] = ["fullstack", "frontend", "backend", "mobile", "library", "docs"];
+export const INTEGRATION_REPO: Record<IntegrationName, string> = {
+  rtk: "https://github.com/rtk-ai/rtk",
+  caveman: "https://github.com/JuliusBrussee/caveman",
+  ponytail: "https://github.com/DietrichGebert/ponytail"
+};
+
+export const INTEGRATION_DESCRIPTION: Record<IntegrationName, string> = {
+  rtk: "compact noisy terminal output before it reaches AI context",
+  caveman: "concise agent response style for status/debug loops",
+  ponytail: "minimal-correct-code rules for coding tasks"
+};
+
 export const INTEGRATIONS: IntegrationName[] = ["rtk", "caveman", "ponytail"];
 export const CAVEMAN_MODES: CavemanMode[] = ["lite", "full", "ultra"];
 export const PONYTAIL_MODES: PonytailMode[] = ["lite", "full", "ultra"];

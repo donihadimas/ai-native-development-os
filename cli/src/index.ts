@@ -10,6 +10,8 @@ import {
   AIOS_KIT_ENTRIES,
   CAVEMAN_MODES,
   CORE_SKILLS,
+  INTEGRATION_DESCRIPTION,
+  INTEGRATION_REPO,
   INTEGRATIONS,
   PONYTAIL_MODES,
   PROJECT_SHAPES,
@@ -1318,9 +1320,9 @@ function integrationSummary(projectPath: string, integrations: IntegrationName[]
 function commandIntegrationList(): string {
   return [
     "Optional AIOS integrations:",
-    "- rtk: compact noisy terminal command output before it reaches AI context (optional external)",
-    "- caveman: concise agent response style for status/debug loops (optional external)",
-    "- ponytail: minimal-correct-code rules for coding tasks (optional external)"
+    "- rtk: " + INTEGRATION_DESCRIPTION.rtk + " repo: " + INTEGRATION_REPO.rtk,
+    "- caveman: " + INTEGRATION_DESCRIPTION.caveman + " repo: " + INTEGRATION_REPO.caveman,
+    "- ponytail: " + INTEGRATION_DESCRIPTION.ponytail + " repo: " + INTEGRATION_REPO.ponytail
   ].join("\n");
 }
 
@@ -1975,6 +1977,16 @@ function integrationReviewMessage(selected: IntegrationName[], projectPath: stri
   if (selected.includes("rtk")) {
     lines.push("RTK may install a user-level command-line tool.");
   }
+  // Add repo links for each integration
+  if (selected.includes("caveman")) {
+    lines.push(`Caveman repo: ${INTEGRATION_REPO.caveman}`);
+  }
+  if (selected.includes("ponytail")) {
+    lines.push(`Ponytail repo: ${INTEGRATION_REPO.ponytail}`);
+  }
+  if (selected.includes("rtk")) {
+    lines.push(`RTK repo: ${INTEGRATION_REPO.rtk}`);
+  }
   lines.push(`Commands will run from: ${projectPath}`);
   return lines.join(" ");
 }
@@ -2100,9 +2112,9 @@ async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: 
   const selected = await checkbox<IntegrationName>({
     message: "Set up optional external integrations now?",
     choices: [
-      { name: "RTK: compact noisy terminal output", value: "rtk" },
-      { name: "Caveman: concise status/debug responses", value: "caveman" },
-      { name: "Ponytail: minimal correct coding rules", value: "ponytail" }
+      { name: `RTK: compact noisy terminal output (${INTEGRATION_REPO.rtk})`, value: "rtk" },
+      { name: `Caveman: concise status/debug responses (${INTEGRATION_REPO.caveman})`, value: "caveman" },
+      { name: `Ponytail: minimal correct coding rules (${INTEGRATION_REPO.ponytail})`, value: "ponytail" }
     ],
     required: false
   });
@@ -2267,9 +2279,9 @@ async function interactiveIntegration(ctx: CommandContext): Promise<string> {
   const selected = await checkbox<IntegrationName>({
     message: action === "add" ? "Enable which integrations?" : "Remove which integrations?",
     choices: [
-      { name: "RTK", value: "rtk" },
-      { name: "Caveman", value: "caveman" },
-      { name: "Ponytail", value: "ponytail" }
+      { name: `RTK (${INTEGRATION_REPO.rtk})`, value: "rtk" },
+      { name: `Caveman (${INTEGRATION_REPO.caveman})`, value: "caveman" },
+      { name: `Ponytail (${INTEGRATION_REPO.ponytail})`, value: "ponytail" }
     ],
     required: true
   });
@@ -2402,7 +2414,7 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
   }
 }
 
-export { detectSubprojectWarning };
+export { detectSubprojectWarning, integrationReviewMessage };
 
 export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }): string {
   const parsed = parseArgs(argv);

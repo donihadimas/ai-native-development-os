@@ -5,8 +5,8 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import packageJson from "../package.json" with { type: "json" };
-import { run, detectSubprojectWarning } from "../src/index.js";
-import type { RuntimePaths } from "../src/core.js";
+import { run, detectSubprojectWarning, integrationReviewMessage } from "../src/index.js";
+import type { IntegrationName, RuntimePaths } from "../src/core.js";
 
 const osRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const runtimePaths: RuntimePaths = {
@@ -305,9 +305,9 @@ test("integration list and status expose optional external integrations", () => 
   run(["init", "demo-project"], { runtimePaths, cwd });
 
   const listOutput = run(["integration", "list"], { runtimePaths, cwd });
-  assert.match(listOutput, /rtk: compact noisy terminal command output/);
-  assert.match(listOutput, /caveman: concise agent response style/);
-  assert.match(listOutput, /ponytail: minimal-correct-code rules/);
+  assert.match(listOutput, /rtk: compact noisy terminal output before it reaches AI context repo: https:\/\/github\.com\/rtk-ai\/rtk/);
+  assert.match(listOutput, /caveman: concise agent response style for status\/debug loops repo: https:\/\/github\.com\/JuliusBrussee\/caveman/);
+  assert.match(listOutput, /ponytail: minimal-correct-code rules for coding tasks repo: https:\/\/github\.com\/DietrichGebert\/ponytail/);
 
   const statusOutput = run(["integration", "status", "demo-project"], { runtimePaths, cwd });
   assert.match(statusOutput, /AIOS integration status/);
@@ -315,6 +315,18 @@ test("integration list and status expose optional external integrations", () => 
   assert.match(statusOutput, /caveman:/);
   assert.match(statusOutput, /ponytail:/);
   assert.match(statusOutput, /state: disabled/);
+});
+
+test("integration review message shows repo links for all supported integrations", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  // Test that review message includes repo links for all integrations
+  const reviewMessage = integrationReviewMessage(["rtk", "caveman", "ponytail"], project);
+  assert.match(reviewMessage, /Caveman repo: https:\/\/github\.com\/JuliusBrussee\/caveman/);
+  assert.match(reviewMessage, /Ponytail repo: https:\/\/github\.com\/DietrichGebert\/ponytail/);
+  assert.match(reviewMessage, /RTK repo: https:\/\/github\.com\/rtk-ai\/rtk/);
 });
 
 test("integration add supports dry-run, RTK rules, Caveman/Ponytail modes, and all selection", () => {
