@@ -1,6 +1,6 @@
 {
   "name": "@donihadimas/aios",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Small CLI for AI-Native Development OS.",
   "type": "module",
   "license": "Apache-2.0",
