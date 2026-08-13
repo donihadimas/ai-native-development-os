@@ -23,3 +23,9 @@ High-risk behavior should have tests or documented checks for failure modes, per
 ## Report Evidence
 
 Done summaries must include what tests were run and what was not run.
+
+## Comprehensive Coverage Rules
+
+- **Feature Completeness**: Every feature should have Unit Tests, Integration Tests, and Edge Case Tests.
+- **Testing Priorities**: Test behavior, not implementation details.
+- **Strict Coverage**: Do not consider a feature "Done" if the core business logic (utilities, reducers, custom hooks, domain layers) lacks unit tests. Ensure edge cases and error paths are covered, not just the happy path.

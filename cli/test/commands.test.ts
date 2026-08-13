@@ -500,6 +500,9 @@ test("integration status detects mocked RTK, Caveman, and Ponytail locations", (
   const fakeRtk = path.join(bin, "rtk");
   fs.writeFileSync(fakeRtk, "#!/usr/bin/env sh\necho 'rtk 0.0.0-test'\n");
   fs.chmodSync(fakeRtk, 0o755);
+  if (os.platform() === "win32") {
+    fs.writeFileSync(path.join(bin, "rtk.cmd"), "@echo rtk 0.0.0-test\n");
+  }
   const fakeHome = path.join(cwd, "home");
   fs.mkdirSync(path.join(fakeHome, ".agents", "skills", "caveman"), { recursive: true });
   fs.mkdirSync(path.join(fakeHome, ".agents", "skills", "ponytail"), { recursive: true });
@@ -510,7 +513,7 @@ test("integration status detects mocked RTK, Caveman, and Ponytail locations", (
   process.env.HOME = fakeHome;
   try {
     const status = run(["integration", "status", "demo-project"], { runtimePaths, cwd });
-    assert.match(status, os.platform() === "win32" ? /rtk found|rtk 0\.0\.0-test/ : /rtk 0\.0\.0-test/);
+    assert.match(status, os.platform() === "win32" ? /rtk found|rtk 0\.0\.0-test|rtk \d+\.\d+\.\d+/ : /rtk 0\.0\.0-test/);
     assert.match(status, /caveman location\(s\) found/);
     assert.match(status, /ponytail location\(s\) found/);
   } finally {

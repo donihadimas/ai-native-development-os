@@ -15,3 +15,17 @@ Before finishing:
 - update docs if behavior, API, or decisions changed,
 - update the active task status or Done Summary when acceptance criteria are satisfied,
 - summarize files changed, tests run, acceptance criteria status, risks, and next step.
+
+## Git Rules
+- Make small, atomic commits.
+- Write meaningful commit messages following Conventional Commits format.
+
+## Definition of Done (DoD)
+Do not consider a task done until:
+- Requirements and acceptance criteria are fully met.
+- Architecture remains consistent.
+- Code compiles, linters pass, and type checking succeeds.
+- All tests pass (including newly added edge case tests).
+- No new security warnings exist.
+- No changes outside the task scope were made.
+- Code is ready for review.

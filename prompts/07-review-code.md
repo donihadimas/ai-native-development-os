@@ -15,4 +15,18 @@ Before writing the review, apply the `code-review` Clarification Gate. If the di
 
 Findings must come first, ordered by severity. Approve only when acceptance criteria and testing expectations are satisfied.
 
+## Self-Review Checklist
+Before finalizing the review, explicitly verify:
+- Does the code follow the project architecture?
+- Is there any duplication?
+- Are there potential bugs or unhandled edge cases?
+- Is naming clear and intent-revealing?
+- Are functions too large?
+- Are there security risks (e.g. lack of sanitization, SSR data leakage)?
+- Are there potential performance bottlenecks (e.g. N+1 queries, unnecessary re-renders)?
+- Is the code easy to test?
+- Are there unnecessary dependencies?
+- Is the change backward compatible?
+- Does documentation need to be updated?
+
 End with the next step: fix blocking findings and re-review, or update the task done summary and proceed to release planning when approved.

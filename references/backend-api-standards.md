@@ -31,3 +31,14 @@ Important API behavior should include logging, observability hooks, idempotency 
 ## Test Expectations
 
 API changes should include tests or documented checks for happy path, validation failures, authorization failures, not-found behavior, and contract compatibility when relevant.
+
+## REST & GraphQL Rules
+
+- **REST**: Maintain consistent endpoints and use proper HTTP status codes. Version APIs, validate all requests, and enforce standard error formats across all endpoints.
+- **GraphQL**: Prevent N+1 queries. Limit query depth and validate query complexity to avoid performance degradation or DoS.
+
+## Dependency Rules
+
+- Avoid abandoned packages. Keep dependencies updated regularly.
+- Remove unused packages. Prefer stable, battle-tested libraries over new trending ones.
+- Minimize dependency count to reduce security surface and maintenance burden.

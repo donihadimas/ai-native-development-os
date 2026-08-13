@@ -8,6 +8,26 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.6.0
+
+Minor release focused on embedding 21 Comprehensive Enterprise Rules into the core AIOS templates for strictly-typed, scalable, and secure AI generation.
+
+### Added
+
+- Added strict Layer Separation and SOLID compliance rules to `engineering-principles.md`.
+- Added Framework-Agnostic UI rules, React Performance constraints, and A11y rules to `frontend-principles.md`.
+- Added explicit Language rules (TypeScript strict, Go context propagation, Kotlin sealed interfaces) and observability standards to `backend-principles.md`.
+- Added REST, GraphQL query depth constraints, and Dependency rules to `backend-api-standards.md`.
+- Added Indexing, Pagination, and Schema migration constraints to `database-standards.md`.
+- Added OWASP Top 10 constraints, SSR Data Leakage prevention, and XSS sanitization rules to `security-principles.md`.
+- Added strict Feature Completeness coverage requirements to `testing-principles.md`.
+- Added Definition of Done (DoD) and Conventional Commit rules to `06-implement-task.md`.
+- Added an 11-point Self-Review Checklist to `07-review-code.md` to prevent N+1 queries, bugs, and duplication.
+
+### Fixed
+
+- Fixed a flaky integration status test resolving `rtk.exe` on Windows environments instead of the test mock.
+
 ## 0.5.0
 
 Minor release focused on optional integration coverage and clearer external-tool review guidance.
