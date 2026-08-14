@@ -861,3 +861,5 @@ export function acceptKitAssets(
 
 export * from "./verify.js";
 export * from "./tasks.js";
+export * from "./worktree.js";
+export * from "./boundaries.js";

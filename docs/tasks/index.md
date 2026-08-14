@@ -26,8 +26,8 @@ Use this index before opening task files. Open task bodies only after selecting 
 
 | Task | Status | Path | Notes |
 | --- | --- | --- | --- |
-| TASK-047 | Planned | `docs/tasks/TASK-047-implement-git-worktree-task-isolation.md` | Add Git worktree isolation (`.aios/worktrees/task-XXX`). |
-| TASK-048 | Planned | `docs/tasks/TASK-048-implement-bounded-execution-and-auto-rollback.md` | Enforce retry bounds and automatic failure rollback. |
+| TASK-047 | Done | `docs/tasks/TASK-047-implement-git-worktree-task-isolation.md` | Added Git worktree task isolation (`aios worktree`). |
+| TASK-048 | Done | `docs/tasks/TASK-048-implement-bounded-execution-and-auto-rollback.md` | Enforced retry bounds, circuit breakers, and auto-rollback (`aios rollback`). |
 
 ### Phase 3 & 4: Dynamic Indexing, Adapters & Telemetry (P3 - Long Term)
 

@@ -46,7 +46,12 @@ import {
   runVerification,
   loadAllTasks,
   resolveTaskGraph,
-  formatTaskGraph
+  formatTaskGraph,
+  startWorktree,
+  finishWorktree,
+  listWorktrees,
+  removeWorktree,
+  rollbackTaskChanges
 } from "./core.js";
 
 interface CommandContext {
@@ -211,7 +216,22 @@ Advanced commands:
     safe config defaults. Non-destructive: skips existing local files.
     Use --dry-run to preview changes without writing.
     Use --accept to apply review-needed .aios/ asset changes.
-    Use --accept <section> to accept only a specific section (commands, integrations, skills, prompts, references, templates, workflows).
+    Use --accept <section> to accept only a specific section (integrations, skills, references, templates, workflows).
+
+  aios worktree start <task-id> [project-path] [--base <branch>]
+    Create an isolated git worktree branch (.aios/worktrees/task-xxx) for executing a task.
+
+  aios worktree finish <task-id> [project-path] [--message <commit-msg>]
+    Verify, commit, and prune the isolated task worktree.
+
+  aios worktree list [project-path]
+    List active AIOS git worktrees.
+
+  aios worktree remove <task-id> [project-path]
+    Remove and prune a task worktree.
+
+  aios rollback [project-path] [--hard] [--task <task-id>]
+    Roll back or stash uncommitted changes when failure threshold is reached.
 
 Document commands:
   aios create feature <feature-name>
@@ -336,6 +356,9 @@ interface ParsedArgs {
   acceptSection?: string;
   task?: string;
   testCommand?: string;
+  base?: string;
+  message?: string;
+  hard: boolean;
 }
 
 function requireName(value: string | undefined, command: string): string {
@@ -358,7 +381,7 @@ function parseCsv<T extends string>(value: string | undefined): T[] | undefined 
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
-  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope", "--shape", "--mode", "--task", "--test-command"]);
+  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope", "--shape", "--mode", "--task", "--test-command", "--base", "--message"]);
   const commandFlags = new Set(["--version", "--help"]);
   const args: string[] = [];
 
@@ -408,7 +431,10 @@ function parseArgs(argv: string[]): ParsedArgs {
     accept,
     acceptSection,
     task: readFlagValue(argv, "--task"),
-    testCommand: readFlagValue(argv, "--test-command")
+    testCommand: readFlagValue(argv, "--test-command"),
+    base: readFlagValue(argv, "--base"),
+    message: readFlagValue(argv, "--message"),
+    hard: argv.includes("--hard")
   };
 }
 
@@ -2453,6 +2479,68 @@ function commandTasks(ctx: CommandContext, projectPathArg: string | undefined): 
   return formatTaskGraph(graph);
 }
 
+function commandWorktree(
+  ctx: CommandContext,
+  subAction: string | undefined,
+  taskIdArg: string | undefined,
+  projectPathArg: string | undefined,
+  parsed: ParsedArgs
+): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+
+  switch (subAction) {
+    case "start": {
+      const taskId = requireName(taskIdArg, "worktree start <task-id>");
+      const res = startWorktree({
+        projectPath,
+        taskId,
+        baseBranch: parsed.base
+      });
+      return `${res.message}\nPath: ${res.worktreePath}\nBranch: ${res.branch}`;
+    }
+    case "finish": {
+      const taskId = requireName(taskIdArg, "worktree finish <task-id>");
+      const res = finishWorktree({
+        projectPath,
+        taskId,
+        commitMessage: parsed.message
+      });
+      if (!res.ok) {
+        if (isDirectRun()) {
+          process.exitCode = 1;
+        }
+        return `Worktree finish failed: ${res.message}\n\n${res.verification?.summary ?? ""}`;
+      }
+      return res.message;
+    }
+    case "list": {
+      const worktrees = listWorktrees(projectPath);
+      if (worktrees.length === 0) {
+        return "No active git worktrees found.";
+      }
+      const lines = ["Active AIOS Git Worktrees:", ""];
+      for (const wt of worktrees) {
+        lines.push(`- ${wt.branch} (${wt.head.slice(0, 7)}): ${wt.worktreePath}`);
+      }
+      return lines.join("\n");
+    }
+    case "remove": {
+      const taskId = requireName(taskIdArg, "worktree remove <task-id>");
+      const removed = removeWorktree(projectPath, taskId);
+      return removed ? `Removed worktree for ${taskId}` : `Failed to remove worktree for ${taskId}`;
+    }
+    default:
+      throw new Error(`Unknown worktree sub-command: ${subAction}. Available: start, finish, list, remove`);
+  }
+}
+
+function commandRollback(ctx: CommandContext, projectPathArg: string | undefined, parsed: ParsedArgs): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const mode = parsed.hard ? "hard" : "stash";
+  const res = rollbackTaskChanges(projectPath, mode, parsed.task ?? "active-task");
+  return res.message;
+}
+
 export { detectSubprojectWarning, integrationReviewMessage };
 
 export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }): string {
@@ -2493,6 +2581,10 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return commandVerify(ctx, name, parsed);
     case "tasks":
       return commandTasks(ctx, name);
+    case "worktree":
+      return commandWorktree(ctx, name, secondName, thirdName, parsed);
+    case "rollback":
+      return commandRollback(ctx, name, parsed);
     case "repair":
       return commandRepair(ctx, name);
     case "update":

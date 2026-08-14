@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -16,12 +16,13 @@ Without bounded execution constraints, an agent encountering failing tests can l
 
 ### In Scope
 
-- Configure execution boundary rules in `.aios/config.json`:
-  - `max_iterations_per_task: 5`
-  - `max_consecutive_test_failures: 3`
-  - `max_files_changed_per_task: 8`
-- Implement tracking and enforcement in the CLI task loop.
-- Automatically trigger git stash or reset when failure thresholds are breached, returning actionable diagnostic output.
+- Configure execution boundary rules:
+  - `maxIterationsPerTask: 5`
+  - `maxConsecutiveTestFailures: 3`
+  - `maxFilesChangedPerTask: 8`
+  - `autoRollbackOnFailure: true`
+- Implement circuit breaker boundary checker (`checkExecutionBoundaries`) in `cli/src/boundaries.ts`.
+- Implement `aios rollback` command to stash or reset uncommitted changes when thresholds are tripped.
 
 ### Out of Scope
 
@@ -29,8 +30,7 @@ Without bounded execution constraints, an agent encountering failing tests can l
 
 ## Affected Areas
 
-- CLI: `cli/src/runner.ts`, `cli/src/index.ts`
-- Configuration: `.aios/config.json` schema
+- CLI: `cli/src/boundaries.ts`, `cli/src/core.ts`, `cli/src/index.ts`
 
 ## Dependencies
 
@@ -40,17 +40,17 @@ Without bounded execution constraints, an agent encountering failing tests can l
 
 ## Acceptance Criteria
 
-- [ ] Task execution halts with a clear error report when exceeding maximum iterations or test failures.
-- [ ] Code changes are automatically stashed/rolled back on failure if `auto_rollback_on_failure` is enabled.
-- [ ] CLI unit/integration tests verify threshold tripping and rollback behavior.
+- [x] Task execution halts with a clear error report when exceeding maximum iterations or test failures.
+- [x] Code changes can be automatically stashed/rolled back via `rollbackTaskChanges` and `aios rollback`.
+- [x] CLI unit/integration tests verify threshold tripping and rollback behavior.
 
 ## Testing Expectations
 
-- Unit tests: Mock failing agent loops and assert that the process halts and rolls back cleanly after 3 test failures.
+- Unit tests: Mock failing agent loops and assert that the process halts and rolls back cleanly in `cli/test/worktree.test.ts`.
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `cli/src/boundaries.ts`, `cli/src/core.ts`, `cli/src/index.ts`, `cli/test/worktree.test.ts`.
+- Tests run: `npm test` in `cli/` (94 passing tests).
+- Acceptance criteria status: All criteria satisfied.
+- Risks: None.
