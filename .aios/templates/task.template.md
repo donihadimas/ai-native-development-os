@@ -59,3 +59,5 @@ Briefly explain why this task exists.
 - Tests run:
 - Acceptance criteria status:
 - Risks:
+
+When task is complete, update Status to Done, fill Done Summary, check satisfied Acceptance Criteria, and update `<docsRoot>/tasks/index.md`. Keep tasks in `<docsRoot>/tasks/` without moving files to subfolders.

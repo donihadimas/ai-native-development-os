@@ -300,7 +300,7 @@ Next step after generating docs:
 `;
 }
 
-const ACCEPT_SECTIONS = ["commands", "integrations", "skills", "prompts", "references", "templates", "workflows"];
+const ACCEPT_SECTIONS = ["integrations", "skills", "references", "templates", "workflows"];
 
 interface ParsedArgs {
   args: string[];
@@ -886,36 +886,39 @@ function agentSkillRootForUpdate(projectPath: string, agent: AgentTarget, config
 
 function commandDirectory(ctx: CommandContext, projectPathArg: string | undefined): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
-  const projectCommands = path.join(projectPath, ".aios", "commands");
-  if (fs.existsSync(projectCommands)) {
-    return projectCommands;
+  const projectWorkflows = path.join(projectPath, ".aios", "workflows");
+  if (fs.existsSync(projectWorkflows)) {
+    return projectWorkflows;
   }
-  return path.join(ctx.runtimePaths.aiosKitSource, "commands");
+  return path.join(ctx.runtimePaths.aiosKitSource, "workflows");
 }
 
 function commandList(ctx: CommandContext, projectPathArg: string | undefined): string {
   const directory = commandDirectory(ctx, projectPathArg);
   if (!fs.existsSync(directory)) {
-    throw new Error(`AIOS commands directory not found: ${directory}`);
+    throw new Error(`AIOS workflows directory not found: ${directory}`);
   }
 
   const commands = fs
     .readdirSync(directory)
     .filter((file) => file.endsWith(".md"))
-    .map((file) => path.basename(file, ".md"))
+    .map((file) => path.basename(file, ".workflow.md").replace(/\.md$/, ""))
     .sort();
 
-  return ["Available AIOS commands:", ...commands.map((command) => `- ${command}`)].join("\n");
+  return ["Available AIOS workflows:", ...commands.map((command) => `- ${command}`)].join("\n");
 }
 
 function commandPrompt(ctx: CommandContext, name: string | undefined, projectPathArg: string | undefined): string {
   const commandName = requireName(name, "prompt show");
   const slug = slugify(commandName);
   const directory = commandDirectory(ctx, projectPathArg);
-  const commandPath = path.join(directory, `${slug}.md`);
+  let commandPath = path.join(directory, `${slug}.workflow.md`);
+  if (!fs.existsSync(commandPath)) {
+    commandPath = path.join(directory, `${slug}.md`);
+  }
 
   if (!fs.existsSync(commandPath)) {
-    throw new Error(`Unknown AIOS command: ${commandName}`);
+    throw new Error(`Unknown AIOS workflow: ${commandName}`);
   }
 
   return fs.readFileSync(commandPath, "utf8").trimEnd();
@@ -1860,8 +1863,8 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
     return [
       `Next recommended step for ${projectPath}:`,
       `Use product discovery to interview the user and fill \`${visionRelative}\` with the problem, users, MVP scope, success metrics, assumptions, and constraints.`,
-      "Ask Codex to read `AGENTS.md` and `.aios/prompts/00-discover-product.md`.",
-      "After the user reviews the vision, generate the PRD with `.aios/prompts/01-generate-prd.md`."
+      "Ask Codex to read `AGENTS.md` and use the `spec` skill (`.aios/skills/spec/SKILL.md`).",
+      "After the user reviews the vision, generate the PRD with the `spec` skill."
     ].join("\n");
   }
 
@@ -1869,7 +1872,7 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
     return [
       `Next recommended step for ${projectPath}:`,
       `Generate \`${prdRelative}\` from \`${visionRelative}\`.`,
-      "Ask Codex to use `.aios/prompts/01-generate-prd.md` and `.aios/templates/prd.template.md`."
+      "Ask Codex to use the `spec` skill and `.aios/templates/prd.template.md`."
     ].join("\n");
   }
 
@@ -1877,7 +1880,7 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
     return [
       `Next recommended step for ${projectPath}:`,
       `Generate \`${architectureRelative}\` from the PRD.`,
-      "Ask Codex to use `.aios/prompts/02-generate-architecture.md` and `.aios/templates/architecture.template.md`."
+      "Ask Codex to use the `arch` skill and `.aios/templates/architecture.template.md`."
     ].join("\n");
   }
 
@@ -1885,8 +1888,8 @@ function commandNext(ctx: CommandContext, projectPathArg: string | undefined): s
     return [
       `Next recommended step for ${projectPath}:`,
       `If the work has user-facing UI or product-facing interactions, create or update \`${designRelative}\` first.`,
-      "Use `aios create design \"Feature name\"` or ask Codex to use `.aios/prompts/13-design-ui-ux.md`.",
-      `When the design is reviewed, create the first implementation task in \`${tasksRelative}/\` with \`aios create task "Task name"\` or \`.aios/prompts/04-generate-tasks.md\`.`
+      "Use `aios create design \"Feature name\"` or ask Codex to use the `ui-ux-design` skill.",
+      `When the design is reviewed, create the first implementation task in \`${tasksRelative}/\` with \`aios create task "Task name"\` or the \`task\` skill.`
     ].join("\n");
   }
 

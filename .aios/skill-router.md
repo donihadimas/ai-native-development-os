@@ -1,52 +1,26 @@
 # AIOS Skill Router
 
-Use this router before choosing a workflow. Match the user request to the smallest relevant skill, prompt, reference, and workflow. Do not load every skill by default.
+Use this router to match user intent directly to the appropriate lifecycle skill and workflow. Do not preload unneeded skills or references.
 
-## Setup Resolution
+## 4 Core Lifecycle Skills
 
-1. Read `.aios/config.json` when it exists.
-2. Resolve `docsRoot` from config; use `docs` only when config is missing.
-3. Resolve `projectShape` before choosing code folders:
-   - `fullstack`: `frontend/` and `backend/`
-   - `frontend`: `frontend/`
-   - `backend`: `backend/`
-   - `mobile`: `mobile/`
-   - `library`: `src/`
-   - `docs`: project docs only
-4. Resolve skill access from `skillDelivery`:
-   - `native`: invoke the matching native agent skill by name.
-   - `portable`: read `.aios/skills/<skill-name>/SKILL.md`.
-   - `both`: prefer native skill invocation and use `.aios/skills/<skill-name>/SKILL.md` as readable fallback.
-5. Resolve optional integrations from `integrations`:
-   - `rtk.enabled`: read `.aios/integrations/rtk.md` before noisy terminal commands.
-   - `caveman.enabled`: read `.aios/integrations/caveman.md` before status/debug-loop responses.
-   - `ponytail.enabled`: read `.aios/integrations/ponytail.md` before implementation, refactor, bugfix, or code-review work.
+| Intent / Phase | Core Skill | Primary Responsibilities | Artifacts |
+| --- | --- | --- | --- |
+| **Discovery & Requirements** | `spec` | Product discovery, user problems, MVP scope, PRDs, feature specs. | `docs/product/vision.md`, `docs/product/prd.md` |
+| **Architecture & Decisions** | `arch` | System architecture, component boundaries, data models, ADRs. | `docs/architecture/architecture.md`, `docs/adr/ADR-XXX.md` |
+| **Breakdown & Implementation** | `task` | Task breakdown, implementation plans, minimal-correct code edits. | `docs/tasks/TASK-XXX.md`, `docs/plans/TASK-XXX-plan.md` |
+| **Testing & Verification** | `verify` | Automated test runs, diff inspection, code review, security checks. | Test suites, acceptance criteria checks, `docs/reviews/` |
 
-## Routing Rules
+## Domain-Optional Skills
 
-- Product idea, product vision, user interview, user/problem clarification: `product-discovery`.
-- Generate or improve PRD: `prd-generator`.
-- Generate architecture: `architecture-design`.
-- Design user flows, screens, UI states, or product-facing interactions before frontend work: `ui-ux-design`.
-- Create or update ADR: `adr-generator`.
-- Break down feature or PRD into tasks: `task-breakdown`.
-- Plan implementation before coding: `implementation-planner`.
-- Implement an active task: `implementation-planner` first when no usable plan exists, then `task-implementation`.
-- Generate or evaluate tests: `testing`.
-- Review code or diff: `code-review`.
-- Design or update API contract: `api-contract-design`.
-- Implement or review backend API behavior: `backend-api-development`.
-- Plan database schema, data, index, seed, or rollback changes: `database-migration`.
-- Review authentication, authorization, validation, secrets, payments, or other security-sensitive work: `security-review`.
-- Prepare release notes, changelog, rollback, or post-release checks: `release-management`.
+- **`api-contract-design`**: OpenAPI / REST contract design before frontend/backend integration.
+- **`database-migration`**: Schema migrations, indexes, and rollback strategies.
+- **`ui-ux-design`**: Wireframes, component states, and accessibility design.
+- **`release-management`**: Release notes and changelog preparation.
 
-## Rules
+## Direct Routing Rules
 
-- Prefer the active task and `<docsRoot>/context/context-map.md` before broader documents.
-- Use only the matched skill and directly relevant references.
-- If more than one skill matches, start with the planning or contract skill before implementation.
-- For generator skills, apply the skill's Clarification Gate before writing final files.
-- Use `.aios/references/context-budget.md` when command output, logs, or diffs could dominate context.
-- Use `.aios/references/response-style.md` when concise communication is helpful, but keep formal artifacts complete.
-- Record uncertainty as open questions instead of guessing important product, architecture, security, or dependency decisions.
-- Do not treat this router as permission to modify files without an implementation plan.
+1. **New Feature**: Route `spec` -> `arch` (if new architecture) -> `task` (breakdown & code) -> `verify`.
+2. **Bugfix / Refactor**: Route `task` (plan & fix) -> `verify` (test suite & regression check).
+3. **Architecture Decision**: Route `arch` -> `task` -> `verify`.
+4. **Pre-commit Verification**: Run test suite via `verify` before completing tasks.

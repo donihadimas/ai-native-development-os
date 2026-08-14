@@ -6,14 +6,15 @@ Use this index before opening implementation plan files. Open plan bodies only a
 
 | Plan | Status | Path | Notes |
 | --- | --- | --- | --- |
-| None | - | - | No active implementation plan is currently indexed. |
+| None | - | - | Phase 0 completed. Phase 1 ready for planning. |
 
 ## Completed Archive
 
-Completed implementation plans live under `docs/plans/done/`. Read a completed plan only for release traceability, audit, completed-task review, or explicit continuation.
+Completed implementation plans live directly under `docs/plans/` (or historical `docs/plans/done/`).
 
 | Plan | Status | Path |
 | --- | --- | --- |
+| TASK-039 - TASK-042 | Done | `docs/plans/TASK-039-042-phase-0-implementation-plan.md` |
 | TASK-001 | Done | `docs/plans/done/TASK-001-adopt-subproject-safety-warning-plan.md` |
 | TASK-002 | Done | `docs/plans/done/TASK-002-optional-docs-next-guidance-plan.md` |
 | TASK-003 | Done | `docs/plans/done/TASK-003-full-lite-workflow-sections-plan.md` |
@@ -32,5 +33,4 @@ Completed implementation plans live under `docs/plans/done/`. Read a completed p
 
 - Prefer this index before listing or opening plan files.
 - Active plan discovery should use direct files under `docs/plans/`.
-- Do not search `docs/plans/done/` unless completed history or release traceability is explicitly needed.
 - Update this index when creating, completing, blocking, or archiving plans.

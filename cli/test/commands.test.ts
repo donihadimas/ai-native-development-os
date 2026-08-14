@@ -70,11 +70,10 @@ test("init copies the project skeleton", () => {
   assert.match(output, /Created AI-ready project/);
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skill-router.md")));
-  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")));
-  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "generate-prd.md")));
-  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
-  assert.ok(fs.existsSync(path.join(project, ".aios", "prompts", "00-discover-product.md")));
-  assert.ok(fs.existsSync(path.join(project, ".aios", "prompts", "01-generate-prd.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "spec", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "arch", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "task", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "verify", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "development-start.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
@@ -154,7 +153,7 @@ test("adopt adds missing AI Dev OS files without overwriting existing files", ()
   assert.match(fs.readFileSync(path.join(project, "AGENTS.md"), "utf8"), /# Existing Agent Rules/);
   assert.match(fs.readFileSync(path.join(project, "CLAUDE.md"), "utf8"), /^<!-- AIOS:BEGIN -->/);
   assert.match(fs.readFileSync(path.join(project, "CLAUDE.md"), "utf8"), /# Existing Claude Rules/);
-  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "spec", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
   assert.ok(fs.existsSync(path.join(project, "docs", "reviews")));
@@ -196,17 +195,16 @@ test("kit install adds missing local workflow assets without overwriting existin
   const cwd = tempCwd();
   run(["init", "demo-project", "--lite"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
-  const customPrompt = path.join(project, ".aios", "prompts", "01-generate-prd.md");
-  fs.mkdirSync(path.dirname(customPrompt), { recursive: true });
-  fs.writeFileSync(customPrompt, "# Custom prompt\n");
+  const customWorkflow = path.join(project, ".aios", "workflows", "custom.workflow.md");
+  fs.mkdirSync(path.dirname(customWorkflow), { recursive: true });
+  fs.writeFileSync(customWorkflow, "# Custom workflow\n");
 
   const output = run(["kit", "install"], { runtimePaths, cwd: project });
 
   assert.match(output, /Installed AIOS workflow kit/);
-  assert.equal(fs.readFileSync(customPrompt, "utf8"), "# Custom prompt\n");
+  assert.equal(fs.readFileSync(customWorkflow, "utf8"), "# Custom workflow\n");
   assert.ok(fs.existsSync(path.join(project, ".aios", "skill-router.md")));
-  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "review-code.md")));
-  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "spec", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "workflows", "review.workflow.md")));
 });
 
@@ -245,9 +243,9 @@ test("native skill delivery installs agent skills without portable .aios skills"
   const project = path.join(cwd, "native-project");
 
   assert.equal(fs.existsSync(path.join(project, ".aios", "skills")), false);
-  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "context-management", "SKILL.md")));
-  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "context-management", "agents", "openai.yaml")));
-  assert.ok(fs.existsSync(path.join(project, ".qwen", "skills", "implementation-planner", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "spec", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "spec", "agents", "openai.yaml")));
+  assert.ok(fs.existsSync(path.join(project, ".qwen", "skills", "arch", "SKILL.md")));
   assert.match(run(["validate"], { runtimePaths, cwd: project }), /AI-ready structure validated/);
 
   const config = JSON.parse(run(["config"], { runtimePaths, cwd: project })) as { skillDelivery: string; selectedAgents: string[] };
@@ -260,22 +258,22 @@ test("agent install supports dry-run, selected agents, selected skills, and skip
   run(["init", "agent-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "agent-project");
 
-  const dryRun = run(["agent", "install", "agent-project", "--agents", "opencode,antigravity", "--skills", "testing", "--dry-run"], {
+  const dryRun = run(["agent", "install", "agent-project", "--agents", "opencode,antigravity", "--skills", "verify", "--dry-run"], {
     runtimePaths,
     cwd
   });
   assert.match(dryRun, /Planned native agent skill install/);
-  assert.equal(fs.existsSync(path.join(project, ".opencode", "skills", "testing", "SKILL.md")), false);
+  assert.equal(fs.existsSync(path.join(project, ".opencode", "skills", "verify", "SKILL.md")), false);
 
-  const output = run(["agent", "install", "agent-project", "--agents", "opencode,antigravity", "--skills", "testing"], {
+  const output = run(["agent", "install", "agent-project", "--agents", "opencode,antigravity", "--skills", "verify"], {
     runtimePaths,
     cwd
   });
   assert.match(output, /Created: 2/);
-  assert.ok(fs.existsSync(path.join(project, ".opencode", "skills", "testing", "SKILL.md")));
-  assert.ok(fs.existsSync(path.join(project, ".agent", "skills", "testing", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".opencode", "skills", "verify", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agent", "skills", "verify", "SKILL.md")));
 
-  const skipped = run(["agent", "install", "agent-project", "--agents", "opencode", "--skills", "testing"], { runtimePaths, cwd });
+  const skipped = run(["agent", "install", "agent-project", "--agents", "opencode", "--skills", "verify"], { runtimePaths, cwd });
   assert.match(skipped, /Skipped existing: 1/);
 });
 
@@ -285,19 +283,12 @@ test("prompt list and prompt show expose local workflow command prompts", () => 
   const project = path.join(cwd, "demo-project");
 
   const listOutput = run(["prompt", "list"], { runtimePaths, cwd: project });
-  assert.match(listOutput, /discover-product/);
-  assert.match(listOutput, /generate-prd/);
-  assert.match(listOutput, /implement-task/);
-  assert.match(listOutput, /review-code/);
+  assert.match(listOutput, /new-feature/);
+  assert.match(listOutput, /review/);
+  assert.match(listOutput, /bugfix/);
 
-  const commandOutput = run(["prompt", "show", "generate-prd"], { runtimePaths, cwd: project });
-  assert.match(commandOutput, /Command: Generate PRD/);
-  assert.match(commandOutput, /\.aios\/skill-router\.md/);
-  assert.match(commandOutput, /prd-generator/);
-
-  const discoveryOutput = run(["prompt", "show", "discover-product"], { runtimePaths, cwd: project });
-  assert.match(discoveryOutput, /Command: Discover Product Vision/);
-  assert.match(discoveryOutput, /product-discovery/);
+  const commandOutput = run(["prompt", "show", "new-feature"], { runtimePaths, cwd: project });
+  assert.match(commandOutput, /New Feature Workflow/i);
 });
 
 test("integration list and status expose optional external integrations", () => {
@@ -561,7 +552,7 @@ test("starter creates an AI docs only stack starter and refuses overwrite", () =
 
   assert.match(output, /Created AI-ready flutter-mobile starter/);
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
-  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "context-management", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "spec", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "mobile")));
   assert.throws(
@@ -638,7 +629,7 @@ test("validate follows lite config and requires kit only when not lite", () => {
   fs.rmSync(path.join(cwd, "demo-project", ".aios"), { recursive: true, force: true });
   const fullOutput = run(["validate", "demo-project"], { runtimePaths, cwd });
   assert.match(fullOutput, /AI-ready structure is incomplete/);
-  assert.match(fullOutput, /\.aios\/skills\/context-management\/SKILL.md/);
+  assert.match(fullOutput, /\.aios\/skills\/spec\/SKILL.md/);
   process.exitCode = undefined;
 
   const liteOutput = run(["validate", "demo-project", "--lite"], { runtimePaths, cwd });
@@ -758,12 +749,12 @@ test("repair restores missing .aios kit files", () => {
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
-  fs.rmSync(path.join(project, ".aios", "commands", "discover-product.md"));
+  fs.rmSync(path.join(project, ".aios", "workflows", "review.workflow.md"));
 
   const output = run(["repair", "demo-project"], { runtimePaths, cwd });
   assert.match(output, /Repairing AIOS assets/);
   assert.match(output, /Kit: 1 created/);
-  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")));
+  assert.ok(fs.existsSync(path.join(project, ".aios", "workflows", "review.workflow.md")));
   assert.match(output, /Next step: run `aios validate`/);
 });
 
@@ -772,11 +763,11 @@ test("repair restores incomplete native skill folders", () => {
   run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
   const project = path.join(cwd, "native-project");
 
-  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+  fs.rmSync(path.join(project, ".agents", "skills", "verify", "SKILL.md"));
 
   const output = run(["repair", "native-project"], { runtimePaths, cwd });
   assert.match(output, /Native skills:/);
-  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "verify", "SKILL.md")));
 });
 
 test("repair restores enabled integration rules", () => {
@@ -824,7 +815,7 @@ test("repair does not add portable skills to native-only projects", () => {
   const output = run(["repair", "native-only"], { runtimePaths, cwd });
   assert.match(output, /Kit: 0 created/);
   assert.equal(fs.existsSync(path.join(project, ".aios", "skills")), false);
-  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "context-management", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "spec", "SKILL.md")));
 });
 
 test("update is available in help output", () => {
@@ -838,12 +829,12 @@ test("update --dry-run does not write files", () => {
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
-  fs.rmSync(path.join(project, ".aios", "commands", "discover-product.md"));
+  fs.rmSync(path.join(project, ".aios", "workflows", "review.workflow.md"));
 
   const output = run(["update", "demo-project", "--dry-run"], { runtimePaths, cwd });
   assert.match(output, /Dry-run/);
   assert.match(output, /would be added/);
-  assert.equal(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")), false);
+  assert.equal(fs.existsSync(path.join(project, ".aios", "workflows", "review.workflow.md")), false);
 });
 
 test("update backfills missing bundled files without overwriting existing", () => {
@@ -851,14 +842,14 @@ test("update backfills missing bundled files without overwriting existing", () =
   run(["init", "demo-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "demo-project");
 
-  const customContent = "# Custom prompt content\n";
-  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), customContent);
-  fs.rmSync(path.join(project, ".aios", "commands", "discover-product.md"));
+  const customContent = "# Custom workflow content\n";
+  fs.writeFileSync(path.join(project, ".aios", "workflows", "custom.workflow.md"), customContent);
+  fs.rmSync(path.join(project, ".aios", "workflows", "review.workflow.md"));
 
   const output = run(["update", "demo-project"], { runtimePaths, cwd });
   assert.match(output, /Kit:/);
-  assert.ok(fs.existsSync(path.join(project, ".aios", "commands", "discover-product.md")));
-  assert.equal(fs.readFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "utf8"), customContent);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "workflows", "review.workflow.md")));
+  assert.equal(fs.readFileSync(path.join(project, ".aios", "workflows", "custom.workflow.md"), "utf8"), customContent);
 });
 
 test("update adds new core skills to config when most core skills are present", () => {
@@ -867,14 +858,14 @@ test("update adds new core skills to config when most core skills are present", 
   const project = path.join(cwd, "demo-project");
 
   const config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
-  config.selectedSkills = ["context-management", "implementation-planner", "task-breakdown", "testing", "code-review"];
+  config.selectedSkills = ["spec", "arch", "task"];
   fs.writeFileSync(path.join(project, ".aios", "config.json"), JSON.stringify(config, null, 2));
 
   const output = run(["update", "demo-project"], { runtimePaths, cwd });
   assert.match(output, /Config: added new core skills/);
   const updatedConfig = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
-  assert.ok(updatedConfig.selectedSkills.includes("task-implementation"));
-  assert.ok(updatedConfig.selectedSkills.includes("context-management"));
+  assert.ok(updatedConfig.selectedSkills.includes("verify"));
+  assert.ok(updatedConfig.selectedSkills.includes("spec"));
 });
 
 test("update does not add core skills when user has a minimal skill set", () => {
@@ -883,13 +874,13 @@ test("update does not add core skills when user has a minimal skill set", () => 
   const project = path.join(cwd, "demo-project");
 
   const config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
-  config.selectedSkills = ["context-management"];
+  config.selectedSkills = ["spec"];
   fs.writeFileSync(path.join(project, ".aios", "config.json"), JSON.stringify(config, null, 2));
 
   const output = run(["update", "demo-project"], { runtimePaths, cwd });
   assert.match(output, /Config: no new core skills to add/);
   const updatedConfig = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
-  assert.deepEqual(updatedConfig.selectedSkills, ["context-management"]);
+  assert.deepEqual(updatedConfig.selectedSkills, ["spec"]);
 });
 
 test("update reports review-needed files when local differs from bundled", () => {
@@ -916,11 +907,11 @@ test("update restores missing native skills when configured", () => {
   run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
   const project = path.join(cwd, "native-project");
 
-  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+  fs.rmSync(path.join(project, ".agents", "skills", "verify", "SKILL.md"));
 
   const output = run(["update", "native-project"], { runtimePaths, cwd });
   assert.match(output, /Native skills:/);
-  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")));
+  assert.ok(fs.existsSync(path.join(project, ".agents", "skills", "verify", "SKILL.md")));
 });
 
 test("update --dry-run correctly counts missing native skills", () => {
@@ -928,12 +919,12 @@ test("update --dry-run correctly counts missing native skills", () => {
   run(["init", "native-project", "--agents", "codex", "--skills", "core", "--skill-delivery", "native"], { runtimePaths, cwd });
   const project = path.join(cwd, "native-project");
 
-  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+  fs.rmSync(path.join(project, ".agents", "skills", "verify", "SKILL.md"));
 
   const output = run(["update", "native-project", "--dry-run"], { runtimePaths, cwd });
   assert.match(output, /Dry-run/);
   assert.match(output, /Native skills: 1 would be added/);
-  assert.equal(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")), false);
+  assert.equal(fs.existsSync(path.join(project, ".agents", "skills", "verify", "SKILL.md")), false);
 });
 
 test("update --dry-run counts native skills from updated config, not original", () => {
@@ -942,15 +933,15 @@ test("update --dry-run counts native skills from updated config, not original", 
   const project = path.join(cwd, "native-project");
 
   const config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
-  config.selectedSkills = ["context-management", "implementation-planner", "task-breakdown", "testing", "code-review"];
+  config.selectedSkills = ["spec", "arch", "task"];
   fs.writeFileSync(path.join(project, ".aios", "config.json"), JSON.stringify(config, null, 2));
 
-  fs.rmSync(path.join(project, ".agents", "skills", "testing", "SKILL.md"));
+  fs.rmSync(path.join(project, ".agents", "skills", "verify", "SKILL.md"));
 
   const output = run(["update", "native-project", "--dry-run"], { runtimePaths, cwd });
-  assert.match(output, /Config: would add new core skills: task-implementation/);
+  assert.match(output, /Config: would add new core skills: verify/);
   assert.match(output, /Native skills: 1 would be added/);
-  assert.equal(fs.existsSync(path.join(project, ".agents", "skills", "testing", "SKILL.md")), false);
+  assert.equal(fs.existsSync(path.join(project, ".agents", "skills", "verify", "SKILL.md")), false);
 });
 
 test("update --accept overwrites a differing local .aios file with bundled source", () => {
@@ -987,11 +978,11 @@ test("update --accept workflows only updates workflow assets", () => {
   const project = path.join(cwd, "demo-project");
 
   fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
-  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "# Modified prompt\n");
+  fs.writeFileSync(path.join(project, ".aios", "workflows", "review.workflow.md"), "# Modified workflow\n");
 
-  const output = run(["update", "demo-project", "--accept", "prompts"], { runtimePaths, cwd });
+  const output = run(["update", "demo-project", "--accept", "workflows"], { runtimePaths, cwd });
   assert.match(output, /Accept: 1 file\(s\) accepted/);
-  assert.match(output, /\.aios\/prompts\/01-generate-prd\.md/);
+  assert.match(output, /\.aios\/workflows\/review\.workflow\.md/);
   assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
 });
 
@@ -1041,14 +1032,14 @@ test("update --accept <section> <project-path> parses section before project pat
   const project = path.join(cwd, "demo-project");
 
   fs.writeFileSync(path.join(project, ".aios", "skill-router.md"), "# Modified locally\n");
-  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "# Modified prompt\n");
+  fs.writeFileSync(path.join(project, ".aios", "workflows", "review.workflow.md"), "# Modified workflow\n");
 
-  const output = run(["update", "--accept", "prompts", "demo-project"], { runtimePaths, cwd });
+  const output = run(["update", "--accept", "workflows", "demo-project"], { runtimePaths, cwd });
   assert.match(output, /Accept: 1 file\(s\) accepted/);
-  assert.match(output, /\.aios\/prompts\/01-generate-prd\.md/);
+  assert.match(output, /\.aios\/workflows\/review\.workflow\.md/);
   assert.match(output, /Updating AIOS assets in.*demo-project/);
   assert.equal(fs.readFileSync(path.join(project, ".aios", "skill-router.md"), "utf8"), "# Modified locally\n");
-  assert.ok(!fs.existsSync(path.join(cwd, "prompts", ".aios")), "should not create .aios in a 'prompts' directory");
+  assert.ok(!fs.existsSync(path.join(cwd, "workflows", ".aios")), "should not create .aios in a 'workflows' directory");
 });
 
 test("update --accept <section> <project-path> does not treat section name as project path when --accept is last", () => {
@@ -1056,10 +1047,10 @@ test("update --accept <section> <project-path> does not treat section name as pr
   run(["init", "my-project"], { runtimePaths, cwd });
   const project = path.join(cwd, "my-project");
 
-  fs.writeFileSync(path.join(project, ".aios", "prompts", "01-generate-prd.md"), "# Modified prompt\n");
+  fs.writeFileSync(path.join(project, ".aios", "workflows", "review.workflow.md"), "# Modified workflow\n");
 
-  const output = run(["update", "my-project", "--accept", "prompts"], { runtimePaths, cwd });
+  const output = run(["update", "my-project", "--accept", "workflows"], { runtimePaths, cwd });
   assert.match(output, /Updating AIOS assets in.*my-project/);
   assert.match(output, /Accept: 1 file\(s\) accepted/);
-  assert.ok(!fs.existsSync(path.join(cwd, "prompts", ".aios")), "should not create .aios in a 'prompts' directory");
+  assert.ok(!fs.existsSync(path.join(cwd, "workflows", ".aios")), "should not create .aios in a 'workflows' directory");
 });

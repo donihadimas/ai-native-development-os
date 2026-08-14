@@ -31,7 +31,7 @@ test("getRuntimePaths resolves bundled package assets when available", () => {
 
   assert.ok(fs.existsSync(runtimePaths.aiosKitSource));
   assert.ok(fs.existsSync(path.join(runtimePaths.aiosKitSource, "skill-router.md")));
-  assert.ok(fs.existsSync(path.join(runtimePaths.aiosKitSource, "commands")));
+  assert.ok(fs.existsSync(path.join(runtimePaths.aiosKitSource, "workflows")));
   assert.ok(fs.existsSync(path.join(runtimePaths.aiosKitSource, "integrations")));
   assert.ok(fs.existsSync(runtimePaths.projectSkeleton));
   assert.ok(fs.existsSync(runtimePaths.templates));
@@ -172,9 +172,7 @@ test("validateProject reports missing AI-ready paths", () => {
   assert.ok(result.missing.includes("docs/product/features"));
   assert.ok(result.missing.includes("docs/reviews"));
   assert.ok(result.missing.includes(".aios/skill-router.md"));
-  assert.ok(result.missing.includes(".aios/commands/discover-product.md"));
-  assert.ok(result.missing.includes(".aios/commands/generate-prd.md"));
-  assert.ok(result.missing.includes(".aios/skills/context-management/SKILL.md"));
+  assert.ok(result.missing.includes(".aios/skills/spec/SKILL.md"));
   assert.ok(result.warnings.some((w) => w.includes("Optional V2.x path not found: docs/security") && w.includes("aios create security")));
 });
 
@@ -242,5 +240,5 @@ test("validateProject can ignore local AIOS kit in lite mode", () => {
   const result = validateProject(project, { lite: true });
 
   assert.equal(result.ok, true);
-  assert.equal(result.missing.includes(".aios/skills/context-management/SKILL.md"), false);
+  assert.equal(result.missing.includes(".aios/skills/spec/SKILL.md"), false);
 });

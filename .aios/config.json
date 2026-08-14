@@ -8,22 +8,14 @@
     "codex"
   ],
   "selectedSkills": [
-    "adr-generator",
+    "spec",
+    "arch",
+    "task",
+    "verify",
     "api-contract-design",
-    "architecture-design",
-    "backend-api-development",
-    "code-review",
-    "context-management",
     "database-migration",
-    "implementation-planner",
-    "task-implementation",
-    "prd-generator",
-    "product-discovery",
-    "release-management",
-    "security-review",
-    "task-breakdown",
-    "testing",
-    "ui-ux-design"
+    "ui-ux-design",
+    "release-management"
   ],
   "agentScope": "repo",
   "projectShape": "docs",

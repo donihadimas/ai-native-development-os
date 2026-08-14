@@ -88,23 +88,19 @@ export const DEFAULT_DOCS_ROOT = "docs";
 export const DEFAULT_KIT_ROOT = ".aios";
 
 export const CORE_SKILLS = [
-  "context-management",
-  "implementation-planner",
-  "task-implementation",
-  "task-breakdown",
-  "testing",
-  "code-review"
+  "spec",
+  "arch",
+  "task",
+  "verify"
 ];
 export const PLANNING_SKILLS = [
-  "product-discovery",
-  "prd-generator",
-  "architecture-design",
+  "spec",
+  "arch",
+  "task",
   "ui-ux-design",
-  "adr-generator",
-  "task-breakdown",
-  "implementation-planner"
+  "api-contract-design"
 ];
-export const DELIVERY_SKILLS = ["task-implementation", "testing", "code-review", "security-review", "release-management"];
+export const DELIVERY_SKILLS = ["task", "verify", "database-migration", "release-management"];
 
 export const AGENT_TARGETS: AgentTarget[] = ["codex", "qwen", "opencode", "antigravity", "generic"];
 export const PROJECT_SHAPES: ProjectShape[] = ["fullstack", "frontend", "backend", "mobile", "library", "docs"];
@@ -170,12 +166,6 @@ export function formatOptionalDocWarning(path: string, docsRoot: string): string
 export const REQUIRED_AIOS_KIT_PATHS = [
   ".aios/skill-router.md",
   ".aios/config.json",
-  ".aios/commands/discover-product.md",
-  ".aios/commands/generate-prd.md",
-  ".aios/commands/implement-task.md",
-  ".aios/commands/review-code.md",
-  ".aios/prompts/00-discover-product.md",
-  ".aios/prompts/01-generate-prd.md",
   ".aios/references/context-principles.md",
   ".aios/templates/task.template.md",
   ".aios/workflows/new-feature.workflow.md",
@@ -184,10 +174,8 @@ export const REQUIRED_AIOS_KIT_PATHS = [
 
 export const AIOS_KIT_ENTRIES = [
   "skill-router.md",
-  "commands",
   "integrations",
   "skills",
-  "prompts",
   "references",
   "templates",
   "workflows"

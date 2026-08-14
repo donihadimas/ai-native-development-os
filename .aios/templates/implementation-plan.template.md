@@ -34,3 +34,5 @@ Describe the intended behavior before coding.
 ## Rollback Notes
 
 Describe how to safely revert or disable the change if needed.
+
+When the related task is complete, update this plan status in `<docsRoot>/plans/index.md`. Keep implementation plans in `<docsRoot>/plans/` without moving files to subfolders.
