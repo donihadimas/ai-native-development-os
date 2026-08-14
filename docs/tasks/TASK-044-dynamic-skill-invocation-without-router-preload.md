@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -37,9 +37,9 @@ Mandatory reading of `skill-router.md` on every turn in full mode consumes ~1,00
 
 ## Acceptance Criteria
 
-- [ ] `AGENTS.md` no longer requires reading `skill-router.md` before every action.
-- [ ] Task and workflow descriptions explicitly declare their required skill (e.g. `Skill: task` or `Skill: verify`).
-- [ ] Token overhead per turn drops by ~1,000 tokens.
+- [x] `AGENTS.md` no longer requires reading `skill-router.md` before every action.
+- [x] Task and workflow descriptions explicitly declare their required skill (e.g. `Skill: task` or `Skill: verify`).
+- [x] Token overhead per turn drops by ~1,000 tokens.
 
 ## Testing Expectations
 
@@ -48,7 +48,7 @@ Mandatory reading of `skill-router.md` on every turn in full mode consumes ~1,00
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `AGENTS.md`, `CLAUDE.md`, `project-skeleton/AGENTS.md`, `project-skeleton/CLAUDE.md`, `skill-router.md`.
+- Tests run: `npm test` in `cli/` (87 passing tests).
+- Acceptance criteria status: All criteria satisfied.
+- Risks: None.

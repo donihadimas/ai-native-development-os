@@ -42,7 +42,11 @@ import {
   writeRenderedTemplate,
   type RuntimePaths,
   classifyKitAssets,
-  acceptKitAssets
+  acceptKitAssets,
+  runVerification,
+  loadAllTasks,
+  resolveTaskGraph,
+  formatTaskGraph
 } from "./core.js";
 
 interface CommandContext {
@@ -133,6 +137,12 @@ Start here:
   aios validate [project-path]
     Check whether a project has the expected AI-ready structure.
 
+  aios verify [project-path] [--task <task-path>] [--test-command <cmd>]
+    Deterministically run automated test suites and inspect git diff.
+
+  aios tasks [project-path]
+    Display the project task dependency graph (Ready, Blocked, Done).
+
 Common commands:
   aios -v
     Show the installed AIOS CLI version.
@@ -145,6 +155,12 @@ Common commands:
 
   aios adopt [project-path] [--lite] [--shape fullstack|frontend|backend|mobile|library|docs] [--docs-root <path>] [--agents <list>] [--skills <set>] [--skill-delivery portable|native|both] [--yes]
     Add AIOS folders and docs to an existing project.
+
+  aios verify [project-path]
+    Run automated tests and verify git changes before completing tasks.
+
+  aios tasks [project-path]
+    Analyze task DAG dependencies and display ready/blocked queue.
 
   aios kit install [project-path]
     Install or repair the local .aios workflow kit without overwriting
@@ -318,6 +334,8 @@ interface ParsedArgs {
   mode?: string;
   accept: boolean;
   acceptSection?: string;
+  task?: string;
+  testCommand?: string;
 }
 
 function requireName(value: string | undefined, command: string): string {
@@ -340,7 +358,7 @@ function parseCsv<T extends string>(value: string | undefined): T[] | undefined 
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
-  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope", "--shape", "--mode"]);
+  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope", "--shape", "--mode", "--task", "--test-command"]);
   const commandFlags = new Set(["--version", "--help"]);
   const args: string[] = [];
 
@@ -388,7 +406,9 @@ function parseArgs(argv: string[]): ParsedArgs {
     projectShape: readFlagValue(argv, "--shape") as ProjectShape | undefined,
     mode: readFlagValue(argv, "--mode"),
     accept,
-    acceptSection
+    acceptSection,
+    task: readFlagValue(argv, "--task"),
+    testCommand: readFlagValue(argv, "--test-command")
   };
 }
 
@@ -2376,10 +2396,11 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       { name: "Install native agent skills", value: "agent install" },
       { name: "Set up external integrations", value: "integration" },
       { name: "Validate project", value: "validate" },
+      { name: "Verify tests and git changes (aios verify)", value: "verify" },
+      { name: "View task dependency graph (aios tasks)", value: "tasks" },
       { name: "Repair missing AIOS assets", value: "repair" },
       { name: "Update AIOS assets to latest bundled versions", value: "update" },
       { name: "Show next recommended step", value: "next" },
-      { name: "Print AIOS command prompt", value: "command" },
       { name: "Show help", value: "help" }
     ]
   });
@@ -2395,26 +2416,41 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       return interactiveIntegration(ctx);
     case "validate":
       return commandValidate(ctx, await input({ message: "Project path:", default: "." }));
+    case "verify":
+      return commandVerify(ctx, await input({ message: "Project path:", default: "." }), parseArgs([]));
+    case "tasks":
+      return commandTasks(ctx, await input({ message: "Project path:", default: "." }));
     case "repair":
       return commandRepair(ctx, await input({ message: "Project path:", default: "." }));
     case "update":
       return commandUpdate(ctx, await input({ message: "Project path:", default: "." }));
     case "next":
       return commandNext(ctx, await input({ message: "Project path:", default: "." }));
-    case "command": {
-      const commandName = await select({
-        message: "AIOS command:",
-        choices: fs
-          .readdirSync(path.join(ctx.runtimePaths.aiosKitSource, "commands"))
-          .filter((file) => file.endsWith(".md"))
-          .map((file) => path.basename(file, ".md"))
-          .map((value) => ({ name: value, value }))
-      });
-      return commandPrompt(ctx, commandName, ".");
-    }
     default:
       return usage();
   }
+}
+
+function commandVerify(ctx: CommandContext, projectPathArg: string | undefined, parsed: ParsedArgs): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const result = runVerification({
+    projectPath,
+    taskFile: parsed.task,
+    testCommand: parsed.testCommand
+  });
+  if (!result.ok && isDirectRun()) {
+    process.exitCode = 1;
+  }
+  return result.summary;
+}
+
+function commandTasks(ctx: CommandContext, projectPathArg: string | undefined): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const config = readProjectConfig(projectPath);
+  const tasksDir = path.join(projectPath, config.docsRoot, "tasks");
+  const tasks = loadAllTasks(tasksDir);
+  const graph = resolveTaskGraph(tasks);
+  return formatTaskGraph(graph);
 }
 
 export { detectSubprojectWarning, integrationReviewMessage };
@@ -2453,6 +2489,10 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return commandCreate(ctx, name, secondName);
     case "validate":
       return commandValidate(ctx, name, parsed);
+    case "verify":
+      return commandVerify(ctx, name, parsed);
+    case "tasks":
+      return commandTasks(ctx, name);
     case "repair":
       return commandRepair(ctx, name);
     case "update":

@@ -32,11 +32,12 @@ Briefly explain why this task exists.
 
 ## Dependencies
 
+- depends_on: []
 - Related PRD:
 - Related design:
 - Related ADR:
 - Related architecture section:
-- Blocking tasks:
+- Blocking tasks: None
 
 ## Acceptance Criteria
 
@@ -60,4 +61,4 @@ Briefly explain why this task exists.
 - Acceptance criteria status:
 - Risks:
 
-When task is complete, update Status to Done, fill Done Summary, check satisfied Acceptance Criteria, and update `<docsRoot>/tasks/index.md`. Keep tasks in `<docsRoot>/tasks/` without moving files to subfolders.
+When task is complete, run `aios verify`, update Status to Done, fill Done Summary, check satisfied Acceptance Criteria, and update `<docsRoot>/tasks/index.md`. Keep tasks in `<docsRoot>/tasks/` without moving files to subfolders.

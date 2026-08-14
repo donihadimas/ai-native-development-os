@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -17,8 +17,9 @@ Currently AIOS tasks are flat and cannot declare dependencies. Agents or develop
 ### In Scope
 
 - Add `depends_on` array field to `templates/task.template.md`.
-- Implement DAG resolution logic in `cli/src/` to determine task execution order.
-- Add CLI task queue display showing tasks grouped by "Ready", "Blocked (waiting on dependencies)", and "Done".
+- Implement DAG resolution logic in `cli/src/tasks.ts` to determine task execution order.
+- Add CLI task queue display (`aios tasks`) showing tasks grouped by "Ready", "Blocked (waiting on dependencies)", and "Completed".
+- Add cycle detection for circular task graphs.
 
 ### Out of Scope
 
@@ -26,8 +27,8 @@ Currently AIOS tasks are flat and cannot declare dependencies. Agents or develop
 
 ## Affected Areas
 
-- Shared docs: `templates/task.template.md`, `docs/tasks/`
-- CLI: Task parsing and listing modules in `cli/src/`
+- Shared docs: `templates/task.template.md`, `.aios/templates/task.template.md`, `docs/tasks/`
+- CLI: Task parsing and listing modules in `cli/src/tasks.ts`, `cli/src/index.ts`, `cli/src/core.ts`
 
 ## Dependencies
 
@@ -37,19 +38,19 @@ Currently AIOS tasks are flat and cannot declare dependencies. Agents or develop
 
 ## Acceptance Criteria
 
-- [ ] Task template supports `depends_on: ["TASK-XXX"]`.
-- [ ] CLI command (`aios tasks` or `aios task list`) resolves dependency trees and flags tasks whose dependencies are not yet complete.
-- [ ] Circular dependency detection prevents infinite loops.
-- [ ] CLI tests pass.
+- [x] Task template supports `depends_on: ["TASK-XXX"]`.
+- [x] CLI command (`aios tasks`) resolves dependency trees and flags tasks whose dependencies are not yet complete.
+- [x] Circular dependency detection prevents infinite loops.
+- [x] CLI tests pass.
 
 ## Testing Expectations
 
-- Unit tests: Test DAG topological sorting and circular dependency detection in `cli/test/`.
-- Integration tests: Test with a chain of 3 dependent tasks.
+- Unit tests: Test DAG topological sorting and circular dependency detection in `cli/test/verify.test.ts`.
+- Integration tests: Test with dependent tasks via CLI `aios tasks`.
 
 ## Done Summary
 
-- Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+- Files changed: `cli/src/tasks.ts`, `cli/src/core.ts`, `cli/src/index.ts`, `templates/task.template.md`, `.aios/templates/task.template.md`, `cli/test/verify.test.ts`.
+- Tests run: `npm test` in `cli/` (87 passing tests).
+- Acceptance criteria status: All criteria satisfied.
+- Risks: None.

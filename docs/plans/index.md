@@ -6,7 +6,7 @@ Use this index before opening implementation plan files. Open plan bodies only a
 
 | Plan | Status | Path | Notes |
 | --- | --- | --- | --- |
-| None | - | - | Phase 0 completed. Phase 1 ready for planning. |
+| None | - | - | Phase 1 completed. Phase 2 ready for planning. |
 
 ## Completed Archive
 
@@ -14,6 +14,7 @@ Completed implementation plans live directly under `docs/plans/` (or historical 
 
 | Plan | Status | Path |
 | --- | --- | --- |
+| TASK-043 - TASK-046 | Done | `docs/plans/TASK-043-046-phase-1-implementation-plan.md` |
 | TASK-039 - TASK-042 | Done | `docs/plans/TASK-039-042-phase-0-implementation-plan.md` |
 | TASK-001 | Done | `docs/plans/done/TASK-001-adopt-subproject-safety-warning-plan.md` |
 | TASK-002 | Done | `docs/plans/done/TASK-002-optional-docs-next-guidance-plan.md` |

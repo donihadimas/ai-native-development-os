@@ -17,10 +17,10 @@ Use this index before opening task files. Open task bodies only after selecting 
 
 | Task | Status | Path | Notes |
 | --- | --- | --- | --- |
-| TASK-043 | Planned | `docs/tasks/TASK-043-implement-deterministic-cli-verification.md` | Build `aios verify` test, lint, and diff runner. |
-| TASK-044 | Planned | `docs/tasks/TASK-044-dynamic-skill-invocation-without-router-preload.md` | Remove mandatory `skill-router.md` pre-loading. |
-| TASK-045 | Planned | `docs/tasks/TASK-045-add-task-graph-dependency-resolution.md` | Support `depends_on` task graphs and DAG resolution. |
-| TASK-046 | Planned | `docs/tasks/TASK-046-cleanup-empty-starters-and-quality-checklists.md` | Clean up doc-only starters and repetitive checklists. |
+| TASK-043 | Done | `docs/tasks/TASK-043-implement-deterministic-cli-verification.md` | Built `aios verify` automated test runner and git diff inspector. |
+| TASK-044 | Done | `docs/tasks/TASK-044-dynamic-skill-invocation-without-router-preload.md` | Dynamic on-demand skill invocation without mandatory router preload. |
+| TASK-045 | Done | `docs/tasks/TASK-045-add-task-graph-dependency-resolution.md` | Supported `depends_on` task graphs and DAG resolution (`aios tasks`). |
+| TASK-046 | Done | `docs/tasks/TASK-046-cleanup-empty-starters-and-quality-checklists.md` | Cleaned up starters and trimmed repetitive checklists. |
 
 ### Phase 2: Bounded Execution & Git Worktrees (P2 - Medium Term)
 
