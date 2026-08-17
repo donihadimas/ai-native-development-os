@@ -1054,3 +1054,75 @@ test("update --accept <section> <project-path> does not treat section name as pr
   assert.match(output, /Accept: 1 file\(s\) accepted/);
   assert.ok(!fs.existsSync(path.join(cwd, "workflows", ".aios")), "should not create .aios in a 'workflows' directory");
 });
+
+test("aios map command generates repository map in project path", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.mkdirSync(path.join(project, "src"));
+  fs.writeFileSync(path.join(project, "src", "index.ts"), "export class SuperApp {}");
+
+  const output = run(["map", "demo-project"], { runtimePaths, cwd });
+  assert.match(output, /Successfully generated repository map/);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "repo-map.json")));
+
+  const saved = JSON.parse(fs.readFileSync(path.join(project, ".aios", "repo-map.json"), "utf8"));
+  assert.ok(saved["src/index.ts"]);
+  assert.equal(saved["src/index.ts"].symbols[0].name, "SuperApp");
+});
+
+test("aios export command generates target-specific rules", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  fs.writeFileSync(path.join(project, "AGENTS.md"), "Special Rules", "utf8");
+
+  const outputAll = run(["export", "demo-project"], { runtimePaths, cwd });
+  assert.match(outputAll, /Successfully exported all agent configurations/);
+  assert.ok(fs.existsSync(path.join(project, ".cursorrules")));
+  assert.ok(fs.existsSync(path.join(project, ".clinerules")));
+  assert.ok(fs.existsSync(path.join(project, ".github", "copilot-instructions.md")));
+
+  const outputCursor = run(["export", "demo-project", "--target", "cursor"], { runtimePaths, cwd });
+  assert.match(outputCursor, /Successfully exported cursor configuration/);
+});
+
+test("aios stats command outputs summary statistics", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "demo-project");
+
+  // Run stats command initially - should show no metrics message
+  const emptyOutput = run(["stats", "demo-project"], { runtimePaths, cwd });
+  assert.match(emptyOutput, /No agent execution metrics found/);
+
+  // Write a mock task metric file manually
+  const metricsDir = path.join(project, ".aios", "metrics");
+  fs.mkdirSync(metricsDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(metricsDir, "task-TASK-001.json"),
+    JSON.stringify({
+      taskId: "TASK-001",
+      startTimestamp: new Date().toISOString(),
+      finishTimestamp: new Date().toISOString(),
+      durationMs: 5000,
+      verificationOutcome: "pass",
+      iterationCount: 2,
+      filesModified: ["src/index.ts"],
+      testPassed: true
+    }),
+    "utf8"
+  );
+
+  const statsOutput = run(["stats", "demo-project"], { runtimePaths, cwd });
+  assert.match(statsOutput, /AIOS Agent Performance Statistics/);
+  assert.match(statsOutput, /Total Tasks Logged:\s+1/);
+  assert.match(statsOutput, /Task Success Rate:\s+100\.0%/);
+  assert.match(statsOutput, /Average Task Duration:\s+5(\.0)?s/);
+  assert.match(statsOutput, /Unique Files Modified:\s+1/);
+});
+
+
+

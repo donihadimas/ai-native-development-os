@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -37,10 +37,10 @@ AIOS currently provides zero observability into agent performance. Tracking task
 
 ## Acceptance Criteria
 
-- [ ] Successful and failed task runs log a metrics payload under `.aios/metrics/`.
-- [ ] `aios stats` outputs summary statistics (success rate, average duration, test pass rate).
-- [ ] Telemetry remains purely local and opt-out configurable.
-- [ ] Tests verify metrics calculation and storage.
+- [x] Successful and failed task runs log a metrics payload under `.aios/metrics/`.
+- [x] `aios stats` outputs summary statistics (success rate, average duration, test pass rate).
+- [x] Telemetry remains purely local and opt-out configurable.
+- [x] Tests verify metrics calculation and storage.
 
 ## Testing Expectations
 
@@ -49,6 +49,13 @@ AIOS currently provides zero observability into agent performance. Tracking task
 ## Done Summary
 
 - Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+  - `cli/src/telemetry.ts`
+  - `cli/src/core.ts`
+  - `cli/src/index.ts`
+  - `cli/src/worktree.ts`
+  - `cli/test/telemetry.test.ts`
+  - `cli/test/commands.test.ts`
+- Tests run: `npm test` (all 105 tests passed successfully)
+- Acceptance criteria status: All met.
+- Risks: None.
+

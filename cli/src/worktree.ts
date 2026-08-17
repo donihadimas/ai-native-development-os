@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 import { runVerification, type VerifyResult } from "./verify.js";
+import { initTaskSession, finalizeTaskMetric, recordVerificationAttempt } from "./telemetry.js";
+
 
 export interface WorktreeInfo {
   worktreePath: string;
@@ -146,6 +148,8 @@ export function startWorktree(options: StartWorktreeOptions): StartWorktreeResul
       });
     }
 
+    initTaskSession(projectPath, options.taskId);
+
     return {
       ok: true,
       worktreePath,
@@ -170,6 +174,7 @@ export function finishWorktree(options: FinishWorktreeOptions): FinishWorktreeRe
   // 1. Run deterministic verification inside worktree
   const verification = runVerification({ projectPath: worktreePath });
   if (!verification.ok) {
+    recordVerificationAttempt(projectPath, options.taskId, verification);
     return {
       ok: false,
       branch: branchName,
@@ -217,6 +222,8 @@ export function finishWorktree(options: FinishWorktreeOptions): FinishWorktreeRe
       stdio: ["ignore", "pipe", "pipe"]
     });
     execSync("git worktree prune", { cwd: projectPath, stdio: "ignore" });
+
+    finalizeTaskMetric(projectPath, options.taskId, verification);
 
     return {
       ok: true,

@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -38,10 +38,10 @@ Manually maintained `context-map.md` documents quickly become stale and incomple
 
 ## Acceptance Criteria
 
-- [ ] `aios map` scans project source directories and writes `.aios/repo-map.json`.
-- [ ] Output represents files, symbols, and signatures concisely (<2,000 tokens for average projects).
-- [ ] Agent instructions leverage `.aios/repo-map.json` for precise file targeting.
-- [ ] Tests verify indexing on standard language samples.
+- [x] `aios map` scans project source directories and writes `.aios/repo-map.json`.
+- [x] Output represents files, symbols, and signatures concisely (<2,000 tokens for average projects).
+- [x] Agent instructions leverage `.aios/repo-map.json` for precise file targeting.
+- [x] Tests verify indexing on standard language samples.
 
 ## Testing Expectations
 
@@ -50,6 +50,12 @@ Manually maintained `context-map.md` documents quickly become stale and incomple
 ## Done Summary
 
 - Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+  - `cli/src/indexer.ts`
+  - `cli/src/core.ts`
+  - `cli/src/index.ts`
+  - `cli/test/indexer.test.ts`
+  - `cli/test/commands.test.ts`
+- Tests run: `npm test` (all 102 tests passed successfully)
+- Acceptance criteria status: All met.
+- Risks: None.
+

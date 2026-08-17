@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned
+Done
 
 ## Objective
 
@@ -37,11 +37,11 @@ Rather than manually duplicating rules across multiple config formats, AIOS main
 
 ## Acceptance Criteria
 
-- [ ] `aios export --target cursor` generates `.cursor/rules/` or `.cursorrules`.
-- [ ] `aios export --target cline` generates `.clinerules`.
-- [ ] `aios export --target copilot` generates `.github/copilot-instructions.md`.
-- [ ] `aios export --target all` generates all supported adapters.
-- [ ] CLI unit tests verify generated rule contents.
+- [x] `aios export --target cursor` generates `.cursor/rules/` or `.cursorrules`.
+- [x] `aios export --target cline` generates `.clinerules`.
+- [x] `aios export --target copilot` generates `.github/copilot-instructions.md`.
+- [x] `aios export --target all` generates all supported adapters.
+- [x] CLI unit tests verify generated rule contents.
 
 ## Testing Expectations
 
@@ -50,6 +50,12 @@ Rather than manually duplicating rules across multiple config formats, AIOS main
 ## Done Summary
 
 - Files changed:
-- Tests run:
-- Acceptance criteria status:
-- Risks:
+  - `cli/src/exporter.ts`
+  - `cli/src/core.ts`
+  - `cli/src/index.ts`
+  - `cli/test/exporter.test.ts`
+  - `cli/test/commands.test.ts`
+- Tests run: `npm test` (all 102 tests passed successfully)
+- Acceptance criteria status: All met.
+- Risks: None.
+

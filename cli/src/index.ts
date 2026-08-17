@@ -51,7 +51,13 @@ import {
   finishWorktree,
   listWorktrees,
   removeWorktree,
-  rollbackTaskChanges
+  rollbackTaskChanges,
+  generateRepoMap,
+  writeRepoMap,
+  exportTarget,
+  exportAll,
+  recordVerificationAttempt,
+  getSummaryStats
 } from "./core.js";
 
 interface CommandContext {
@@ -145,6 +151,9 @@ Start here:
   aios verify [project-path] [--task <task-path>] [--test-command <cmd>]
     Deterministically run automated test suites and inspect git diff.
 
+  aios map [project-path]
+    Generate a dynamic AST repository map at .aios/repo-map.json.
+
   aios tasks [project-path]
     Display the project task dependency graph (Ready, Blocked, Done).
 
@@ -206,6 +215,12 @@ Advanced commands:
 
   aios config [project-path]
     Print resolved AIOS project configuration.
+
+  aios export [project-path] [--target cursor|claude|cline|windsurf|copilot|all]
+    Compile and export AIOS rules to tool-native configurations.
+
+  aios stats [project-path]
+    Print summary of agent execution telemetry and performance metrics.
 
   aios repair [project-path]
     Repair missing .aios kit files, native skills, and integration rules.
@@ -359,6 +374,7 @@ interface ParsedArgs {
   base?: string;
   message?: string;
   hard: boolean;
+  target?: string;
 }
 
 function requireName(value: string | undefined, command: string): string {
@@ -381,7 +397,7 @@ function parseCsv<T extends string>(value: string | undefined): T[] | undefined 
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
-  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope", "--shape", "--mode", "--task", "--test-command", "--base", "--message"]);
+  const valueFlags = new Set(["--docs-root", "--skill-delivery", "--agents", "--skills", "--scope", "--shape", "--mode", "--task", "--test-command", "--base", "--message", "--target"]);
   const commandFlags = new Set(["--version", "--help"]);
   const args: string[] = [];
 
@@ -434,7 +450,8 @@ function parseArgs(argv: string[]): ParsedArgs {
     testCommand: readFlagValue(argv, "--test-command"),
     base: readFlagValue(argv, "--base"),
     message: readFlagValue(argv, "--message"),
-    hard: argv.includes("--hard")
+    hard: argv.includes("--hard"),
+    target: readFlagValue(argv, "--target")
   };
 }
 
@@ -2424,6 +2441,9 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       { name: "Validate project", value: "validate" },
       { name: "Verify tests and git changes (aios verify)", value: "verify" },
       { name: "View task dependency graph (aios tasks)", value: "tasks" },
+      { name: "Generate repository map (aios map)", value: "map" },
+      { name: "Export agent configurations (aios export)", value: "export" },
+      { name: "View agent execution telemetry (aios stats)", value: "stats" },
       { name: "Repair missing AIOS assets", value: "repair" },
       { name: "Update AIOS assets to latest bundled versions", value: "update" },
       { name: "Show next recommended step", value: "next" },
@@ -2446,6 +2466,12 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
       return commandVerify(ctx, await input({ message: "Project path:", default: "." }), parseArgs([]));
     case "tasks":
       return commandTasks(ctx, await input({ message: "Project path:", default: "." }));
+    case "map":
+      return commandMap(ctx, await input({ message: "Project path:", default: "." }));
+    case "export":
+      return commandExport(ctx, await input({ message: "Project path:", default: "." }), parseArgs([]));
+    case "stats":
+      return commandStats(ctx, await input({ message: "Project path:", default: "." }));
     case "repair":
       return commandRepair(ctx, await input({ message: "Project path:", default: "." }));
     case "update":
@@ -2464,6 +2490,34 @@ function commandVerify(ctx: CommandContext, projectPathArg: string | undefined, 
     taskFile: parsed.task,
     testCommand: parsed.testCommand
   });
+
+  let taskId: string | undefined = undefined;
+  if (parsed.task) {
+    const fileName = path.basename(parsed.task, ".md");
+    const idMatch = fileName.match(/^(TASK-\d+)/i);
+    if (idMatch) {
+      taskId = idMatch[1].toUpperCase();
+    } else {
+      taskId = fileName;
+    }
+  } else {
+    try {
+      const config = readProjectConfig(projectPath);
+      const tasksDir = path.join(projectPath, config.docsRoot, "tasks");
+      const tasks = loadAllTasks(tasksDir);
+      const activeTask = tasks.find((t) => t.status === "Active");
+      if (activeTask) {
+        taskId = activeTask.id;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (taskId) {
+    recordVerificationAttempt(projectPath, taskId, result);
+  }
+
   if (!result.ok && isDirectRun()) {
     process.exitCode = 1;
   }
@@ -2478,6 +2532,54 @@ function commandTasks(ctx: CommandContext, projectPathArg: string | undefined): 
   const graph = resolveTaskGraph(tasks);
   return formatTaskGraph(graph);
 }
+
+function commandMap(ctx: CommandContext, projectPathArg: string | undefined): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const repoMap = generateRepoMap(projectPath);
+  const targetPath = writeRepoMap(projectPath, repoMap);
+  return `Successfully generated repository map at ${targetPath} (${Object.keys(repoMap).length} files indexed).`;
+}
+
+function commandExport(ctx: CommandContext, projectPathArg: string | undefined, parsed: ParsedArgs): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const target = parsed.target || "all";
+  if (target === "all") {
+    const exportedPaths = exportAll(projectPath);
+    return `Successfully exported all agent configurations:\n${exportedPaths.map(p => `  - ${path.relative(projectPath, p)}`).join("\n")}`;
+  } else {
+    const exportedPath = exportTarget(projectPath, target);
+    return `Successfully exported ${target} configuration to ${path.relative(projectPath, exportedPath)}`;
+  }
+}
+
+function commandStats(ctx: CommandContext, projectPathArg: string | undefined): string {
+  const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
+  const stats = getSummaryStats(projectPath);
+
+  if (stats.totalTasks === 0) {
+    return "No agent execution metrics found in .aios/metrics/. Run verification/tasks to log telemetry.";
+  }
+
+  const formatPercent = (val: number) => `${(val * 100).toFixed(1)}%`;
+  const formatDuration = (ms: number) => {
+    if (ms < 1000) return `${ms}ms`;
+    const sec = (ms / 1000).toFixed(1);
+    return `${sec}s`;
+  };
+
+  return [
+    `AIOS Agent Performance Statistics (${projectPath}):`,
+    `  - Total Tasks Logged:      ${stats.totalTasks}`,
+    `  - Task Success Rate:       ${formatPercent(stats.successRate)}`,
+    `  - Automated Test Pass Rate: ${formatPercent(stats.testPassRate)}`,
+    `  - Average Task Duration:   ${formatDuration(stats.avgDurationMs)}`,
+    `  - Average Iterations/Task: ${stats.avgIterationCount.toFixed(1)}`,
+    `  - Unique Files Modified:   ${stats.totalFilesModifiedCount}`
+  ].join("\n");
+}
+
+
+
 
 function commandWorktree(
   ctx: CommandContext,
@@ -2581,6 +2683,12 @@ export function run(argv: string[], ctx: CommandContext = { runtimePaths: getRun
       return commandVerify(ctx, name, parsed);
     case "tasks":
       return commandTasks(ctx, name);
+    case "map":
+      return commandMap(ctx, name);
+    case "export":
+      return commandExport(ctx, name, parsed);
+    case "stats":
+      return commandStats(ctx, name);
     case "worktree":
       return commandWorktree(ctx, name, secondName, thirdName, parsed);
     case "rollback":

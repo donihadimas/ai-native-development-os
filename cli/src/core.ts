@@ -49,6 +49,7 @@ export interface ProjectConfig {
   projectShape: ProjectShape;
   integrations: IntegrationConfig;
   starter?: string;
+  telemetry?: boolean;
 }
 
 export interface RuntimePaths {
@@ -307,6 +308,7 @@ export function defaultProjectConfig(overrides: Partial<ProjectConfig> = {}): Pr
     agentScope: "repo",
     projectShape: "fullstack",
     integrations: defaultIntegrations,
+    telemetry: true,
     ...overrides
   };
 }
@@ -863,3 +865,6 @@ export * from "./verify.js";
 export * from "./tasks.js";
 export * from "./worktree.js";
 export * from "./boundaries.js";
+export * from "./indexer.js";
+export * from "./exporter.js";
+export * from "./telemetry.js";
