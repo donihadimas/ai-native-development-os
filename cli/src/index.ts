@@ -226,12 +226,13 @@ Advanced commands:
     Repair missing .aios kit files, native skills, and integration rules.
     Non-destructive: skips existing valid files.
 
-  aios update [project-path] [--dry-run] [--accept [section]]
+  aios update [project-path] [--dry-run] [--accept [section]] [--clean]
     Update an adopted project with newly bundled AIOS assets, skills, and
     safe config defaults. Non-destructive: skips existing local files.
     Use --dry-run to preview changes without writing.
     Use --accept to apply review-needed .aios/ asset changes.
     Use --accept <section> to accept only a specific section (integrations, skills, references, templates, workflows).
+    Use --clean to force overwrite and clean up unselected skills/assets (excluding user files).
 
   aios worktree start <task-id> [project-path] [--base <branch>]
     Create an isolated git worktree branch (.aios/worktrees/task-xxx) for executing a task.
@@ -375,6 +376,7 @@ interface ParsedArgs {
   message?: string;
   hard: boolean;
   target?: string;
+  clean: boolean;
 }
 
 function requireName(value: string | undefined, command: string): string {
@@ -451,7 +453,8 @@ function parseArgs(argv: string[]): ParsedArgs {
     base: readFlagValue(argv, "--base"),
     message: readFlagValue(argv, "--message"),
     hard: argv.includes("--hard"),
-    target: readFlagValue(argv, "--target")
+    target: readFlagValue(argv, "--target"),
+    clean: argv.includes("--clean")
   };
 }
 
@@ -790,7 +793,7 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
   const config = readProjectConfig(projectPath);
   const dryRun = options.dryRun;
-  const acceptMode = options.accept;
+  const acceptMode = options.accept || options.clean;
   const sectionFilter = options.acceptSection;
   const output = [dryRun ? `Dry-run: updating AIOS assets in ${projectPath}` : `Updating AIOS assets in ${projectPath}`];
   let totalCreated = 0;
@@ -830,7 +833,12 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
       }
       output.push(`Kit: ${plannedKit} files would be added`);
     } else {
-      const kitResult = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, { includeSkills, config });
+      const kitResult = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, {
+        includeSkills,
+        config,
+        overwrite: options.overwrite || options.clean,
+        clean: options.clean
+      });
       totalCreated += kitResult.created.length;
       totalSkipped += kitResult.skipped.length;
       output.push(`Kit: ${kitResult.created.length} added, ${kitResult.skipped.length} skipped existing`);
@@ -874,7 +882,8 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
         projectPath,
         agents: config.selectedAgents,
         skills: config.selectedSkills,
-        scope: config.agentScope
+        scope: config.agentScope,
+        overwrite: options.overwrite || options.clean
       });
       totalCreated += agentResult.created.length;
       totalSkipped += agentResult.skipped.length;
@@ -886,6 +895,21 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
 
   if (!dryRun && configUpdated) {
     writeProjectConfig(projectPath, config);
+  }
+
+  if (!dryRun && options.clean && (config.skillDelivery === "native" || config.skillDelivery === "both")) {
+    for (const agent of config.selectedAgents) {
+      const targetRoot = agentSkillRootForUpdate(projectPath, agent, config);
+      if (fs.existsSync(targetRoot)) {
+        for (const dirName of fs.readdirSync(targetRoot)) {
+          const targetDir = path.join(targetRoot, dirName);
+          if (fs.statSync(targetDir).isDirectory() && !updatedSkills.includes(dirName)) {
+            fs.rmSync(targetDir, { recursive: true, force: true });
+            output.push(`Clean: removed deprecated native skill folder: ${path.relative(projectPath, targetDir)}`);
+          }
+        }
+      }
+    }
   }
 
   if (acceptMode) {

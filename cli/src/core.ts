@@ -479,7 +479,7 @@ export function adoptSkeleton(source: string, target: string): AdoptResult {
 export function installAiosKit(
   sourceRoot: string,
   projectPath: string,
-  options: { includeSkills?: boolean; config?: ProjectConfig } = {}
+  options: { includeSkills?: boolean; config?: ProjectConfig; overwrite?: boolean; clean?: boolean } = {}
 ): AdoptResult {
   const targetRoot = path.join(projectPath, ".aios");
   const result: AdoptResult = {
@@ -495,7 +495,11 @@ export function installAiosKit(
     if (!fs.existsSync(sourcePath)) {
       throw new Error(`Missing AIOS kit source: ${sourcePath}`);
     }
-    copyMissingEntries(sourcePath, path.join(targetRoot, entry), targetRoot, result);
+    const targetPath = path.join(targetRoot, entry);
+    if (options.clean) {
+      cleanExtraEntries(sourcePath, targetPath);
+    }
+    copyMissingEntries(sourcePath, targetPath, targetRoot, result, options.overwrite);
   }
 
   const config = options.config ?? defaultProjectConfig({ skillDelivery: options.includeSkills === false ? "native" : "portable" });
@@ -638,18 +642,55 @@ export function installAgentSkills(options: {
   return result;
 }
 
-function copyMissingEntries(source: string, target: string, root: string, result: AdoptResult): void {
+function cleanExtraEntries(source: string, target: string): void {
+  if (!fs.existsSync(target)) {
+    return;
+  }
+  const targetStat = fs.statSync(target);
+  if (targetStat.isFile()) {
+    if (!fs.existsSync(source)) {
+      fs.rmSync(target, { force: true });
+    }
+    return;
+  }
+
+  // It's a directory
+  if (!fs.existsSync(source)) {
+    fs.rmSync(target, { recursive: true, force: true });
+    return;
+  }
+
+  for (const entry of fs.readdirSync(target, { withFileTypes: true })) {
+    const sourcePath = path.join(source, entry.name);
+    const targetPath = path.join(target, entry.name);
+    if (entry.isDirectory()) {
+      cleanExtraEntries(sourcePath, targetPath);
+      // If target directory is now empty, delete it
+      if (fs.existsSync(targetPath) && fs.readdirSync(targetPath).length === 0) {
+        fs.rmSync(targetPath, { recursive: true, force: true });
+      }
+    } else if (entry.isFile()) {
+      if (!fs.existsSync(sourcePath)) {
+        fs.rmSync(targetPath, { force: true });
+      }
+    }
+  }
+}
+
+function copyMissingEntries(source: string, target: string, root: string, result: AdoptResult, overwrite?: boolean): void {
   const sourceStat = fs.statSync(source);
   const relativeRootPath = path.relative(root, target) || ".";
 
   if (sourceStat.isFile()) {
     if (fs.existsSync(target)) {
-      if (isAiosAgentInstructionFile(target) && prependAiosManagedSection(source, target)) {
-        result.created.push(`${relativeRootPath} (AIOS section prepended)`);
+      if (!overwrite) {
+        if (isAiosAgentInstructionFile(target) && prependAiosManagedSection(source, target)) {
+          result.created.push(`${relativeRootPath} (AIOS section prepended)`);
+          return;
+        }
+        result.skipped.push(relativeRootPath);
         return;
       }
-      result.skipped.push(relativeRootPath);
-      return;
     }
 
     fs.mkdirSync(path.dirname(target), { recursive: true });
@@ -666,21 +707,28 @@ function copyMissingEntries(source: string, target: string, root: string, result
     const relativePath = path.relative(root, targetPath) || ".";
 
     if (fs.existsSync(targetPath)) {
-      if (entry.isFile() && isAiosAgentInstructionFile(targetPath) && prependAiosManagedSection(sourcePath, targetPath)) {
-        result.created.push(`${relativePath} (AIOS section prepended)`);
+      if (entry.isFile()) {
+        if (!overwrite) {
+          if (isAiosAgentInstructionFile(targetPath) && prependAiosManagedSection(sourcePath, targetPath)) {
+            result.created.push(`${relativePath} (AIOS section prepended)`);
+            continue;
+          }
+          result.skipped.push(relativePath);
+          continue;
+        }
+      } else {
+        result.skipped.push(relativePath);
+        if (entry.isDirectory()) {
+          copyMissingEntries(sourcePath, targetPath, root, result, overwrite);
+        }
         continue;
       }
-      result.skipped.push(relativePath);
-      if (entry.isDirectory()) {
-        copyMissingEntries(sourcePath, targetPath, root, result);
-      }
-      continue;
     }
 
     if (entry.isDirectory()) {
       fs.mkdirSync(targetPath, { recursive: true });
       result.created.push(`${relativePath}/`);
-      copyMissingEntries(sourcePath, targetPath, root, result);
+      copyMissingEntries(sourcePath, targetPath, root, result, overwrite);
     } else if (entry.isFile()) {
       fs.mkdirSync(path.dirname(targetPath), { recursive: true });
       fs.copyFileSync(sourcePath, targetPath);

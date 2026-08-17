@@ -1064,6 +1064,39 @@ test("update --accept <section> <project-path> does not treat section name as pr
   assert.ok(!fs.existsSync(path.join(cwd, "workflows", ".aios")), "should not create .aios in a 'workflows' directory");
 });
 
+test("update --clean overwrites differing assets, removes unselected native skills/kit files, and preserves user tasks", () => {
+  const cwd = tempCwd();
+  run(["init", "clean-project", "--skill-delivery", "native", "--agents", "codex"], { runtimePaths, cwd });
+  const project = path.join(cwd, "clean-project");
+
+  const workflowPath = path.join(project, ".aios", "workflows", "review.workflow.md");
+  fs.writeFileSync(workflowPath, "# Modified locally\n");
+
+  const extraKitPath = path.join(project, ".aios", "workflows", "extra-obsolete-workflow.md");
+  fs.writeFileSync(extraKitPath, "# Obsolete workflow\n");
+
+  const obsoleteSkillPath = path.join(project, ".agents", "skills", "obsolete-skill");
+  fs.mkdirSync(obsoleteSkillPath, { recursive: true });
+  fs.writeFileSync(path.join(obsoleteSkillPath, "SKILL.md"), "# Obsolete Skill\n");
+
+  fs.mkdirSync(path.join(project, "docs", "tasks"), { recursive: true });
+  const userTaskPath = path.join(project, "docs", "tasks", "TASK-999-user-work.md");
+  fs.writeFileSync(userTaskPath, "# User work\n");
+
+  const output = run(["update", "clean-project", "--clean"], { runtimePaths, cwd });
+
+  const workflowContent = fs.readFileSync(workflowPath, "utf8");
+  assert.notEqual(workflowContent, "# Modified locally\n");
+
+  assert.ok(!fs.existsSync(extraKitPath), "Extra kit file should be deleted by --clean");
+
+  assert.ok(!fs.existsSync(obsoleteSkillPath), "Obsolete native skill folder should be deleted by --clean");
+
+  assert.ok(fs.existsSync(userTaskPath), "User task file under docs/tasks/ must be preserved");
+
+  assert.match(output, /Clean: removed deprecated native skill folder/);
+});
+
 test("aios map command generates repository map in project path", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
