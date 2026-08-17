@@ -8,6 +8,28 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.7.0
+
+Minor release introducing V2.x architecture enhancements: isolated task worktrees, deterministic verification, AST codebase indexing, telemetry, and the Graphify knowledge-graph integration.
+
+### Added
+
+- Added `aios worktree` command suite (`start`, `finish`, `list`, `remove`) for isolated task environments.
+- Added `aios verify` command for automated and deterministic testing detection (npm, pytest, cargo, go, dart).
+- Added `aios tasks` command for task dependency graph visualization and cycle resolution.
+- Added `aios rollback` command for automatic stashing/rollback when execution safety limits are breached.
+- Added execution safety boundaries and circuit breakers during agent task execution.
+- Added AST codebase indexing (`aios map` updates) with `repo-map.json` output.
+- Added multi-tool agent rules exporter (`aios export`) compiling to Cursor, Claude, Cline, Windsurf, and Copilot configs.
+- Added execution metrics telemetry logging for performance tracking.
+- Added optional `graphify` integration with automatic knowledge graph ingestion on `aios map` and dynamic configuration export.
+- Added `--clean` option to `aios update` to force overwrite default templates and prune obsolete/unselected assets while preserving user tasks.
+
+### Changed
+
+- Streamlined core skills to 5 consolidated, lightweight modules (`spec`, `arch`, `task`, `verify`, and `release-management`).
+- Streamlined generated skeleton `AGENTS.md` and starters by removing redundant metadata layers.
+
 ## 0.6.0
 
 Minor release focused on embedding 21 Comprehensive Enterprise Rules into the core AIOS templates for strictly-typed, scalable, and secure AI generation.
