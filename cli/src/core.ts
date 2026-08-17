@@ -14,7 +14,7 @@ export type SkillDelivery = "portable" | "native" | "both";
 export type AgentTarget = "codex" | "qwen" | "opencode" | "antigravity" | "generic";
 export type AgentScope = "repo" | "user";
 export type ProjectShape = "fullstack" | "frontend" | "backend" | "mobile" | "library" | "docs";
-export type IntegrationName = "rtk" | "caveman" | "ponytail";
+export type IntegrationName = "rtk" | "caveman" | "ponytail" | "graphify";
 export type CavemanMode = "lite" | "full" | "ultra";
 export type PonytailMode = "lite" | "full" | "ultra";
 
@@ -34,6 +34,10 @@ export interface IntegrationConfig {
     mode: PonytailMode;
     codePolicy: "prefer-minimal-correct-code";
     targetAgents: AgentTarget[];
+  };
+  graphify: {
+    enabled: boolean;
+    queryPolicy: "prefer-for-relationships";
   };
 }
 
@@ -108,16 +112,18 @@ export const PROJECT_SHAPES: ProjectShape[] = ["fullstack", "frontend", "backend
 export const INTEGRATION_REPO: Record<IntegrationName, string> = {
   rtk: "https://github.com/rtk-ai/rtk",
   caveman: "https://github.com/JuliusBrussee/caveman",
-  ponytail: "https://github.com/DietrichGebert/ponytail"
+  ponytail: "https://github.com/DietrichGebert/ponytail",
+  graphify: "https://github.com/Graphify-Labs/graphify"
 };
 
 export const INTEGRATION_DESCRIPTION: Record<IntegrationName, string> = {
   rtk: "compact noisy terminal output before it reaches AI context",
   caveman: "concise agent response style for status/debug loops",
-  ponytail: "minimal-correct-code rules for coding tasks"
+  ponytail: "minimal-correct-code rules for coding tasks",
+  graphify: "codebase knowledge graph for dependency and semantic relationship queries"
 };
 
-export const INTEGRATIONS: IntegrationName[] = ["rtk", "caveman", "ponytail"];
+export const INTEGRATIONS: IntegrationName[] = ["rtk", "caveman", "ponytail", "graphify"];
 export const CAVEMAN_MODES: CavemanMode[] = ["lite", "full", "ultra"];
 export const PONYTAIL_MODES: PonytailMode[] = ["lite", "full", "ultra"];
 
@@ -294,6 +300,10 @@ export function defaultProjectConfig(overrides: Partial<ProjectConfig> = {}): Pr
       mode: "full",
       codePolicy: "prefer-minimal-correct-code",
       targetAgents: []
+    },
+    graphify: {
+      enabled: false,
+      queryPolicy: "prefer-for-relationships"
     }
   };
 
@@ -339,6 +349,10 @@ export function readProjectConfig(projectPath: string): ProjectConfig {
       ponytail: {
         ...base.integrations.ponytail,
         ...parsed.integrations?.ponytail
+      },
+      graphify: {
+        ...base.integrations.graphify,
+        ...parsed.integrations?.graphify
       }
     }
   };

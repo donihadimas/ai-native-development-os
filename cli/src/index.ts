@@ -199,11 +199,11 @@ Advanced commands:
   aios integration status [project-path]
     Show project config, local rules, and detected external tool status.
 
-  aios integration add <rtk|caveman|ponytail|all> [project-path] [--install] [--mode lite|full|ultra] [--agents <list>] [--dry-run] [--yes]
-    Enable optional RTK/Caveman/Ponytail rules in the local .aios kit.
+  aios integration add <rtk|caveman|ponytail|graphify|all> [project-path] [--install] [--mode lite|full|ultra] [--agents <list>] [--dry-run] [--yes]
+    Enable optional RTK/Caveman/Ponytail/Graphify rules in the local .aios kit.
     With --install --yes, also runs the external installer when supported.
 
-  aios integration remove <rtk|caveman|ponytail|all> [project-path] [--scope project|user|both] [--dry-run] [--yes]
+  aios integration remove <rtk|caveman|ponytail|graphify|all> [project-path] [--scope project|user|both] [--dry-run] [--yes]
     Disable local rules, offer user-computer uninstall, or both.
     External uninstall only runs with --yes.
 
@@ -1208,6 +1208,13 @@ function detectIntegration(projectPath: string, integration: IntegrationName): {
     return { detected: true, detail: commandVersion("rtk") ?? "rtk found" };
   }
 
+  if (integration === "graphify") {
+    if (!commandExists("graphify")) {
+      return { detected: false, detail: "graphify CLI not found on PATH" };
+    }
+    return { detected: true, detail: commandVersion("graphify", ["-h"]) ?? "graphify found" };
+  }
+
   if (integration === "caveman") {
     const locations = cavemanLocations(projectPath).filter((location) => fs.existsSync(location));
     if (locations.length === 0) {
@@ -1295,6 +1302,28 @@ function installCommand(
       command: "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh",
       runnable: true,
       note: "Official RTK install script."
+    };
+  }
+
+  if (integration === "graphify") {
+    if (commandExists("uv")) {
+      return {
+        command: "uv tool install graphifyy && graphify install",
+        runnable: true,
+        note: "Installs Graphify cross-platform using uv (recommended)."
+      };
+    }
+    if (commandExists("pipx")) {
+      return {
+        command: "pipx install graphifyy && graphify install",
+        runnable: true,
+        note: "Installs Graphify globally using pipx."
+      };
+    }
+    return {
+      command: "pip install --user graphifyy && graphify install",
+      runnable: true,
+      note: "Installs Graphify via standard pip. Ensure Python is on your PATH."
     };
   }
 
@@ -1386,9 +1415,7 @@ function integrationSummary(projectPath: string, integrations: IntegrationName[]
 function commandIntegrationList(): string {
   return [
     "Optional AIOS integrations:",
-    "- rtk: " + INTEGRATION_DESCRIPTION.rtk + " repo: " + INTEGRATION_REPO.rtk,
-    "- caveman: " + INTEGRATION_DESCRIPTION.caveman + " repo: " + INTEGRATION_REPO.caveman,
-    "- ponytail: " + INTEGRATION_DESCRIPTION.ponytail + " repo: " + INTEGRATION_REPO.ponytail
+    ...INTEGRATIONS.map(name => `- ${name}: ${INTEGRATION_DESCRIPTION[name]} repo: ${INTEGRATION_REPO[name]}`)
   ].join("\n");
 }
 
@@ -2053,6 +2080,9 @@ function integrationReviewMessage(selected: IntegrationName[], projectPath: stri
   if (selected.includes("rtk")) {
     lines.push(`RTK repo: ${INTEGRATION_REPO.rtk}`);
   }
+  if (selected.includes("graphify")) {
+    lines.push(`Graphify repo: ${INTEGRATION_REPO.graphify}`);
+  }
   lines.push(`Commands will run from: ${projectPath}`);
   return lines.join(" ");
 }
@@ -2347,7 +2377,8 @@ async function interactiveIntegration(ctx: CommandContext): Promise<string> {
     choices: [
       { name: `RTK (${INTEGRATION_REPO.rtk})`, value: "rtk" },
       { name: `Caveman (${INTEGRATION_REPO.caveman})`, value: "caveman" },
-      { name: `Ponytail (${INTEGRATION_REPO.ponytail})`, value: "ponytail" }
+      { name: `Ponytail (${INTEGRATION_REPO.ponytail})`, value: "ponytail" },
+      { name: `Graphify (${INTEGRATION_REPO.graphify})`, value: "graphify" }
     ],
     required: true
   });
@@ -2537,7 +2568,23 @@ function commandMap(ctx: CommandContext, projectPathArg: string | undefined): st
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
   const repoMap = generateRepoMap(projectPath);
   const targetPath = writeRepoMap(projectPath, repoMap);
-  return `Successfully generated repository map at ${targetPath} (${Object.keys(repoMap).length} files indexed).`;
+  let output = `Successfully generated repository map at ${targetPath} (${Object.keys(repoMap).length} files indexed).`;
+
+  const config = readProjectConfig(projectPath);
+  if (config.integrations.graphify?.enabled && detectIntegration(projectPath, "graphify").detected) {
+    try {
+      execSync("graphify ingest", {
+        cwd: projectPath,
+        stdio: "ignore",
+        shell: os.platform() === "win32" ? "cmd.exe" : "/bin/sh"
+      });
+      output += "\nAlso successfully ingested codebase into Graphify.";
+    } catch (err: any) {
+      output += `\nWarning: Graphify ingest failed: ${err.message || String(err)}`;
+    }
+  }
+
+  return output;
 }
 
 function commandExport(ctx: CommandContext, projectPathArg: string | undefined, parsed: ParsedArgs): string {

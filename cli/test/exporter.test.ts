@@ -51,3 +51,35 @@ test("exportAll generates all targets", () => {
   // Cleanup
   fs.rmSync(projectDir, { recursive: true, force: true });
 });
+
+test("exportTarget appends enabled integration rules", () => {
+  const projectDir = tempProjectDir();
+  
+  // Set config with enabled integrations
+  fs.writeFileSync(path.join(projectDir, ".aios", "config.json"), JSON.stringify({
+    mode: "lite",
+    docsRoot: "docs",
+    integrations: {
+      rtk: { enabled: true, commandPolicy: "prefer-for-noisy-output" },
+      graphify: { enabled: true, queryPolicy: "prefer-for-relationships" }
+    }
+  }), "utf8");
+
+  // Create rules directories and mock integration files
+  fs.mkdirSync(path.join(projectDir, ".aios", "integrations"), { recursive: true });
+  fs.writeFileSync(path.join(projectDir, ".aios", "integrations", "rtk.md"), "RTK rule content.", "utf8");
+  fs.writeFileSync(path.join(projectDir, ".aios", "integrations", "graphify.md"), "Graphify rule content.", "utf8");
+
+  // Create an AGENTS.md file
+  fs.writeFileSync(path.join(projectDir, "AGENTS.md"), "Core rule: be nice.", "utf8");
+
+  const cursorPath = exportTarget(projectDir, "cursor");
+  const content = fs.readFileSync(cursorPath, "utf8");
+
+  assert.match(content, /Core rule: be nice\./);
+  assert.match(content, /RTK rule content\./);
+  assert.match(content, /Graphify rule content\./);
+
+  // Cleanup
+  fs.rmSync(projectDir, { recursive: true, force: true });
+});

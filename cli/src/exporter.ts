@@ -42,15 +42,29 @@ You are an AI coding agent working in this repository. Follow these execution ru
   const targetPath = getExportTargetPath(projectPath, target);
   fs.mkdirSync(path.dirname(targetPath), { recursive: true });
 
-  let content = agentsContent;
+  // Read and append enabled integration rules
+  let integrationsRules = "";
+  if (config.integrations) {
+    for (const [name, conf] of Object.entries(config.integrations)) {
+      if (conf && (conf as any).enabled) {
+        const integrationRuleFile = path.join(projectPath, ".aios", "integrations", `${name}.md`);
+        if (fs.existsSync(integrationRuleFile)) {
+          const ruleContent = fs.readFileSync(integrationRuleFile, "utf8");
+          integrationsRules += `\n\n---\n\n${ruleContent}`;
+        }
+      }
+    }
+  }
+
+  let content = agentsContent + integrationsRules;
   if (target === "cursor") {
-    content = `# Cursor Rules\n\n${agentsContent}`;
+    content = `# Cursor Rules\n\n${agentsContent}${integrationsRules}`;
   } else if (target === "cline") {
-    content = `# Cline Rules\n\n${agentsContent}`;
+    content = `# Cline Rules\n\n${agentsContent}${integrationsRules}`;
   } else if (target === "windsurf") {
-    content = `# Windsurf Rules\n\n${agentsContent}`;
+    content = `# Windsurf Rules\n\n${agentsContent}${integrationsRules}`;
   } else if (target === "copilot") {
-    content = `# GitHub Copilot Rules\n\n${agentsContent}`;
+    content = `# GitHub Copilot Rules\n\n${agentsContent}${integrationsRules}`;
   }
 
   fs.writeFileSync(targetPath, content, "utf8");

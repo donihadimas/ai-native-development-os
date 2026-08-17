@@ -43,7 +43,7 @@ test("help explains the CLI purpose and available commands", () => {
   assert.match(output, /aios agent list/);
   assert.match(output, /aios integration list/);
   assert.match(output, /aios integration status \[project-path\]/);
-  assert.match(output, /aios integration add <rtk\|caveman\|ponytail\|all>.*\[--agents <list>\].*\[--yes\]/);
+  assert.match(output, /aios integration add <rtk\|caveman\|ponytail\|graphify\|all>.*\[--agents <list>\].*\[--yes\]/);
   assert.match(output, /aios integration doctor \[project-path\]/);
   assert.match(output, /aios integration repair \[project-path\]/);
   assert.match(output, /aios config \[project-path\]/);
@@ -299,12 +299,14 @@ test("integration list and status expose optional external integrations", () => 
   assert.match(listOutput, /rtk: compact noisy terminal output before it reaches AI context repo: https:\/\/github\.com\/rtk-ai\/rtk/);
   assert.match(listOutput, /caveman: concise agent response style for status\/debug loops repo: https:\/\/github\.com\/JuliusBrussee\/caveman/);
   assert.match(listOutput, /ponytail: minimal-correct-code rules for coding tasks repo: https:\/\/github\.com\/DietrichGebert\/ponytail/);
+  assert.match(listOutput, /graphify: codebase knowledge graph for dependency and semantic relationship queries repo: https:\/\/github\.com\/Graphify-Labs\/graphify/);
 
   const statusOutput = run(["integration", "status", "demo-project"], { runtimePaths, cwd });
   assert.match(statusOutput, /AIOS integration status/);
   assert.match(statusOutput, /rtk:/);
   assert.match(statusOutput, /caveman:/);
   assert.match(statusOutput, /ponytail:/);
+  assert.match(statusOutput, /graphify:/);
   assert.match(statusOutput, /state: disabled/);
 });
 
@@ -314,10 +316,11 @@ test("integration review message shows repo links for all supported integrations
   const project = path.join(cwd, "demo-project");
 
   // Test that review message includes repo links for all integrations
-  const reviewMessage = integrationReviewMessage(["rtk", "caveman", "ponytail"], project);
+  const reviewMessage = integrationReviewMessage(["rtk", "caveman", "ponytail", "graphify"], project);
   assert.match(reviewMessage, /Caveman repo: https:\/\/github\.com\/JuliusBrussee\/caveman/);
   assert.match(reviewMessage, /Ponytail repo: https:\/\/github\.com\/DietrichGebert\/ponytail/);
   assert.match(reviewMessage, /RTK repo: https:\/\/github\.com\/rtk-ai\/rtk/);
+  assert.match(reviewMessage, /Graphify repo: https:\/\/github\.com\/Graphify-Labs\/graphify/);
 });
 
 test("integration add supports dry-run, RTK rules, Caveman/Ponytail modes, and all selection", () => {
@@ -366,12 +369,18 @@ test("integration add supports dry-run, RTK rules, Caveman/Ponytail modes, and a
   assert.match(ponytailDryRun, /npx -y skills add DietrichGebert\/ponytail -a qwen-code --yes/);
   assert.match(ponytailDryRun, /targeted agents only/);
 
+  run(["integration", "add", "graphify", "demo-project"], { runtimePaths, cwd });
+  config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
+  assert.equal(config.integrations.graphify.enabled, true);
+  assert.ok(fs.existsSync(path.join(project, ".aios", "integrations", "graphify.md")));
+
   run(["integration", "remove", "all", "demo-project", "--scope", "project"], { runtimePaths, cwd });
   run(["integration", "add", "all", "demo-project"], { runtimePaths, cwd });
   config = JSON.parse(fs.readFileSync(path.join(project, ".aios", "config.json"), "utf8"));
   assert.equal(config.integrations.rtk.enabled, true);
   assert.equal(config.integrations.caveman.enabled, true);
   assert.equal(config.integrations.ponytail.enabled, true);
+  assert.equal(config.integrations.graphify.enabled, true);
 });
 
 test("integration remove supports project, user dry-run, both dry-run, and validation", () => {
