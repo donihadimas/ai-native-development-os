@@ -1527,6 +1527,11 @@ function commandIntegrationAdd(
       }
     } else if (!detection.detected) {
       output.push(`- manual install: ${installer.command}`);
+      output.push(`- install note: ${installer.note}`);
+      if (integration === "graphify") {
+        output.push(`- install tip: on Linux (PEP 668), use 'pipx install graphifyy && graphify install' or 'pip install --user graphifyy --break-system-packages && graphify install'`);
+      }
+      output.push(`- auto install: run 'aios integration add ${integration} --install --yes' to install automatically`);
     }
   }
 
@@ -2602,14 +2607,14 @@ function commandMap(ctx: CommandContext, projectPathArg: string | undefined): st
   const config = readProjectConfig(projectPath);
   if (config.integrations.graphify?.enabled && detectIntegration(projectPath, "graphify").detected) {
     try {
-      execSync("graphify ingest", {
+      execSync("graphify extract . --code-only", {
         cwd: projectPath,
         stdio: "ignore",
         shell: os.platform() === "win32" ? "cmd.exe" : "/bin/sh"
       });
       output += "\nAlso successfully ingested codebase into Graphify.";
     } catch (err: any) {
-      output += `\nWarning: Graphify ingest failed: ${err.message || String(err)}`;
+      output += `\nWarning: Graphify extract failed: ${err.message || String(err)}`;
     }
   }
 

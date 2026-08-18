@@ -4,3 +4,4 @@ cli/assets/
 cli/dist/
 .DS_Store
 .aios/worktrees/
+graphify-out/

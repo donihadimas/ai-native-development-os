@@ -457,6 +457,23 @@ test("integration add offers runnable RTK installers on supported platforms", ()
   }
 });
 
+test("integration add provides clear manual install and auto install guidance when external is missing", () => {
+  const cwd = tempCwd();
+  run(["init", "demo-project"], { runtimePaths, cwd });
+
+  const oldPath = process.env.PATH;
+  process.env.PATH = "";
+  try {
+    const output = run(["integration", "add", "graphify", "demo-project"], { runtimePaths, cwd });
+    assert.match(output, /manual install:/);
+    assert.match(output, /install note:/);
+    assert.match(output, /install tip: on Linux \(PEP 668\)/);
+    assert.match(output, /auto install: run 'aios integration add graphify --install --yes'/);
+  } finally {
+    process.env.PATH = oldPath;
+  }
+});
+
 test("integration install runs external commands from the target project path", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });

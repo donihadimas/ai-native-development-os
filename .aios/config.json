@@ -31,6 +31,17 @@
       "targetAgents": [
         "codex"
       ]
+    },
+    "ponytail": {
+      "enabled": true,
+      "mode": "full",
+      "targetAgents": [
+        "codex"
+      ]
+    },
+    "graphify": {
+      "enabled": true
     }
-  }
+  },
+  "telemetry": true
 }
