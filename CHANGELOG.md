@@ -8,6 +8,16 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.7.1
+
+Patch release enhancing `aios update --clean` to automatically purge unmanaged and legacy kit assets (`.aios/commands/`, `.aios/prompts/`, and unselected portable skills).
+
+### Fixed
+
+- Enhanced `aios update --clean` to scan the root `.aios/` directory and remove legacy/unmanaged folders (`.aios/commands/`, `.aios/prompts/`) and unselected portable skills (`.aios/skills/` when using native delivery mode).
+- Preserved all runtime and user project assets (`config.json`, `repo-map.json`, `worktrees/`, `telemetry.json`, etc.) during `--clean` operations.
+- Added removal tracking in `AdoptResult` and transparent logging for all pruned kit items during update.
+
 ## 0.7.0
 
 Minor release introducing V2.x architecture enhancements: isolated task worktrees, deterministic verification, AST codebase indexing, telemetry, and the Graphify knowledge-graph integration.
