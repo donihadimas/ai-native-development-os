@@ -8,6 +8,17 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.7.2
+
+Patch release fixing Graphify command execution in `aios map` and enhancing installation guidance for missing external integration tools.
+
+### Fixed
+
+- Corrected Graphify knowledge graph auto-extraction in `aios map` from `graphify ingest` to `graphify extract . --code-only` (local AST parsing with zero LLM API key requirement).
+- Enhanced `aios integration add` output when external tools are missing to provide comprehensive step-by-step manual installation guides, OS-specific tips (e.g. Linux PEP 668), and automated install instructions (`--install --yes`).
+- Updated `.aios/integrations/graphify.md` and `integrations/graphify.md` with guidelines on `graphify query`, `graphify explain`, `graphify affected`, and `graphify extract`.
+- Added `graphify-out/` to `.gitignore` to prevent local graph artifacts from cluttering git working trees.
+
 ## 0.7.1
 
 Patch release enhancing `aios update --clean` to automatically purge unmanaged and legacy kit assets (`.aios/commands/`, `.aios/prompts/`, and unselected portable skills).
