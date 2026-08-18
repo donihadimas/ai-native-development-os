@@ -13,6 +13,20 @@
 - If RTK is enabled, use it for noisy command output unless exact full output is required.
 - If Caveman is enabled, use concise style for operational updates only; keep formal artifacts complete.
 
+## Workflow Handoffs
+
+Use this workflow as the primary route for a raw idea, new project setup, first PRD, initial architecture, or early AIOS lifecycle. It should create enough durable context before any implementation workflow begins.
+
+- Use `product-discovery`, then `prd-generator`, then `architecture-design` for the initial product and system foundation.
+- Use `adr-generator` when the architecture creates durable decisions or trade-offs.
+- Use `.aios/workflows/ui-design.workflow.md` and `ui-ux-design` when the project has user-facing UI or product-facing interactions.
+- Use `.aios/workflows/api-contract.workflow.md` and `api-contract-design` when initial tasks require app integration, provider/client boundaries, webhooks, or external services.
+- Use `.aios/workflows/database-migration.workflow.md` and `database-migration` when initial scope requires persistence design, migration plans, or seed data.
+- Use `.aios/workflows/security-review.workflow.md` when initial scope includes auth, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or sensitive data.
+- For the current lifecycle step only, read the selected prompt first, then use `skill-router.md` Artifact Routing to add references or templates only when they govern the artifact being created.
+- Use `task-breakdown` to create small tasks only after the relevant PRD, architecture, ADR, design, API, migration, and security inputs are reviewed.
+- Use `.aios/workflows/new-feature.workflow.md` for the first feature implementation after the project foundation is accepted.
+
 ## Process
 
 1. Resolve `.aios/config.json`; use `docsRoot`, `projectShape`, selected agents, and skill delivery mode.
@@ -27,7 +41,7 @@
 10. User reviews design before frontend or product-facing implementation tasks are treated as ready.
 11. Break the reviewed PRD, architecture, ADRs, API contracts, and design into small tasks using `task-breakdown`.
 12. Initialize app code with the chosen stack outside the AIOS core when needed.
-13. Plan one task at a time using `implementation-planner`, then implement and close status with `task-implementation`.
+13. Plan one task at a time using `implementation-planner`, then implement, close status, and archive completed tasks with `task-implementation`.
 14. Add or update tests using `testing`.
 15. Review each change using `code-review`.
 
@@ -40,7 +54,7 @@
 - After ADRs: design UI/UX for user-facing work and create API contracts or migration plans when needed.
 - After design/API/migration planning: generate small implementation tasks.
 - After task generation: implement one task at a time.
-- After implementation: test and review before marking done.
+- After implementation: test, review, complete the Done Summary, then archive the task under `<docsRoot>/tasks/done/`.
 
 ## Output
 
@@ -62,7 +76,7 @@
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select skills at each stage. Use `.aios/prompts/` for discovery, PRD, and architecture triggers. Use `.aios/templates/` for all document creation. Use `.aios/references/` for engineering guidance. Use `.aios/workflows/` for end-to-end sequencing.
+Use `.aios/skill-router.md` to select this workflow first, then use skills and adjacent workflows from the handoff list above one lifecycle step at a time. Use `skill-router.md` Artifact Routing just-in-time: read the selected step's prompt first, add references only when they govern the decision, and add templates only when creating or updating the artifact. Use `.aios/workflows/` for end-to-end sequencing.
 
 ## Lite Mode Flow
 

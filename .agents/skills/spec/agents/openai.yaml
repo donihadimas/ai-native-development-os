@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec"
+  short_description: "Use when discovering product vision, refining feature scope, and generating or updating PRDs."
+  default_prompt: "Use $spec for this AIOS workflow."

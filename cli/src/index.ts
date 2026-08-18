@@ -842,6 +842,11 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
       totalCreated += kitResult.created.length;
       totalSkipped += kitResult.skipped.length;
       output.push(`Kit: ${kitResult.created.length} added, ${kitResult.skipped.length} skipped existing`);
+      if (kitResult.removed && kitResult.removed.length > 0) {
+        for (const item of kitResult.removed) {
+          output.push(`Clean: removed deprecated/unmanaged kit entry: .aios/${item}`);
+        }
+      }
     }
   } else {
     output.push("Kit: skipped (lite mode)");

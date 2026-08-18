@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task"
+  short_description: "Use when breaking down specifications into actionable tasks, creating implementation plans, and executing code modifications."
+  default_prompt: "Use $task for this AIOS workflow."

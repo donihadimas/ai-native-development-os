@@ -23,3 +23,10 @@ Keep database decisions visible in architecture docs or ADRs when they affect mu
 ## Operational Readiness
 
 Plan indexes, query patterns, data volume, backups, rollback, and verification before applying risky changes. Migration plans should identify pre-checks and post-checks before implementation.
+
+## Database Query & Schema Rules
+
+- **Schema**: Normalize when appropriate. Version migrations explicitly. Always support rollback mechanisms.
+- **Queries**: Index frequently queried columns. Avoid `SELECT *`.
+- **Retrieval**: Always paginate collection returns to prevent unbounded memory usage.
+- **Transactions**: Use transactions correctly to guarantee atomic operations across related tables.

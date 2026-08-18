@@ -1,0 +1,4 @@
+interface:
+  display_name: "Arch"
+  short_description: "Use when designing system architecture, defining components, data models, and recording Architecture Decision Records (ADRs)."
+  default_prompt: "Use $arch for this AIOS workflow."

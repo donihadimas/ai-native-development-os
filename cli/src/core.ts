@@ -67,6 +67,7 @@ export interface RuntimePaths {
 export interface AdoptResult {
   created: string[];
   skipped: string[];
+  removed?: string[];
 }
 
 export interface AgentInstallResult {
@@ -484,8 +485,33 @@ export function installAiosKit(
   const targetRoot = path.join(projectPath, ".aios");
   const result: AdoptResult = {
     created: [],
-    skipped: []
+    skipped: [],
+    removed: []
   };
+
+  if (options.clean && fs.existsSync(targetRoot)) {
+    const allowedEntries = new Set<string>(AIOS_KIT_ENTRIES);
+    if (options.includeSkills === false) {
+      allowedEntries.delete("skills");
+    }
+    const preservedRootEntries = new Set<string>([
+      "config.json",
+      "repo-map.json",
+      "worktrees",
+      "telemetry.json",
+      "review-needed",
+      ".gitkeep",
+      ".gitignore"
+    ]);
+
+    for (const dirEntry of fs.readdirSync(targetRoot)) {
+      if (!allowedEntries.has(dirEntry) && !preservedRootEntries.has(dirEntry)) {
+        const entryPath = path.join(targetRoot, dirEntry);
+        fs.rmSync(entryPath, { recursive: true, force: true });
+        result.removed?.push(path.relative(targetRoot, entryPath));
+      }
+    }
+  }
 
   for (const entry of AIOS_KIT_ENTRIES) {
     if (entry === "skills" && options.includeSkills === false) {
@@ -497,7 +523,7 @@ export function installAiosKit(
     }
     const targetPath = path.join(targetRoot, entry);
     if (options.clean) {
-      cleanExtraEntries(sourcePath, targetPath);
+      cleanExtraEntries(sourcePath, targetPath, targetRoot, result.removed);
     }
     copyMissingEntries(sourcePath, targetPath, targetRoot, result, options.overwrite);
   }
@@ -642,7 +668,7 @@ export function installAgentSkills(options: {
   return result;
 }
 
-function cleanExtraEntries(source: string, target: string): void {
+function cleanExtraEntries(source: string, target: string, root?: string, removed?: string[]): void {
   if (!fs.existsSync(target)) {
     return;
   }
@@ -650,6 +676,9 @@ function cleanExtraEntries(source: string, target: string): void {
   if (targetStat.isFile()) {
     if (!fs.existsSync(source)) {
       fs.rmSync(target, { force: true });
+      if (removed && root) {
+        removed.push(path.relative(root, target));
+      }
     }
     return;
   }
@@ -657,6 +686,9 @@ function cleanExtraEntries(source: string, target: string): void {
   // It's a directory
   if (!fs.existsSync(source)) {
     fs.rmSync(target, { recursive: true, force: true });
+    if (removed && root) {
+      removed.push(path.relative(root, target));
+    }
     return;
   }
 
@@ -664,7 +696,7 @@ function cleanExtraEntries(source: string, target: string): void {
     const sourcePath = path.join(source, entry.name);
     const targetPath = path.join(target, entry.name);
     if (entry.isDirectory()) {
-      cleanExtraEntries(sourcePath, targetPath);
+      cleanExtraEntries(sourcePath, targetPath, root, removed);
       // If target directory is now empty, delete it
       if (fs.existsSync(targetPath) && fs.readdirSync(targetPath).length === 0) {
         fs.rmSync(targetPath, { recursive: true, force: true });
@@ -672,6 +704,9 @@ function cleanExtraEntries(source: string, target: string): void {
     } else if (entry.isFile()) {
       if (!fs.existsSync(sourcePath)) {
         fs.rmSync(targetPath, { force: true });
+        if (removed && root) {
+          removed.push(path.relative(root, targetPath));
+        }
       }
     }
   }

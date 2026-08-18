@@ -1,4 +1,4 @@
 interface:
   display_name: "Release Management"
-  short_description: "Use the release-management AIOS workflow."
+  short_description: "Use when preparing release notes, changelog updates, deployment checks, rollback notes, or post-release verification."
   default_prompt: "Use $release-management for this AIOS workflow."

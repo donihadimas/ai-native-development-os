@@ -1,4 +1,4 @@
 interface:
   display_name: "Database Migration"
-  short_description: "Use the database-migration AIOS workflow."
+  short_description: "Use when planning or reviewing database schema, data, index, seed, or rollback changes before implementation."
   default_prompt: "Use $database-migration for this AIOS workflow."

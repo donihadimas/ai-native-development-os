@@ -1,4 +1,4 @@
 interface:
   display_name: "Api Contract Design"
-  short_description: "Use the api-contract-design AIOS workflow."
+  short_description: "Use when defining or updating an API contract before frontend and backend integration work begins."
   default_prompt: "Use $api-contract-design for this AIOS workflow."

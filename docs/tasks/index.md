@@ -37,6 +37,7 @@ Use this index before opening task files. Open task bodies only after selecting 
 | TASK-050 | Done | `docs/tasks/TASK-050-implement-multi-tool-agent-config-exporter.md` | Multi-tool agent config exporter for Cursor, Cline, etc. (`aios export`). |
 | TASK-051 | Done | `docs/tasks/TASK-051-implement-agent-telemetry-and-metrics-logging.md` | Local task execution metrics and telemetry logger (`aios stats`). |
 | TASK-052 | Done | `docs/tasks/TASK-052-implement-graphify-optional-integration.md` | Implement Graphify optional integration to map code connections. |
+| TASK-053 | Done | `docs/tasks/TASK-053-full-clean-unmanaged-and-legacy-kit-assets.md` | Full clean unmanaged and legacy kit assets in AIOS update. |
 
 ### Existing Queue
 

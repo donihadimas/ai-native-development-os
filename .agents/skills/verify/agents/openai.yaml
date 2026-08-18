@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify"
+  short_description: "Use when running test suites, verifying acceptance criteria, performing code review, and conducting security audits."
+  default_prompt: "Use $verify for this AIOS workflow."

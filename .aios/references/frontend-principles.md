@@ -25,3 +25,30 @@ Every async flow should define loading, empty, success, and error behavior.
 ## Respect API Contracts
 
 Do not assume backend response shapes. Use `<docsRoot>/api/` when integration is involved, resolving `docsRoot` from `.aios/config.json` or defaulting to `docs`.
+
+## Framework-Agnostic UI Rules
+
+- **Component Composition**: Prefer composition over prop drilling.
+- **State Management**: Avoid unnecessary state. Derive state whenever possible. Keep state close to where it's used.
+- **Server vs Client**: (For frameworks like Next.js) Use Server Components by default. Client Components only when necessary. Keep server logic on the server and never expose secrets to the client bundle. Cache intentionally and avoid unnecessary hydration.
+- **Mobile Patterns**: (For Android/Flutter) Prefer MVVM/MVI, repository pattern, dependency injection, and offline-first architectures. Use unidirectional data flow (e.g., StateFlow).
+
+## Frontend Performance Rules
+
+- **Rendering**: Minimize unnecessary rerenders. Memoize only when measured (e.g., `useMemo`/`useCallback` strictly for heavy computations or reference stability).
+- **Data Loading**: Implement lazy loading, pagination, and streaming for heavy data. Avoid N+1 queries on the client or during SSR.
+- **Allocations**: Avoid repeated object allocations in render paths. Cache only when beneficial. Measure before optimizing.
+
+## Accessibility (A11y) Rules
+
+- Use semantic HTML tags.
+- Ensure full keyboard navigation support.
+- Ensure screen reader support.
+- Verify color contrast ratios.
+- Use ARIA attributes only when semantic HTML is insufficient.
+
+## Internationalization (i18n) Rules
+
+- No hardcoded text strings in UI components.
+- Use locale-aware formatting for dates, numbers, and currencies.
+- Maintain timezone awareness across interactions.

@@ -1064,7 +1064,7 @@ test("update --accept <section> <project-path> does not treat section name as pr
   assert.ok(!fs.existsSync(path.join(cwd, "workflows", ".aios")), "should not create .aios in a 'workflows' directory");
 });
 
-test("update --clean overwrites differing assets, removes unselected native skills/kit files, and preserves user tasks", () => {
+test("update --clean overwrites differing assets, removes unselected native skills/kit files, purges legacy commands/prompts, and preserves user tasks", () => {
   const cwd = tempCwd();
   run(["init", "clean-project", "--skill-delivery", "native", "--agents", "codex"], { runtimePaths, cwd });
   const project = path.join(cwd, "clean-project");
@@ -1074,6 +1074,14 @@ test("update --clean overwrites differing assets, removes unselected native skil
 
   const extraKitPath = path.join(project, ".aios", "workflows", "extra-obsolete-workflow.md");
   fs.writeFileSync(extraKitPath, "# Obsolete workflow\n");
+
+  const legacyCommandsPath = path.join(project, ".aios", "commands", "create-adr.md");
+  fs.mkdirSync(path.dirname(legacyCommandsPath), { recursive: true });
+  fs.writeFileSync(legacyCommandsPath, "# Obsolete command\n");
+
+  const legacyPromptsPath = path.join(project, ".aios", "prompts", "00-discover.md");
+  fs.mkdirSync(path.dirname(legacyPromptsPath), { recursive: true });
+  fs.writeFileSync(legacyPromptsPath, "# Obsolete prompt\n");
 
   const obsoleteSkillPath = path.join(project, ".agents", "skills", "obsolete-skill");
   fs.mkdirSync(obsoleteSkillPath, { recursive: true });
@@ -1089,12 +1097,16 @@ test("update --clean overwrites differing assets, removes unselected native skil
   assert.notEqual(workflowContent, "# Modified locally\n");
 
   assert.ok(!fs.existsSync(extraKitPath), "Extra kit file should be deleted by --clean");
+  assert.ok(!fs.existsSync(path.join(project, ".aios", "commands")), "Legacy .aios/commands should be deleted by --clean");
+  assert.ok(!fs.existsSync(path.join(project, ".aios", "prompts")), "Legacy .aios/prompts should be deleted by --clean");
+  assert.ok(!fs.existsSync(path.join(project, ".aios", "skills")), "Native project should not retain .aios/skills under --clean");
 
   assert.ok(!fs.existsSync(obsoleteSkillPath), "Obsolete native skill folder should be deleted by --clean");
 
   assert.ok(fs.existsSync(userTaskPath), "User task file under docs/tasks/ must be preserved");
 
   assert.match(output, /Clean: removed deprecated native skill folder/);
+  assert.match(output, /Clean: removed deprecated\/unmanaged kit entry: .aios\/commands/);
 });
 
 test("aios map command generates repository map in project path", () => {
