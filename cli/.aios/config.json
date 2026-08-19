@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "mode": "full",
+  "docsRoot": "docs",
+  "kitRoot": ".aios",
+  "skillDelivery": "portable",
+  "selectedAgents": [],
+  "selectedSkills": [
+    "spec",
+    "arch",
+    "task",
+    "verify"
+  ],
+  "agentScope": "repo",
+  "projectShape": "fullstack",
+  "integrations": {
+    "rtk": {
+      "enabled": true,
+      "commandPolicy": "prefer-for-noisy-output"
+    },
+    "caveman": {
+      "enabled": true,
+      "mode": "lite",
+      "responsePolicy": "concise-for-status-only",
+      "targetAgents": [
+        "codex"
+      ]
+    },
+    "ponytail": {
+      "enabled": true,
+      "mode": "lite",
+      "codePolicy": "prefer-minimal-correct-code",
+      "targetAgents": [
+        "codex"
+      ]
+    },
+    "graphify": {
+      "enabled": true,
+      "queryPolicy": "prefer-for-relationships"
+    }
+  },
+  "telemetry": true
+}
