@@ -212,7 +212,7 @@ If docs/product/vision.md is still thin, read AGENTS.md and .aios/prompts/00-dis
 For task implementation:
 
 ```text
-Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and the active task in docs/tasks/. Use implementation-planner before editing, then task-implementation to implement, validate acceptance criteria, and update the task Done Summary when complete. Do not modify unrelated files.
+Read AGENTS.md, .aios/repo-map.json, .aios/skill-router.md, and the active task in docs/tasks/. Use implementation-planner before editing, then task-implementation to implement, validate acceptance criteria, and update the task Done Summary when complete. Do not modify unrelated files.
 ```
 
 For review:
@@ -227,22 +227,22 @@ Review the diff against the active task acceptance criteria. Findings first, the
 - `aios validate [project-path] [--lite]`: Checks whether a project has the expected AI-ready structure.
 - `aios starter <starter-name> <project-name>`: Copies a bundled AI docs only starter into a new directory.
 - `aios adopt [project-path]`: Adds the AI Dev OS structure and local `.aios/` workflow kit to an existing project without overwriting existing files.
+- `aios map [project-path]`: Generates a compact JSON repository AST map (`.aios/repo-map.json`) with Graphify code graph extraction and a real-time animated braille spinner (`⠋ ⠙ ⠹`).
+- `aios verify [project-path] [--task <file>] [--test-command <cmd>]`: Automated verification test runner with auto-detection for npm, pytest, cargo, go, dart, and gradle/kotlin with real-time progress feedback.
+- `aios export [project-path] [--target <cursor,claude|all>]`: Exports agent-specific rules (`.cursorrules`, `.clauderules`, etc.) with interactive multiselect checkbox support.
+- `aios worktree <start|finish|list|remove> <task-id>`: Manages isolated Git worktrees for task implementation and verification.
+- `aios rollback [project-path] [--task <file>] [--hard]`: Safely stashes or resets uncommitted task changes when verification fails.
 - `aios kit install [project-path]`: Installs or repairs the local `.aios/` workflow kit.
 - `aios agent list`: Lists supported native agent targets and available AIOS skills.
 - `aios agent install [project-path]`: Installs selected AIOS skills into native agent skill folders.
-- `aios integration list / status / add / remove / doctor / repair`: Manages optional external integrations like `rtk`, `caveman`, and `ponytail`.
+- `aios integration list / status / add / remove / doctor / repair`: Manages optional external integrations (`rtk`, `caveman`, `ponytail`, `graphify`).
 - `aios config [project-path]`: Prints the resolved AIOS project config.
 - `aios prompt list / show`: Lists or prints portable AIOS command prompts.
+- `aios tasks [project-path]`: Displays a formatted dependency graph of all task files.
+- `aios stats [project-path]`: Prints local AIOS workspace telemetry and task metrics.
+- `aios repair / update`: Repairs missing assets or updates local AIOS kit files cleanly.
 - `aios next [project-path]`: Prints the next recommended development step without changing files.
-- `aios create feature <name>`: Creates a feature PRD stub from the PRD template.
-- `aios create adr <name>`: Creates the next numbered ADR.
-- `aios create task <name>`: Creates the next numbered implementation task.
-- `aios create review <name>`: Creates a review report stub.
-- `aios create design <name>`: Creates a UI/UX design document stub.
-- `aios create openapi <name>`: Creates an OpenAPI contract stub.
-- `aios create migration <name>`: Creates the next numbered database migration plan.
-- `aios create security <name>`: Creates a security review report stub.
-- `aios create release <name>`: Creates a release note and changelog draft.
+- `aios create feature / adr / task / review / design / openapi / migration / security / release`: Generates numbered V2.x workflow document stubs from templates.
 
 ## 📂 Generated Project Structure
 
@@ -267,10 +267,10 @@ A project created with `aios init` looks like this:
 │   ├── 📁 reviews/
 │   ├── 📁 api/
 │   └── 📁 context/
-│       ├── 📄 context-map.md
 │       └── 📄 development-start.md
 ├── 📁 .aios/
 │   ├── 📄 config.json
+│   ├── 📄 repo-map.json
 │   ├── 📄 skill-router.md
 │   ├── 📁 commands/
 │   ├── 📁 integrations/
