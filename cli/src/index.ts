@@ -43,7 +43,9 @@ import {
   type RuntimePaths,
   classifyKitAssets,
   acceptKitAssets,
+  startSpinner,
   runVerification,
+  runVerificationAsync,
   loadAllTasks,
   resolveTaskGraph,
   formatTaskGraph,
@@ -587,6 +589,7 @@ function setupAiosForProject(
 
   const includeSkills = config.skillDelivery === "portable" || config.skillDelivery === "both";
   const kitResult = installAiosKit(ctx.runtimePaths.aiosKitSource, projectPath, { includeSkills, config });
+  syncIntegrationRulesToAgentDocs(projectPath);
   const agentResult =
     config.skillDelivery === "native" || config.skillDelivery === "both"
       ? installAgentSkills({
@@ -1280,6 +1283,33 @@ function ensureIntegrationRule(ctx: CommandContext, projectPath: string, integra
   return target;
 }
 
+function syncIntegrationRulesToAgentDocs(projectPath: string): void {
+  const config = readProjectConfig(projectPath);
+  if (!config.integrations) return;
+
+  const targetFiles = ["AGENTS.md", "CLAUDE.md"];
+  for (const fileName of targetFiles) {
+    const filePath = path.join(projectPath, fileName);
+    if (!fs.existsSync(filePath)) continue;
+
+    let content = fs.readFileSync(filePath, "utf8");
+
+    for (const integration of INTEGRATIONS) {
+      if (config.integrations[integration]?.enabled) {
+        const ruleFile = integrationRulePath(projectPath, integration);
+        if (fs.existsSync(ruleFile)) {
+          const ruleContent = fs.readFileSync(ruleFile, "utf8").trim();
+          const header = `# ${titleize(integration)} Integration Rules`;
+          if (!content.includes(header)) {
+            content = content.trimEnd() + `\n\n---\n\n${ruleContent}\n`;
+          }
+        }
+      }
+    }
+    fs.writeFileSync(filePath, content, "utf8");
+  }
+}
+
 function disableIntegrationRule(projectPath: string, integration: IntegrationName): string | undefined {
   const target = integrationRulePath(projectPath, integration);
   if (!fs.existsSync(target)) {
@@ -1537,6 +1567,7 @@ function commandIntegrationAdd(
 
   if (!options.dryRun) {
     writeProjectConfig(projectPath, config);
+    syncIntegrationRulesToAgentDocs(projectPath);
   }
 
   if (!options.dryRun) {
@@ -2244,7 +2275,8 @@ async function promptOptionalIntegrationSetup(ctx: CommandContext, projectPath: 
     choices: [
       { name: `RTK: compact noisy terminal output (${INTEGRATION_REPO.rtk})`, value: "rtk" },
       { name: `Caveman: concise status/debug responses (${INTEGRATION_REPO.caveman})`, value: "caveman" },
-      { name: `Ponytail: minimal correct coding rules (${INTEGRATION_REPO.ponytail})`, value: "ponytail" }
+      { name: `Ponytail: minimal correct coding rules (${INTEGRATION_REPO.ponytail})`, value: "ponytail" },
+      { name: `Graphify: codebase knowledge graph queries (${INTEGRATION_REPO.graphify})`, value: "graphify" }
     ],
     required: false
   });
@@ -2480,6 +2512,32 @@ async function interactiveIntegration(ctx: CommandContext): Promise<string> {
   });
 }
 
+async function interactiveExport(ctx: CommandContext, defaultPath?: string): Promise<string> {
+  const projectPathInput = await input({ message: "Project path:", default: defaultPath || "." });
+  const projectPath = path.resolve(ctx.cwd, projectPathInput);
+
+  const selectedTargets = await checkbox<string>({
+    message: "Select AI agents to export configuration for:",
+    choices: [
+      { name: "Cursor (.cursorrules)", value: "cursor", checked: true },
+      { name: "Claude (CLAUDE.md)", value: "claude", checked: true },
+      { name: "Cline (.clinerules)", value: "cline", checked: true },
+      { name: "Windsurf (.windsurfrules)", value: "windsurf", checked: true },
+      { name: "GitHub Copilot (.github/copilot-instructions.md)", value: "copilot", checked: true }
+    ]
+  });
+
+  if (selectedTargets.length === 0) {
+    return "Export cancelled: no AI agent selected.";
+  }
+
+  const target = selectedTargets.length === 5 ? "all" : selectedTargets.join(",");
+  return commandExport(ctx, projectPath, {
+    ...parseArgs([]),
+    target
+  });
+}
+
 async function runInteractive(argv: string[], ctx: CommandContext = { runtimePaths: getRuntimePaths(), cwd: process.cwd() }): Promise<string> {
   const [command, name, secondName] = parseArgs(argv).args;
 
@@ -2494,6 +2552,10 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
     const projectName = secondName ?? (await input({ message: "Project name:", required: true }));
     const setup = await promptSetupOptions(ctx);
     return interactiveStarter(ctx, starter, projectName, setup);
+  }
+
+  if (command === "export") {
+    return interactiveExport(ctx, name);
   }
 
   const action = await select({
@@ -2528,13 +2590,13 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
     case "validate":
       return commandValidate(ctx, await input({ message: "Project path:", default: "." }));
     case "verify":
-      return commandVerify(ctx, await input({ message: "Project path:", default: "." }), parseArgs([]));
+      return await commandVerify(ctx, await input({ message: "Project path:", default: "." }), parseArgs([]));
     case "tasks":
       return commandTasks(ctx, await input({ message: "Project path:", default: "." }));
     case "map":
       return commandMap(ctx, await input({ message: "Project path:", default: "." }));
     case "export":
-      return commandExport(ctx, await input({ message: "Project path:", default: "." }), parseArgs([]));
+      return interactiveExport(ctx);
     case "stats":
       return commandStats(ctx, await input({ message: "Project path:", default: "." }));
     case "repair":
@@ -2550,43 +2612,52 @@ async function runInteractive(argv: string[], ctx: CommandContext = { runtimePat
 
 function commandVerify(ctx: CommandContext, projectPathArg: string | undefined, parsed: ParsedArgs): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
-  const result = runVerification({
-    projectPath,
-    taskFile: parsed.task,
-    testCommand: parsed.testCommand
-  });
+  console.log(`Running automated verification for ${projectPath}...`);
+  const spinner = startSpinner("Executing test suite and verifying codebase...");
+  try {
+    const result = runVerification({
+      projectPath,
+      taskFile: parsed.task,
+      testCommand: parsed.testCommand,
+      onProgress: (msg) => spinner.update(msg)
+    });
+    spinner.stop();
 
-  let taskId: string | undefined = undefined;
-  if (parsed.task) {
-    const fileName = path.basename(parsed.task, ".md");
-    const idMatch = fileName.match(/^(TASK-\d+)/i);
-    if (idMatch) {
-      taskId = idMatch[1].toUpperCase();
-    } else {
-      taskId = fileName;
-    }
-  } else {
-    try {
-      const config = readProjectConfig(projectPath);
-      const tasksDir = path.join(projectPath, config.docsRoot, "tasks");
-      const tasks = loadAllTasks(tasksDir);
-      const activeTask = tasks.find((t) => t.status === "Active");
-      if (activeTask) {
-        taskId = activeTask.id;
+    let taskId: string | undefined = undefined;
+    if (parsed.task) {
+      const fileName = path.basename(parsed.task, ".md");
+      const idMatch = fileName.match(/^(TASK-\d+)/i);
+      if (idMatch) {
+        taskId = idMatch[1].toUpperCase();
+      } else {
+        taskId = fileName;
       }
-    } catch {
-      // ignore
+    } else {
+      try {
+        const config = readProjectConfig(projectPath);
+        const tasksDir = path.join(projectPath, config.docsRoot, "tasks");
+        const tasks = loadAllTasks(tasksDir);
+        const activeTask = tasks.find((t) => t.status === "Active");
+        if (activeTask) {
+          taskId = activeTask.id;
+        }
+      } catch {
+        // ignore
+      }
     }
-  }
 
-  if (taskId) {
-    recordVerificationAttempt(projectPath, taskId, result);
-  }
+    if (taskId) {
+      recordVerificationAttempt(projectPath, taskId, result);
+    }
 
-  if (!result.ok && isDirectRun()) {
-    process.exitCode = 1;
+    if (!result.ok && isDirectRun()) {
+      process.exitCode = 1;
+    }
+    return result.summary;
+  } catch (err) {
+    spinner.stop();
+    throw err;
   }
-  return result.summary;
 }
 
 function commandTasks(ctx: CommandContext, projectPathArg: string | undefined): string {
@@ -2600,37 +2671,66 @@ function commandTasks(ctx: CommandContext, projectPathArg: string | undefined): 
 
 function commandMap(ctx: CommandContext, projectPathArg: string | undefined): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
-  const repoMap = generateRepoMap(projectPath);
-  const targetPath = writeRepoMap(projectPath, repoMap);
-  let output = `Successfully generated repository map at ${targetPath} (${Object.keys(repoMap).length} files indexed).`;
+  console.log(`Generating repository map for ${projectPath}...`);
+  const spinner = startSpinner("Scanning and indexing codebase files...");
+  try {
+    const repoMap = generateRepoMap(projectPath, (relPath, fileCount) => {
+      spinner.update(`Indexing [${fileCount}] ${relPath}...`);
+    });
+    const targetPath = writeRepoMap(projectPath, repoMap);
+    spinner.stop();
+    let output = `Successfully generated repository map at ${targetPath} (${Object.keys(repoMap).length} files indexed).`;
 
-  const config = readProjectConfig(projectPath);
-  if (config.integrations.graphify?.enabled && detectIntegration(projectPath, "graphify").detected) {
-    try {
-      execSync("graphify extract . --code-only", {
-        cwd: projectPath,
-        stdio: "ignore",
-        shell: os.platform() === "win32" ? "cmd.exe" : "/bin/sh"
-      });
-      output += "\nAlso successfully ingested codebase into Graphify.";
-    } catch (err: any) {
-      output += `\nWarning: Graphify extract failed: ${err.message || String(err)}`;
+    const config = readProjectConfig(projectPath);
+    if (config.integrations.graphify?.enabled && detectIntegration(projectPath, "graphify").detected) {
+      const gSpinner = startSpinner("Running Graphify extraction...");
+      try {
+        execSync("graphify extract . --code-only", {
+          cwd: projectPath,
+          stdio: "ignore",
+          shell: os.platform() === "win32" ? "cmd.exe" : "/bin/sh"
+        });
+        gSpinner.stop();
+        output += "\nAlso successfully ingested codebase into Graphify.";
+      } catch (err: any) {
+        gSpinner.stop();
+        output += `\nWarning: Graphify extract failed: ${err.message || String(err)}`;
+      }
     }
-  }
 
-  return output;
+    return output;
+  } catch (err) {
+    spinner.stop();
+    throw err;
+  }
 }
 
 function commandExport(ctx: CommandContext, projectPathArg: string | undefined, parsed: ParsedArgs): string {
   const projectPath = path.resolve(ctx.cwd, projectPathArg ?? ".");
-  const target = parsed.target || "all";
-  if (target === "all") {
+  const targetRaw = parsed.target || "all";
+
+  if (targetRaw === "all") {
     const exportedPaths = exportAll(projectPath);
-    return `Successfully exported all agent configurations:\n${exportedPaths.map(p => `  - ${path.relative(projectPath, p)}`).join("\n")}`;
-  } else {
-    const exportedPath = exportTarget(projectPath, target);
-    return `Successfully exported ${target} configuration to ${path.relative(projectPath, exportedPath)}`;
+    return `Successfully exported all agent configurations:\n${exportedPaths.map((p) => `  - ${path.relative(projectPath, p)}`).join("\n")}`;
   }
+
+  const targets = targetRaw.split(",").map((t) => t.trim()).filter(Boolean);
+  if (targets.length === 1 && targets[0] === "all") {
+    const exportedPaths = exportAll(projectPath);
+    return `Successfully exported all agent configurations:\n${exportedPaths.map((p) => `  - ${path.relative(projectPath, p)}`).join("\n")}`;
+  }
+
+  const exportedPaths: string[] = [];
+  for (const t of targets) {
+    const exportedPath = exportTarget(projectPath, t);
+    exportedPaths.push(exportedPath);
+  }
+
+  if (exportedPaths.length === 1) {
+    return `Successfully exported ${targets[0]} configuration to ${path.relative(projectPath, exportedPaths[0])}`;
+  }
+
+  return `Successfully exported ${exportedPaths.length} agent configuration(s):\n${exportedPaths.map((p) => `  - ${path.relative(projectPath, p)}`).join("\n")}`;
 }
 
 function commandStats(ctx: CommandContext, projectPathArg: string | undefined): string {
@@ -2801,7 +2901,8 @@ if (isDirectRun()) {
     const needsInteractive =
       command === undefined ||
       (command === "init" && !name && !parsed.yes) ||
-      (command === "starter" && (!name || !secondName) && !parsed.yes);
+      (command === "starter" && (!name || !secondName) && !parsed.yes) ||
+      (command === "export" && !parsed.target && process.stdout.isTTY && !parsed.yes);
     const output = needsInteractive ? await runInteractive(argv) : run(argv);
     if (output) {
       console.log(output);

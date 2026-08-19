@@ -39,10 +39,18 @@ const SUPPORTED_EXTENSIONS = new Set([
   ".py",
   ".go",
   ".rs",
-  ".dart"
+  ".dart",
+  ".kt",
+  ".kts"
 ]);
 
-export function scanDirectory(dir: string, projectRoot: string, repoMap: RepoMap = {}): RepoMap {
+export function scanDirectory(
+  dir: string,
+  projectRoot: string,
+  repoMap: RepoMap = {},
+  onProgress?: (relPath: string, fileCount: number) => void,
+  state: { count: number } = { count: 0 }
+): RepoMap {
   if (!fs.existsSync(dir)) {
     return repoMap;
   }
@@ -56,10 +64,14 @@ export function scanDirectory(dir: string, projectRoot: string, repoMap: RepoMap
       if (IGNORE_DIRS.has(entry.name) || entry.name.startsWith(".")) {
         continue;
       }
-      scanDirectory(fullPath, projectRoot, repoMap);
+      scanDirectory(fullPath, projectRoot, repoMap, onProgress, state);
     } else if (entry.isFile()) {
       const ext = path.extname(entry.name);
       if (SUPPORTED_EXTENSIONS.has(ext)) {
+        state.count += 1;
+        if (onProgress) {
+          onProgress(relPath, state.count);
+        }
         const content = fs.readFileSync(fullPath, "utf8");
         const symbols = parseSymbols(content, ext);
         if (symbols.length > 0) {
@@ -180,13 +192,42 @@ export function parseSymbols(content: string, ext: string): SymbolInfo[] {
         }
       }
       break;
+
+    case ".kt":
+    case ".kts":
+      for (const line of lines) {
+        const trimmed = line.trim();
+        const classMatch = trimmed.match(/^(?:abstract\s+|data\s+|open\s+|sealed\s+)?class\s+([a-zA-Z0-9_$]+)/);
+        if (classMatch) {
+          symbols.push({ name: classMatch[1], type: "class", signature: trimmed });
+          continue;
+        }
+        const interfaceMatch = trimmed.match(/^(?:fun\s+)?interface\s+([a-zA-Z0-9_$]+)/);
+        if (interfaceMatch) {
+          symbols.push({ name: interfaceMatch[1], type: "interface", signature: trimmed });
+          continue;
+        }
+        const objectMatch = trimmed.match(/^(?:companion\s+)?object\s+([a-zA-Z0-9_$]+)?/);
+        if (objectMatch && objectMatch[1]) {
+          symbols.push({ name: objectMatch[1], type: "object", signature: trimmed });
+          continue;
+        }
+        const funMatch = trimmed.match(/^(?:override\s+|private\s+|protected\s+|public\s+|internal\s+)?fun\s+([a-zA-Z0-9_$]+)\s*\(([^)]*)\)/);
+        if (funMatch) {
+          symbols.push({ name: funMatch[1], type: "function", signature: `${funMatch[0]}...` });
+        }
+      }
+      break;
   }
 
   return symbols;
 }
 
-export function generateRepoMap(projectPath: string): RepoMap {
-  return scanDirectory(projectPath, projectPath);
+export function generateRepoMap(
+  projectPath: string,
+  onProgress?: (relPath: string, fileCount: number) => void
+): RepoMap {
+  return scanDirectory(projectPath, projectPath, {}, onProgress);
 }
 
 export function writeRepoMap(projectPath: string, repoMap: RepoMap): string {

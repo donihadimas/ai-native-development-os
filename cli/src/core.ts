@@ -141,7 +141,6 @@ export const PROJECT_SHAPE_PATHS: Record<ProjectShape, string[]> = {
 
 export const REQUIRED_DOCS_PATHS = [
   ".",
-  "context/context-map.md",
   "context/development-start.md",
   "product/vision.md",
   "product/prd.md",
@@ -213,18 +212,28 @@ function extractAiosManagedSection(content: string): string {
   return content.slice(start, end + AIOS_MANAGED_END.length).trim();
 }
 
-function prependAiosManagedSection(source: string, target: string): boolean {
+function updateAiosManagedSection(source: string, target: string): boolean {
   const targetContent = fs.readFileSync(target, "utf8");
-  if (targetContent.includes(AIOS_MANAGED_BEGIN)) {
+  const sourceContent = fs.readFileSync(source, "utf8");
+  const newManagedSection = extractAiosManagedSection(sourceContent);
+
+  const start = targetContent.indexOf(AIOS_MANAGED_BEGIN);
+  const end = targetContent.lastIndexOf(AIOS_MANAGED_END);
+
+  if (start === -1 || end === -1 || end < start) {
+    const preservedContent = targetContent.trimStart();
+    const heading = path.basename(target) === "CLAUDE.md" ? "## Existing Claude Instructions" : "## Existing Agent Instructions";
+    fs.writeFileSync(target, `${newManagedSection}\n\n${heading}\n\n${preservedContent}`, "utf8");
+    return true;
+  }
+
+  const currentManaged = targetContent.slice(start, end + AIOS_MANAGED_END.length);
+  if (currentManaged === newManagedSection) {
     return false;
   }
 
-  const sourceContent = fs.readFileSync(source, "utf8");
-  const managedSection = extractAiosManagedSection(sourceContent);
-  const preservedContent = targetContent.trimStart();
-  const heading = path.basename(target) === "CLAUDE.md" ? "## Existing Claude Instructions" : "## Existing Agent Instructions";
-
-  fs.writeFileSync(target, `${managedSection}\n\n${heading}\n\n${preservedContent}`, "utf8");
+  const updatedContent = targetContent.slice(0, start) + newManagedSection + targetContent.slice(end + AIOS_MANAGED_END.length);
+  fs.writeFileSync(target, updatedContent, "utf8");
   return true;
 }
 
@@ -513,6 +522,16 @@ export function installAiosKit(
     }
   }
 
+  const resolvedConfig = options.config ?? readProjectConfig(projectPath);
+  const preservedSkills = new Set<string>();
+  if (resolvedConfig && resolvedConfig.integrations) {
+    for (const [name, conf] of Object.entries(resolvedConfig.integrations)) {
+      if (conf && (conf as any).enabled) {
+        preservedSkills.add(name);
+      }
+    }
+  }
+
   for (const entry of AIOS_KIT_ENTRIES) {
     if (entry === "skills" && options.includeSkills === false) {
       continue;
@@ -523,7 +542,7 @@ export function installAiosKit(
     }
     const targetPath = path.join(targetRoot, entry);
     if (options.clean) {
-      cleanExtraEntries(sourcePath, targetPath, targetRoot, result.removed);
+      cleanExtraEntries(sourcePath, targetPath, targetRoot, result.removed, entry === "skills" ? preservedSkills : undefined);
     }
     copyMissingEntries(sourcePath, targetPath, targetRoot, result, options.overwrite);
   }
@@ -668,7 +687,13 @@ export function installAgentSkills(options: {
   return result;
 }
 
-function cleanExtraEntries(source: string, target: string, root?: string, removed?: string[]): void {
+function cleanExtraEntries(
+  source: string,
+  target: string,
+  root?: string,
+  removed?: string[],
+  preservedNames?: Set<string>
+): void {
   if (!fs.existsSync(target)) {
     return;
   }
@@ -693,10 +718,13 @@ function cleanExtraEntries(source: string, target: string, root?: string, remove
   }
 
   for (const entry of fs.readdirSync(target, { withFileTypes: true })) {
+    if (preservedNames && preservedNames.has(entry.name)) {
+      continue;
+    }
     const sourcePath = path.join(source, entry.name);
     const targetPath = path.join(target, entry.name);
     if (entry.isDirectory()) {
-      cleanExtraEntries(sourcePath, targetPath, root, removed);
+      cleanExtraEntries(sourcePath, targetPath, root, removed, preservedNames);
       // If target directory is now empty, delete it
       if (fs.existsSync(targetPath) && fs.readdirSync(targetPath).length === 0) {
         fs.rmSync(targetPath, { recursive: true, force: true });
@@ -718,11 +746,11 @@ function copyMissingEntries(source: string, target: string, root: string, result
 
   if (sourceStat.isFile()) {
     if (fs.existsSync(target)) {
+      if (isAiosAgentInstructionFile(target) && updateAiosManagedSection(source, target)) {
+        result.created.push(`${relativeRootPath} (AIOS section updated)`);
+        return;
+      }
       if (!overwrite) {
-        if (isAiosAgentInstructionFile(target) && prependAiosManagedSection(source, target)) {
-          result.created.push(`${relativeRootPath} (AIOS section prepended)`);
-          return;
-        }
         result.skipped.push(relativeRootPath);
         return;
       }
@@ -743,11 +771,11 @@ function copyMissingEntries(source: string, target: string, root: string, result
 
     if (fs.existsSync(targetPath)) {
       if (entry.isFile()) {
+        if (isAiosAgentInstructionFile(targetPath) && updateAiosManagedSection(sourcePath, targetPath)) {
+          result.created.push(`${relativePath} (AIOS section updated)`);
+          continue;
+        }
         if (!overwrite) {
-          if (isAiosAgentInstructionFile(targetPath) && prependAiosManagedSection(sourcePath, targetPath)) {
-            result.created.push(`${relativePath} (AIOS section prepended)`);
-            continue;
-          }
           result.skipped.push(relativePath);
           continue;
         }
@@ -956,6 +984,76 @@ export function acceptKitAssets(
   }
 
   return result;
+}
+
+import { spawn } from "node:child_process";
+
+export interface Spinner {
+  update(message: string): void;
+  stop(finalMessage?: string): void;
+}
+
+export function startSpinner(initialMessage: string): Spinner {
+  const isInteractive = Boolean(process.stdout.isTTY && process.env.NODE_ENV !== "test");
+
+  if (!isInteractive) {
+    if (initialMessage) {
+      console.log(initialMessage);
+    }
+    return {
+      update: (msg: string) => {
+        if (msg) console.log(msg);
+      },
+      stop: (finalMessage?: string) => {
+        if (finalMessage) console.log(finalMessage);
+      }
+    };
+  }
+
+  const spinnerScript = `
+    const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+    let i = 0;
+    let msg = process.argv[2] || '';
+    process.stdout.write('\\r\\x1b[K' + frames[0] + ' ' + msg);
+    const timer = setInterval(() => {
+      i = (i + 1) % frames.length;
+      process.stdout.write('\\r\\x1b[K' + frames[i] + ' ' + msg);
+    }, 80);
+    process.stdin.on('data', (data) => {
+      const line = data.toString().trim();
+      if (line) msg = line;
+    });
+  `;
+
+  let worker: ReturnType<typeof spawn> | null = null;
+  try {
+    worker = spawn(process.execPath, ["-e", spinnerScript, initialMessage], {
+      stdio: ["pipe", "inherit", "inherit"]
+    });
+  } catch {
+    worker = null;
+  }
+
+  return {
+    update: (newMessage: string) => {
+      if (worker && worker.stdin && !worker.stdin.destroyed) {
+        worker.stdin.write(newMessage + "\n");
+      }
+    },
+    stop: (finalMessage?: string) => {
+      if (worker) {
+        try {
+          worker.kill();
+        } catch {}
+        if (process.stdout.isTTY) {
+          process.stdout.write("\r\x1b[K");
+        }
+      }
+      if (finalMessage) {
+        console.log(finalMessage);
+      }
+    }
+  };
 }
 
 export * from "./verify.js";

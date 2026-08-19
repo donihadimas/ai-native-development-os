@@ -1,12 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { execSync } from "node:child_process";
+import { exec, execSync } from "node:child_process";
 
 export interface VerifyOptions {
   projectPath?: string;
   taskFile?: string;
   testCommand?: string;
   allowNoTests?: boolean;
+  onProgress?: (message: string) => void;
 }
 
 export interface VerifyResult {
@@ -53,6 +54,20 @@ export function detectTestRunner(projectPath: string): { runner: string; command
     return { runner: "dart", command: "dart test" };
   }
 
+  if (
+    fs.existsSync(path.join(projectPath, "build.gradle")) ||
+    fs.existsSync(path.join(projectPath, "build.gradle.kts")) ||
+    fs.existsSync(path.join(projectPath, "gradlew")) ||
+    fs.existsSync(path.join(projectPath, "gradlew.bat"))
+  ) {
+    const gradleCmd = process.platform === "win32" && fs.existsSync(path.join(projectPath, "gradlew.bat"))
+      ? "gradlew.bat test"
+      : fs.existsSync(path.join(projectPath, "gradlew"))
+        ? "./gradlew test"
+        : "gradle test";
+    return { runner: "gradle", command: gradleCmd };
+  }
+
   return null;
 }
 
@@ -79,36 +94,12 @@ export function getGitChanges(projectPath: string): { files: string[]; stat: str
   }
 }
 
-export function runVerification(options: VerifyOptions = {}): VerifyResult {
-  const projectPath = path.resolve(options.projectPath ?? ".");
-  const runner = options.testCommand
-    ? { runner: "custom", command: options.testCommand }
-    : detectTestRunner(projectPath);
-
-  let testPassed = false;
-  let testOutput = "";
-
-  if (runner) {
-    try {
-      testOutput = execSync(runner.command, {
-        cwd: projectPath,
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "pipe"],
-        env: process.env
-      });
-      testPassed = true;
-    } catch (err: any) {
-      testPassed = false;
-      testOutput = `${err.stdout || ""}\n${err.stderr || ""}\n${err.message || ""}`.trim();
-    }
-  } else if (options.allowNoTests) {
-    testPassed = true;
-    testOutput = "No automated test runner detected; skipped test execution.";
-  } else {
-    testPassed = false;
-    testOutput = "No automated test runner detected in project (package.json, pytest, cargo, go, pubspec).";
-  }
-
+function buildVerificationReport(
+  projectPath: string,
+  runner: { runner: string; command: string } | null,
+  testPassed: boolean,
+  testOutput: string
+): VerifyResult {
   const gitChanges = getGitChanges(projectPath);
   const taskViolations: string[] = [];
 
@@ -143,4 +134,65 @@ export function runVerification(options: VerifyOptions = {}): VerifyResult {
     taskViolations,
     summary: lines.join("\n")
   };
+}
+
+export async function runVerificationAsync(options: VerifyOptions = {}): Promise<VerifyResult> {
+  const projectPath = path.resolve(options.projectPath ?? ".");
+  const runner = options.testCommand
+    ? { runner: "custom", command: options.testCommand }
+    : detectTestRunner(projectPath);
+
+  if (!runner) {
+    const testPassed = Boolean(options.allowNoTests);
+    const testOutput = options.allowNoTests
+      ? "No automated test runner detected; skipped test execution."
+      : "No automated test runner detected in project (package.json, pytest, cargo, go, pubspec).";
+    return buildVerificationReport(projectPath, null, testPassed, testOutput);
+  }
+
+  options.onProgress?.(`Running test command: ${runner.command}...`);
+
+  return new Promise((resolve) => {
+    exec(runner.command, { cwd: projectPath, encoding: "utf8", maxBuffer: 10 * 1024 * 1024, env: process.env }, (err, stdout, stderr) => {
+      const testPassed = !err;
+      const testOutput = err
+        ? `${stdout || ""}\n${stderr || ""}\n${err.message || ""}`.trim()
+        : stdout;
+      resolve(buildVerificationReport(projectPath, runner, testPassed, testOutput));
+    });
+  });
+}
+
+export function runVerification(options: VerifyOptions = {}): VerifyResult {
+  const projectPath = path.resolve(options.projectPath ?? ".");
+  const runner = options.testCommand
+    ? { runner: "custom", command: options.testCommand }
+    : detectTestRunner(projectPath);
+
+  let testPassed = false;
+  let testOutput = "";
+
+  if (runner) {
+    try {
+      options.onProgress?.(`Running test command: ${runner.command}...`);
+      testOutput = execSync(runner.command, {
+        cwd: projectPath,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+        env: process.env
+      });
+      testPassed = true;
+    } catch (err: any) {
+      testPassed = false;
+      testOutput = `${err.stdout || ""}\n${err.stderr || ""}\n${err.message || ""}`.trim();
+    }
+  } else if (options.allowNoTests) {
+    testPassed = true;
+    testOutput = "No automated test runner detected; skipped test execution.";
+  } else {
+    testPassed = false;
+    testOutput = "No automated test runner detected in project (package.json, pytest, cargo, go, pubspec).";
+  }
+
+  return buildVerificationReport(projectPath, runner, testPassed, testOutput);
 }

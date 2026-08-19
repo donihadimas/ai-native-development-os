@@ -8,6 +8,25 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.7.3
+
+Patch release enhancing AIOS managed section update mechanics, integration rule syncing, external skill preservation, Kotlin/Gradle test runner and AST indexing support, and CLI progress UX.
+
+### Added
+
+- Added Kotlin and Kotlin Script (`.kt`, `.kts`) AST symbol parsing (`class`, `interface`, `data class`, `object`, `fun`) to `aios map`.
+- Added Gradle / Kotlin test runner detection (`build.gradle`, `build.gradle.kts`, `gradlew`, `gradlew.bat`) to `aios verify`.
+- Added live progress logging to `aios verify` and `aios map` (indexing counter) to eliminate blank screens during execution.
+- Added Graphify to choices in `promptOptionalIntegrationSetup` (guided setup flow).
+- Added interactive multiselect checkbox prompt to `aios export` when `--target` is omitted, supporting single, multi-agent (e.g. `--target cursor,claude`), or all-agent exports.
+
+### Fixed
+
+- Updated `aios update` to replace content strictly between `<!-- AIOS:BEGIN -->` and `<!-- AIOS:END -->` in `AGENTS.md` and `CLAUDE.md`, preserving user custom rules below without duplicating sections.
+- Preserved active external integration skills (`caveman`, `ponytail`, `rtk`, `graphify`) in `.aios/skills/` during `aios update --clean`.
+- Automatically injected enabled integration rules into `AGENTS.md` and `CLAUDE.md` during `aios integration add` and guided setup flows (`adopt`, `init`, `create`).
+- Removed legacy `context-map.md` references across root, skeleton, starters, and CLI fallbacks in favor of `.aios/repo-map.json`.
+
 ## 0.7.2
 
 Patch release fixing Graphify command execution in `aios map` and enhancing installation guidance for missing external integration tools.

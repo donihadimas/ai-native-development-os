@@ -71,6 +71,29 @@ func Connect(cfg DBConfig) DBConn {
   assert.equal(symbols[2].name, "Connect");
   assert.equal(symbols[2].type, "function");
 });
+test("parseSymbols extracts correct symbols for Kotlin", () => {
+  const ktContent = `
+data class User(val id: String)
+interface UserRepository {
+    fun findById(id: String): User?
+}
+object Database {
+    fun connect() {}
+}
+`;
+  const symbols = parseSymbols(ktContent, ".kt");
+  assert.equal(symbols.length, 5);
+  assert.equal(symbols[0].name, "User");
+  assert.equal(symbols[0].type, "class");
+  assert.equal(symbols[1].name, "UserRepository");
+  assert.equal(symbols[1].type, "interface");
+  assert.equal(symbols[2].name, "findById");
+  assert.equal(symbols[2].type, "function");
+  assert.equal(symbols[3].name, "Database");
+  assert.equal(symbols[3].type, "object");
+  assert.equal(symbols[4].name, "connect");
+  assert.equal(symbols[4].type, "function");
+});
 
 test("generateRepoMap indexes supported files and writes repo-map.json", () => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "aios-indexer-"));

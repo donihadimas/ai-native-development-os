@@ -51,6 +51,10 @@ test("detectTestRunner identifies pytest, cargo, go, and dart", () => {
   const dartDir = tempCwd();
   fs.writeFileSync(path.join(dartDir, "pubspec.yaml"), "name: demo\n");
   assert.equal(detectTestRunner(dartDir)?.runner, "dart");
+
+  const gradleDir = tempCwd();
+  fs.writeFileSync(path.join(gradleDir, "build.gradle.kts"), "plugins {}\n");
+  assert.equal(detectTestRunner(gradleDir)?.runner, "gradle");
 });
 
 test("runVerification returns pass for successful test command", () => {

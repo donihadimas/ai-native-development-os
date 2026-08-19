@@ -1126,6 +1126,25 @@ test("update --clean overwrites differing assets, removes unselected native skil
   assert.match(output, /Clean: removed deprecated\/unmanaged kit entry: .aios\/commands/);
 });
 
+test("update --clean preserves enabled external integration skills in .aios/skills", () => {
+  const cwd = tempCwd();
+  run(["init", "clean-integration-project"], { runtimePaths, cwd });
+  const project = path.join(cwd, "clean-integration-project");
+
+  const cavemanSkillDir = path.join(project, ".aios", "skills", "caveman");
+  fs.mkdirSync(cavemanSkillDir, { recursive: true });
+  fs.writeFileSync(path.join(cavemanSkillDir, "SKILL.md"), "# Caveman Skill\n");
+
+  const configPath = path.join(project, ".aios", "config.json");
+  const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  config.integrations.caveman.enabled = true;
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
+
+  const output = run(["update", "clean-integration-project", "--clean"], { runtimePaths, cwd });
+
+  assert.ok(fs.existsSync(path.join(cavemanSkillDir, "SKILL.md")), "Enabled integration skill caveman should be preserved during --clean");
+});
+
 test("aios map command generates repository map in project path", () => {
   const cwd = tempCwd();
   run(["init", "demo-project"], { runtimePaths, cwd });
@@ -1158,6 +1177,11 @@ test("aios export command generates target-specific rules", () => {
 
   const outputCursor = run(["export", "demo-project", "--target", "cursor"], { runtimePaths, cwd });
   assert.match(outputCursor, /Successfully exported cursor configuration/);
+
+  const outputMulti = run(["export", "demo-project", "--target", "cursor,claude"], { runtimePaths, cwd });
+  assert.match(outputMulti, /Successfully exported 2 agent configuration\(s\)/);
+  assert.match(outputMulti, /\.cursorrules/);
+  assert.match(outputMulti, /CLAUDE\.md/);
 });
 
 test("aios stats command outputs summary statistics", () => {

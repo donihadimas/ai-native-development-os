@@ -96,12 +96,12 @@ test("adoptSkeleton copies missing files and skips existing files", () => {
   assert.ok(result.skipped.includes("README.md"));
 });
 
-test("adoptSkeleton prepends AIOS sections to existing agent instruction files", () => {
+test("adoptSkeleton prepends and updates AIOS sections on existing agent instruction files", () => {
   const source = fs.mkdtempSync(path.join(os.tmpdir(), "aios-adopt-agent-source-"));
   const target = fs.mkdtempSync(path.join(os.tmpdir(), "aios-adopt-agent-target-"));
   fs.writeFileSync(
     path.join(source, "AGENTS.md"),
-    "# AGENTS.md\n\n<!-- AIOS:BEGIN -->\n\n## AIOS Managed Section\n\nFollow AIOS. User instructions may be added below `<!-- AIOS:END -->`.\n\n<!-- AIOS:END -->\n",
+    "# AGENTS.md\n\n<!-- AIOS:BEGIN -->\n\n## AIOS Managed Section\n\nFollow AIOS v2. User instructions below.\n\n<!-- AIOS:END -->\n",
     "utf8"
   );
   fs.writeFileSync(path.join(target, "AGENTS.md"), "# Existing Agent Rules\n\nKeep this.\n", "utf8");
@@ -110,14 +110,21 @@ test("adoptSkeleton prepends AIOS sections to existing agent instruction files",
   const adopted = fs.readFileSync(path.join(target, "AGENTS.md"), "utf8");
 
   assert.match(adopted, /^<!-- AIOS:BEGIN -->/);
-  assert.match(adopted, /<!-- AIOS:END -->\n\n## Existing Agent Instructions/);
-  assert.match(adopted, /## Existing Agent Instructions/);
+  assert.match(adopted, /Follow AIOS v2/);
   assert.match(adopted, /# Existing Agent Rules/);
-  assert.match(result.created.join("\n"), /AGENTS\.md \(AIOS section prepended\)/);
+  assert.match(result.created.join("\n"), /AGENTS\.md \(AIOS section updated\)/);
 
+  // Update source with new managed rules and adopt again
+  fs.writeFileSync(
+    path.join(source, "AGENTS.md"),
+    "# AGENTS.md\n\n<!-- AIOS:BEGIN -->\n\n## AIOS Managed Section\n\nFollow AIOS v3 updated rules.\n\n<!-- AIOS:END -->\n",
+    "utf8"
+  );
   adoptSkeleton(source, target);
   const adoptedAgain = fs.readFileSync(path.join(target, "AGENTS.md"), "utf8");
   assert.equal(adoptedAgain.match(/<!-- AIOS:BEGIN -->/g)?.length, 1);
+  assert.match(adoptedAgain, /Follow AIOS v3 updated rules/);
+  assert.match(adoptedAgain, /# Existing Agent Rules/);
 });
 
 test("writeRenderedTemplate writes rendered content and refuses overwrite", () => {

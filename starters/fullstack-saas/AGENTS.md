@@ -34,7 +34,7 @@ When a generator skill has a Clarification Gate, ask focused questions before wr
 1. Resolve `mode`, `docsRoot`, `projectShape`, and `skillDelivery` from `.aios/config.json`; default to lite mode and `docs` only when config is missing.
 2. Read the active task in `<docsRoot>/tasks/`.
 3. Read related ADRs if mentioned.
-4. Use `<docsRoot>/context/context-map.md` to choose the smallest relevant context set.
+4. **Minimal Context**: Read only the files needed for the task. Use `.aios/repo-map.json` to locate code. Do not scan the entire codebase.
 5. In full mode, read `.aios/skill-router.md`, select the matching command/workflow/skill, and follow that AIOS guidance before planning or editing.
 6. Read API contracts before app integration work.
 7. Search existing code before creating new patterns.

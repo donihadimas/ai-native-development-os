@@ -733,6 +733,8 @@ npm run build
 npm run aios -- init ../demo-project
 ```
 
+For complete instructions on testing CLI commands locally with `npm link` or tarball packages, see [LOCAL_TESTING.md](LOCAL_TESTING.md) and [docs/context/local-testing.md](../docs/context/local-testing.md).
+
 ## 🚢 Publishing Checklist
 
 Before publishing to npm, follow the step-by-step checklist at `../validation/npm-publish-readiness-checklist.md`. Quick summary:
