@@ -8,15 +8,27 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.7.4
+
+Patch release adding real-time non-blocking sidecar process braille spinner animation (`⠋ ⠙ ⠹`) to `aios verify` and `aios map`, with EPIPE stream pipe error protection and 50ms update throttling for large codebases.
+
+### Added
+
+- Added real-time non-blocking sidecar process braille spinner animation (`⠋ ⠙ ⠹`) for `aios verify` and `aios map` in interactive TTY terminals.
+
+### Fixed
+
+- Added EPIPE broken-pipe protection (`worker.stdin.on("error")`) and 50ms update throttling for sidecar spinner process to prevent pipe buffer overflows and stream crashes on large repositories (e.g. 4000+ files).
+- Filtered `aios map` progress updates to every 10 files to optimize I/O on large codebases.
+
 ## 0.7.3
 
-Patch release enhancing AIOS managed section update mechanics, integration rule syncing, external skill preservation, Kotlin/Gradle test runner and AST indexing support, and CLI progress UX.
+Patch release enhancing AIOS managed section update mechanics, integration rule syncing, external skill preservation, Kotlin/Gradle test runner and AST indexing support, and export UX.
 
 ### Added
 
 - Added Kotlin and Kotlin Script (`.kt`, `.kts`) AST symbol parsing (`class`, `interface`, `data class`, `object`, `fun`) to `aios map`.
 - Added Gradle / Kotlin test runner detection (`build.gradle`, `build.gradle.kts`, `gradlew`, `gradlew.bat`) to `aios verify`.
-- Added live progress logging to `aios verify` and `aios map` (indexing counter) to eliminate blank screens during execution.
 - Added Graphify to choices in `promptOptionalIntegrationSetup` (guided setup flow).
 - Added interactive multiselect checkbox prompt to `aios export` when `--target` is omitted, supporting single, multi-agent (e.g. `--target cursor,claude`), or all-agent exports.
 

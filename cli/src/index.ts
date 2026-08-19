@@ -2675,7 +2675,9 @@ function commandMap(ctx: CommandContext, projectPathArg: string | undefined): st
   const spinner = startSpinner("Scanning and indexing codebase files...");
   try {
     const repoMap = generateRepoMap(projectPath, (relPath, fileCount) => {
-      spinner.update(`Indexing [${fileCount}] ${relPath}...`);
+      if (fileCount === 1 || fileCount % 10 === 0) {
+        spinner.update(`Indexing [${fileCount}] ${relPath}...`);
+      }
     });
     const targetPath = writeRepoMap(projectPath, repoMap);
     spinner.stop();

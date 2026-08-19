@@ -1030,19 +1030,31 @@ export function startSpinner(initialMessage: string): Spinner {
     worker = spawn(process.execPath, ["-e", spinnerScript, initialMessage], {
       stdio: ["pipe", "inherit", "inherit"]
     });
+    worker.stdin?.on("error", () => {});
+    worker.on("error", () => {});
   } catch {
     worker = null;
   }
 
+  let lastWrite = 0;
+
   return {
     update: (newMessage: string) => {
-      if (worker && worker.stdin && !worker.stdin.destroyed) {
-        worker.stdin.write(newMessage + "\n");
+      const now = Date.now();
+      if (now - lastWrite < 50) return;
+      lastWrite = now;
+      if (worker && worker.stdin && !worker.stdin.destroyed && worker.stdin.writable) {
+        try {
+          worker.stdin.write(newMessage + "\n");
+        } catch {
+          // ignore EPIPE
+        }
       }
     },
     stop: (finalMessage?: string) => {
       if (worker) {
         try {
+          worker.stdin?.end();
           worker.kill();
         } catch {}
         if (process.stdout.isTTY) {
