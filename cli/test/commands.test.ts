@@ -1122,23 +1122,34 @@ test("update --clean overwrites differing assets, removes unselected native skil
   assert.match(output, /Clean: removed deprecated\/unmanaged kit entry: .aios\/commands/);
 });
 
-test("update --clean preserves enabled external integration skills in .aios/skills", () => {
+test("update --clean preserves enabled external integration skills in .aios/skills and native .agents/skills", () => {
   const cwd = tempCwd();
-  run(["init", "clean-integration-project"], { runtimePaths, cwd });
+  run(["init", "clean-integration-project", "--skill-delivery", "both", "--agents", "codex"], { runtimePaths, cwd });
   const project = path.join(cwd, "clean-integration-project");
 
   const cavemanSkillDir = path.join(project, ".aios", "skills", "caveman");
   fs.mkdirSync(cavemanSkillDir, { recursive: true });
   fs.writeFileSync(path.join(cavemanSkillDir, "SKILL.md"), "# Caveman Skill\n");
 
+  const cavemanNativeSkillDir = path.join(project, ".agents", "skills", "caveman");
+  fs.mkdirSync(cavemanNativeSkillDir, { recursive: true });
+  fs.writeFileSync(path.join(cavemanNativeSkillDir, "SKILL.md"), "# Native Caveman Skill\n");
+
+  const ponytailNativeSkillDir = path.join(project, ".agents", "skills", "ponytail");
+  fs.mkdirSync(ponytailNativeSkillDir, { recursive: true });
+  fs.writeFileSync(path.join(ponytailNativeSkillDir, "SKILL.md"), "# Native Ponytail Skill\n");
+
   const configPath = path.join(project, ".aios", "config.json");
   const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
   config.integrations.caveman.enabled = true;
+  config.integrations.ponytail.enabled = true;
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
 
   const output = run(["update", "clean-integration-project", "--clean"], { runtimePaths, cwd });
 
-  assert.ok(fs.existsSync(path.join(cavemanSkillDir, "SKILL.md")), "Enabled integration skill caveman should be preserved during --clean");
+  assert.ok(fs.existsSync(path.join(cavemanSkillDir, "SKILL.md")), "Enabled integration skill caveman in .aios/skills should be preserved during --clean");
+  assert.ok(fs.existsSync(path.join(cavemanNativeSkillDir, "SKILL.md")), "Enabled native integration skill caveman in .agents/skills should be preserved during --clean");
+  assert.ok(fs.existsSync(path.join(ponytailNativeSkillDir, "SKILL.md")), "Enabled native integration skill ponytail in .agents/skills should be preserved during --clean");
 });
 
 test("aios map command generates repository map in project path", () => {

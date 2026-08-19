@@ -906,12 +906,20 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
   }
 
   if (!dryRun && options.clean && (config.skillDelivery === "native" || config.skillDelivery === "both")) {
+    const preservedSkills = new Set<string>(updatedSkills);
+    if (config && config.integrations) {
+      for (const [name, conf] of Object.entries(config.integrations)) {
+        if (conf && (conf as any).enabled) {
+          preservedSkills.add(name);
+        }
+      }
+    }
     for (const agent of config.selectedAgents) {
       const targetRoot = agentSkillRootForUpdate(projectPath, agent, config);
       if (fs.existsSync(targetRoot)) {
         for (const dirName of fs.readdirSync(targetRoot)) {
           const targetDir = path.join(targetRoot, dirName);
-          if (fs.statSync(targetDir).isDirectory() && !updatedSkills.includes(dirName)) {
+          if (fs.statSync(targetDir).isDirectory() && !preservedSkills.has(dirName)) {
             fs.rmSync(targetDir, { recursive: true, force: true });
             output.push(`Clean: removed deprecated native skill folder: ${path.relative(projectPath, targetDir)}`);
           }
