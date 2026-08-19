@@ -166,18 +166,16 @@ test("installAgentSkills repairs incomplete existing native skill folders", () =
   assert.equal(result.created.length, 1);
 });
 
-test("validateProject reports missing AI-ready paths", () => {
+test("validateProject reports missing required paths and optional V2.x path warnings", () => {
   const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-"));
-  fs.mkdirSync(path.join(project, "docs", "context"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "reviews"), { recursive: true });
   fs.writeFileSync(path.join(project, "AGENTS.md"), "");
-  fs.writeFileSync(path.join(project, "docs", "context", "context-map.md"), "");
 
   const result = validateProject(project);
 
   assert.equal(result.ok, false);
   assert.ok(result.missing.includes("docs/product/vision.md"));
   assert.ok(result.missing.includes("docs/product/features"));
-  assert.ok(result.missing.includes("docs/reviews"));
   assert.ok(result.missing.includes(".aios/skill-router.md"));
   assert.ok(result.missing.includes(".aios/skills/spec/SKILL.md"));
   assert.ok(result.warnings.some((w) => w.includes("Optional V2.x path not found: docs/security") && w.includes("aios create security")));
@@ -185,9 +183,8 @@ test("validateProject reports missing AI-ready paths", () => {
 
 test("validateProject includes actionable command guidance for all optional V2.x warnings", () => {
   const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-optional-"));
-  fs.mkdirSync(path.join(project, "docs", "context"), { recursive: true });
+  fs.mkdirSync(path.join(project, "docs", "reviews"), { recursive: true });
   fs.writeFileSync(path.join(project, "AGENTS.md"), "");
-  fs.writeFileSync(path.join(project, "docs", "context", "context-map.md"), "");
 
   const result = validateProject(project);
 
@@ -202,13 +199,11 @@ test("validateProject includes actionable command guidance for all optional V2.x
 
 test("validateProject does not warn for optional docs that exist", () => {
   const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-optional-exists-"));
-  fs.mkdirSync(path.join(project, "docs", "context"), { recursive: true });
   fs.mkdirSync(path.join(project, "docs", "security"), { recursive: true });
   fs.mkdirSync(path.join(project, "docs", "releases"), { recursive: true });
   fs.mkdirSync(path.join(project, "docs", "database", "migrations"), { recursive: true });
   fs.mkdirSync(path.join(project, "docs", "api"), { recursive: true });
   fs.writeFileSync(path.join(project, "AGENTS.md"), "");
-  fs.writeFileSync(path.join(project, "docs", "context", "context-map.md"), "");
   fs.writeFileSync(path.join(project, "docs", "api", "openapi.yaml"), "openapi: 3.0.0");
 
   const result = validateProject(project);
@@ -223,7 +218,6 @@ test("validateProject does not warn for optional docs that exist", () => {
 test("validateProject can ignore local AIOS kit in lite mode", () => {
   const project = fs.mkdtempSync(path.join(os.tmpdir(), "aios-validate-lite-"));
   for (const relativePath of [
-    "docs/context",
     "docs/product/features",
     "docs/architecture",
     "docs/design",
@@ -237,8 +231,6 @@ test("validateProject can ignore local AIOS kit in lite mode", () => {
     fs.mkdirSync(path.join(project, relativePath), { recursive: true });
   }
   fs.writeFileSync(path.join(project, "AGENTS.md"), "");
-  fs.writeFileSync(path.join(project, "docs", "context", "context-map.md"), "");
-  fs.writeFileSync(path.join(project, "docs", "context", "development-start.md"), "");
   fs.writeFileSync(path.join(project, "docs", "product", "vision.md"), "");
   fs.writeFileSync(path.join(project, "docs", "product", "prd.md"), "");
   fs.writeFileSync(path.join(project, "docs", "architecture", "architecture.md"), "");

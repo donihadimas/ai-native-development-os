@@ -1,5 +1,17 @@
 # Implementation Plan: {{task_title}}
 
+## Status
+
+Planned
+
+## Created Datetime
+
+{{created_datetime}}
+
+## Finish Datetime
+
+{{finish_datetime}}
+
 ## Task
 
 - Task file:

@@ -2,40 +2,22 @@
 
 Use this reference when routing tasks, plans, or completed work.
 
-## Task Index
+## Task Lifecycle
 
-- Read `<docsRoot>/tasks/index.md` before opening task files when it exists.
-- Use the index to identify active, blocked, planned, and archived tasks.
-- Open a task body only after selecting the relevant task.
-- If the index is missing or stale, list direct files under `<docsRoot>/tasks/` and update the index after changing task state.
-
-## Task Archive
-
-- Active tasks live directly under `<docsRoot>/tasks/`.
-- Completed tasks live under `<docsRoot>/tasks/done/`.
-- Do not search `<docsRoot>/tasks/done/` for active work.
-- Move a task to `<docsRoot>/tasks/done/` only after:
-  - `## Status` is `Done`,
+- Active and completed tasks live directly under `<docsRoot>/tasks/`.
+- Update task status (`Status: Done`) in-place in `<docsRoot>/tasks/`.
+- Do not move task files into `done/` subfolders; git history and the status field preserve archival tracking.
+- Set `Status: Done` only after:
   - acceptance criteria are verified,
   - validation evidence is recorded,
   - `## Done Summary` is filled.
-- Preserve the original `TASK-XXX-title.md` filename when archiving.
 
-## Plan Index
+## Plan Lifecycle
 
-- Read `<docsRoot>/plans/index.md` before opening implementation plan files when it exists.
-- Use the index to identify active plans and archived plans.
-- Open a plan body only after selecting the relevant plan.
-- If the index is missing or stale, list direct files under `<docsRoot>/plans/` and update the index after changing plan state.
-
-## Plan Archive
-
-- Active implementation plans live directly under `<docsRoot>/plans/`.
-- Completed implementation plans live under `<docsRoot>/plans/done/`.
-- Do not search `<docsRoot>/plans/done/` for active planning.
-- Move a plan to `<docsRoot>/plans/done/` only after the task or task range it governs is complete and archived.
+- Active and completed implementation plans live directly under `<docsRoot>/plans/`.
+- Update plan status in-place under `<docsRoot>/plans/`.
+- Do not move plan files into `done/` subfolders.
 - Multi-task plans stay active until every task they govern is complete.
-- Preserve the original `TASK-XXX-title-plan.md` filename when archiving.
 
 ## Summary-First Reading
 
@@ -45,6 +27,7 @@ Use this reference when routing tasks, plans, or completed work.
 
 ## Index Maintenance
 
-- Update `tasks/index.md` when creating, blocking, completing, reopening, or archiving a task.
-- Update `plans/index.md` when creating, completing, reopening, or archiving a plan.
+- Update `tasks/index.md` when creating, blocking, completing, or reopening a task.
+- Update `plans/index.md` when creating, completing, or reopening a plan.
 - Do not treat stale index entries as stronger evidence than file status or verified repository state.
+

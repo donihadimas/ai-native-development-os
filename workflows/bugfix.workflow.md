@@ -7,8 +7,8 @@
 ## Mode Routing
 
 - Resolve `.aios/config.json` when it exists.
-- Full mode: use `.aios/skill-router.md`, bugfix workflow guidance, testing skill, implementation planner, and code review skill.
-- Lite mode or missing config: use `AGENTS.md`, `<docsRoot>/context/context-map.md`, the bug report, affected files, and nearby tests. Keep the same sequence manually.
+- Full mode: use `Skill: task` and `Skill: verify`.
+- Lite mode or missing config: use `AGENTS.md`, the bug report, affected files, and nearby tests. Keep the same sequence manually.
 - If RTK is enabled, use it for noisy logs, failing tests, diffs, and repeated debug output unless exact full output is required.
 - If Caveman is enabled, use concise style for debug-loop updates only; keep the final bugfix summary complete.
 
@@ -16,13 +16,12 @@
 
 Use this workflow as the primary route for bugs, regressions, failing tests, crashes, incorrect behavior, flaky behavior, broken builds, and production incidents. Keep the bugfix workflow as primary even when the affected feature is payment, auth, API, database, or UI behavior.
 
-- Use `testing` first when reproduction requires a failing check, regression test, or test evidence review.
-- Use `implementation-planner`, then `task-implementation`, for the smallest safe fix; archive completed bugfix tasks under `<docsRoot>/tasks/done/`.
-- Use `.aios/workflows/api-contract.workflow.md` and `api-contract-design` when the bug reveals a missing, incorrect, or incompatible API contract.
-- Use `.aios/workflows/database-migration.workflow.md` and `database-migration` when the fix requires schema, data repair, index, seed, or rollback planning.
-- Use `.aios/workflows/security-review.workflow.md` and `security-review` before marking work done when the bug touches authentication, authorization, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or personally sensitive data.
-- For the current selected skill only, read the prompt first, then use `skill-router.md` Artifact Routing to add references or templates only when they govern the artifact being created.
-- Use `.aios/workflows/review.workflow.md` and `code-review` after tests or manual verification.
+- Use `Skill: verify` first when reproduction requires a failing check, regression test, or test evidence review.
+- Use `Skill: task` for planning and implementing the smallest safe fix; update task status to `Status: Done` in-place.
+- Use `workflows/api-contract.workflow.md` and `api-contract-design` when the bug reveals a missing, incorrect, or incompatible API contract.
+- Use `workflows/database-migration.workflow.md` and `database-migration` when the fix requires schema, data repair, index, seed, or rollback planning.
+- Use `workflows/security-review.workflow.md` and `Skill: verify` before marking work done when the bug touches authentication, authorization, permissions, secrets, payments, billing, subscriptions, checkout, webhooks, or personally sensitive data.
+- Use `workflows/review.workflow.md` and `Skill: verify` after tests or manual verification.
 
 ## Process
 
@@ -58,12 +57,13 @@ Use this workflow as the primary route for bugs, regressions, failing tests, cra
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow first, then use testing, implementation planning, task implementation, security review, API contract, database migration, and code-review skills as the bug requires. Use `skill-router.md` Artifact Routing just-in-time: read the selected step's prompt first, add references only when they govern the decision, and add templates only when creating or updating the artifact.
+Use `Skill: task` and `Skill: verify`, API contract, database migration, and security review as the bug requires.
 
 ## Lite Mode Flow
 
-Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, the bug report, affected files, and nearby tests. Do not assume `.aios/skill-router.md` or `.aios/templates/` exist. Follow the same sequence manually: reproduce, plan fix, implement, test, review.
+Use `AGENTS.md`, the bug report, affected files, and nearby tests. Follow the same sequence manually: reproduce, plan fix, implement, test, review.
 
 ## After This Flow
 
-If the bug is not reproduced, define a reproduction or failing check first. If fixed, ask the user to review the diff and regression evidence, then run code review. If review passes, prepare the change for release notes when user-visible behavior changed.
+If the bug is not reproduced, define a reproduction or failing check first. If fixed, ask the user to review the diff and regression evidence, then run review. If review passes, prepare the change for release notes when user-visible behavior changed.
+

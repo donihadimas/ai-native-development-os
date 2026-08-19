@@ -74,8 +74,6 @@ test("init copies the project skeleton", () => {
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "arch", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "task", "SKILL.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "verify", "SKILL.md")));
-  assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
-  assert.ok(fs.existsSync(path.join(project, "docs", "context", "development-start.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
   assert.ok(fs.existsSync(path.join(project, "docs", "design", "design.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "reviews")));
@@ -154,7 +152,6 @@ test("adopt adds missing AI Dev OS files without overwriting existing files", ()
   assert.match(fs.readFileSync(path.join(project, "CLAUDE.md"), "utf8"), /^<!-- AIOS:BEGIN -->/);
   assert.match(fs.readFileSync(path.join(project, "CLAUDE.md"), "utf8"), /# Existing Claude Rules/);
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "spec", "SKILL.md")));
-  assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "docs", "product", "features")));
   assert.ok(fs.existsSync(path.join(project, "docs", "reviews")));
   assert.ok(fs.existsSync(path.join(project, "frontend")));
@@ -579,7 +576,6 @@ test("starter creates an AI docs only stack starter and refuses overwrite", () =
   assert.match(output, /Created AI-ready flutter-mobile starter/);
   assert.ok(fs.existsSync(path.join(project, "AGENTS.md")));
   assert.ok(fs.existsSync(path.join(project, ".aios", "skills", "spec", "SKILL.md")));
-  assert.ok(fs.existsSync(path.join(project, "docs", "context", "context-map.md")));
   assert.ok(fs.existsSync(path.join(project, "mobile")));
   assert.throws(
     () => run(["starter", "flutter-mobile", "demo-mobile"], { runtimePaths, cwd }),

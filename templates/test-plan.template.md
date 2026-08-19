@@ -1,5 +1,17 @@
 # Test Plan: {{feature_or_task}}
 
+## Status
+
+Planned
+
+## Created Datetime
+
+{{created_datetime}}
+
+## Finish Datetime
+
+{{finish_datetime}}
+
 ## Scope
 
 What behavior is being tested?

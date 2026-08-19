@@ -8,6 +8,20 @@ This project loosely follows Semantic Versioning. While the project is still pre
 - Minor: new CLI commands, skills, templates, workflows, or pre-`1.0.0` workflow cleanup.
 - Major: breaking CLI, template, or workflow changes.
 
+## 0.7.5
+
+Patch release standardizing task/plan templates with created and finish datetimes, pruning legacy skeleton context files, refactoring workflows to 4 core skills, and enforcing in-place task state management across `aios update --clean`.
+
+### Added
+
+- Added `## Status`, `## Created Datetime`, and `## Finish Datetime` headers to task and plan templates (`task.template.md`, `implementation-plan.template.md`, `test-plan.template.md`, `migration-plan.template.md`).
+
+### Fixed
+
+- Pruned redundant `docs/context/` directory (`context-map.md` & `development-start.md`) from `project-skeleton/` and all 7 starters (`flutter-mobile`, `fullstack-saas`, `laravel-api`, `nestjs-api`, `nextjs-web`, `node-api`, `supabase-app`).
+- Refactored all 10 workflow files to use 4 core skills (`spec`, `arch`, `task`, `verify`) + domain skills, in-place `Status: Done` updates, and dynamic skill invocation.
+- Updated `release-management` and `database-migration` skills, `artifact-lifecycle.md` and `workflow-modes.md` references, and CLI validator requirements to eliminate `done/` subfolder archiving directives.
+
 ## 0.7.4
 
 Patch release adding real-time non-blocking sidecar process braille spinner animation (`⠋ ⠙ ⠹`) to `aios verify` and `aios map`, with EPIPE stream pipe error protection and 50ms update throttling for large codebases.

@@ -11,8 +11,8 @@
 ## Mode Routing
 
 - Resolve `.aios/config.json` when it exists.
-- Full mode: use `.aios/skill-router.md`, `.aios/templates/design.template.md`, `.aios/references/frontend-principles.md`, and `.aios/workflows/`.
-- Lite mode or missing config: use `AGENTS.md`, `<docsRoot>/context/context-map.md`, product docs, and available root or agent-provided design guidance.
+- Full mode: use `ui-ux-design`, `.aios/templates/design.template.md`, and `.aios/references/frontend-principles.md`.
+- Lite mode or missing config: use `AGENTS.md`, product docs, and available design guidance.
 - If RTK is enabled, use it for noisy diffs or generated artifact comparisons unless exact full output is required.
 - If Caveman is enabled, use concise style for operational updates only; keep design artifacts complete.
 
@@ -20,20 +20,19 @@
 
 Use this workflow when the primary feature or new-project workflow includes user-facing UI, product-facing interactions, user flows, screens, states, accessibility, or frontend design decisions.
 
-- Start from `.aios/workflows/new-feature.workflow.md` or `.aios/workflows/new-project.workflow.md` when the UI belongs to broader product scope; return there after design review.
+- Start from `workflows/new-feature.workflow.md` or `workflows/new-project.workflow.md` when the UI belongs to broader product scope; return there after design review.
 - Use `ui-ux-design` with `.aios/references/frontend-principles.md` and `.aios/templates/design.template.md` for the design artifact.
-- Route to `.aios/workflows/api-contract.workflow.md` when screens depend on request, response, error, auth, or integration behavior.
-- Route to `.aios/workflows/security-review.workflow.md` when the UI handles auth, permissions, secrets, payments, billing, checkout, sensitive data, or risky user actions.
-- Read `.aios/prompts/13-design-ui-ux.md`, `.aios/references/frontend-principles.md`, `.aios/references/api-standards.md` when data exchange matters, and `.aios/templates/design.template.md` when available.
-- Use `task-breakdown` only after design is reviewed; frontend or product-facing tasks should link back to the accepted design.
-- Use `implementation-planner`, `task-implementation`, `testing`, and `.aios/workflows/review.workflow.md` for each implementation task after design approval; archive completed implementation tasks under `<docsRoot>/tasks/done/`.
+- Route to `workflows/api-contract.workflow.md` when screens depend on request, response, error, auth, or integration behavior.
+- Route to `workflows/security-review.workflow.md` when the UI handles auth, permissions, secrets, payments, billing, checkout, sensitive data, or risky user actions.
+- Use `Skill: task` after design is reviewed; frontend tasks should link back to the accepted design, and task status is updated to `Status: Done` in-place.
+- Use `Skill: verify` and `workflows/review.workflow.md` for each implementation task after design approval.
 
 ## Process
 
 1. Resolve `.aios/config.json`; use `docsRoot` and `projectShape`.
 2. Confirm the feature has user-facing UI or product-facing interaction.
 3. Read the accepted PRD or feature PRD and relevant architecture/API notes.
-4. Route through `ui-ux-design` using `.aios/skill-router.md` when available, or the same UI/UX design checklist manually in lite mode.
+4. Route through `ui-ux-design`.
 5. Create or update `<docsRoot>/design/design.md` using `.aios/templates/design.template.md` when available.
 6. Have the user review user flow, screens, interface states, accessibility, and data/API dependencies.
 7. Link accepted design notes from frontend or product-facing tasks.
@@ -57,12 +56,13 @@ Use this workflow when the primary feature or new-project workflow includes user
 
 ## Full Mode Flow
 
-Use `.aios/skill-router.md` to select this workflow when UI/UX design is the current step, then use the ui-ux-design skill. Read `.aios/prompts/13-design-ui-ux.md`, `.aios/templates/design.template.md`, `.aios/references/frontend-principles.md`, and `.aios/references/api-standards.md` when data exchange matters.
+Use `ui-ux-design` skill when UI/UX design is the current step. Read `.aios/templates/design.template.md`, `.aios/references/frontend-principles.md`, and `.aios/references/api-standards.md` when data exchange matters.
 
 ## Lite Mode Flow
 
-Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, product docs, and available root or agent-provided design guidance. Do not assume `.aios/skill-router.md` or `.aios/templates/` exist. Follow the same UI/UX design checklist manually.
+Use `AGENTS.md`, product docs, and available design guidance. Follow the same UI/UX design checklist manually.
 
 ## After This Flow
 
-Have the user review and accept the design. After approval, generate frontend or product-facing tasks with acceptance criteria and testing expectations, then implement one selected task with implementation planning.
+Have the user review and accept the design. After approval, generate frontend or product-facing tasks with acceptance criteria and testing expectations, then implement one selected task with `Skill: task`.
+

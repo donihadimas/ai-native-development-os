@@ -57,8 +57,4 @@ Completed task bodies live directly under `docs/tasks/` (or historical archive `
 | TASK-037 | Done | `docs/tasks/done/TASK-037-add-ponytail-integration.md` |
 | TASK-038 | Done | `docs/tasks/done/TASK-038-add-guided-integration-repo-links.md` |
 
-## Routing Rules
-
-- Prefer this index before listing or opening task files.
-- Active task discovery should use direct files under `docs/tasks/`.
-- Update this index when creating, completing, blocking, or archiving tasks.
+   

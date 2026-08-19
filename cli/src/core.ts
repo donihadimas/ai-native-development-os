@@ -141,7 +141,6 @@ export const PROJECT_SHAPE_PATHS: Record<ProjectShape, string[]> = {
 
 export const REQUIRED_DOCS_PATHS = [
   ".",
-  "context/development-start.md",
   "product/vision.md",
   "product/prd.md",
   "product/features",

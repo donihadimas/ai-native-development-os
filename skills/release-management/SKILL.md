@@ -23,8 +23,8 @@ Use this skill when:
 
 Expected inputs:
 
-- completed task list or summaries from `docs/tasks/done/`,
-- selected completed implementation plan summaries from `docs/plans/done/` when traceability is needed,
+- completed task list or summaries from `<docsRoot>/tasks/` with `Status: Done`,
+- selected completed implementation plan summaries from `<docsRoot>/plans/` when traceability is needed,
 - review and test evidence,
 - changed public behavior or command list,
 - known risks and deferred work,
@@ -58,7 +58,7 @@ Expected outputs:
 
 Step-by-step process:
 
-1. Confirm included scope and excluded scope from completed task summaries, usually under `docs/tasks/done/`; read selected completed plan summaries from `docs/plans/done/` only when release traceability needs them.
+1. Confirm included scope and excluded scope from completed task summaries under `<docsRoot>/tasks/` with `Status: Done`; read selected completed plan summaries from `<docsRoot>/plans/` only when release traceability needs them.
 2. Confirm tests, review, and acceptance criteria status.
 3. Summarize user-visible and developer-visible changes.
 4. Create release notes using `templates/release-note.template.md`.

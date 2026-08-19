@@ -1,5 +1,17 @@
 # MIGRATION-{{number}}: {{title}}
 
+## Status
+
+Planned
+
+## Created Datetime
+
+{{created_datetime}}
+
+## Finish Datetime
+
+{{finish_datetime}}
+
 ## Objective
 
 Describe the database change and the behavior it enables.

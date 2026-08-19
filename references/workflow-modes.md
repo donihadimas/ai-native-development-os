@@ -16,8 +16,7 @@ Use the lightest workflow mode that matches the project setup.
 
 In full mode:
 
-- Use `.aios/skill-router.md` before choosing a skill.
-- Use `.aios/prompts/` or `.aios/commands/` for known workflows.
+- Use skills on-demand when invoked or referenced by a task (`spec`, `arch`, `task`, `verify`).
 - Use `.aios/templates/` when creating documents.
 - Use `.aios/references/` for durable engineering guidance.
 - Use `.aios/workflows/` for end-to-end flow steps.
@@ -27,11 +26,10 @@ In full mode:
 
 In lite mode:
 
-- Use `AGENTS.md`, `<docsRoot>/context/context-map.md`, and the active task or product document as the primary context.
-- Use the repository-level AIOS prompts, skills, templates, references, and workflows only if they are available to the agent.
+- Use `AGENTS.md` and the active task or product document as the primary context.
+- Use the repository-level AIOS skills, templates, references, and workflows only if they are available to the agent.
 - If the workflow kit is not available, follow the same sequence manually:
   vision -> PRD -> PRD review -> architecture -> ADRs -> design/API planning when needed -> tasks -> one task -> tests -> review -> release notes.
-- Do not assume `.aios/skill-router.md`, `.aios/templates/`, or `.aios/references/` exist.
 - Keep outputs smaller than full mode, but preserve acceptance criteria, risks, tests, and next step guidance.
 
 ## Integration Rules
@@ -49,4 +47,5 @@ Every workflow output must end with:
 - what the user should review,
 - whether the artifact is ready for the next stage,
 - the next recommended action,
-- the artifact or prompt/skill to use next when known.
+- the artifact or skill to use next when known.
+
