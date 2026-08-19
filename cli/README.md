@@ -144,7 +144,7 @@ aios validate
 Open the project in your IDE and ask Codex to start from the generated docs:
 
 ```text
-Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and docs/tasks/TASK-001-implement-habit-api.md. Use the matching native agent skill when installed, otherwise use the portable .aios skill. Create an implementation plan before coding.
+Read AGENTS.md, .aios/repo-map.json, .aios/skill-router.md, and docs/tasks/TASK-001-implement-habit-api.md. Use the matching native agent skill when installed, otherwise use the portable .aios skill. Create an implementation plan before coding.
 ```
 
 ## 🔄 Recommended Workflow
@@ -641,6 +641,77 @@ docs/releases/0-3-0-release.md
 docs/releases/CHANGELOG.md
 ```
 
+### `aios map [project-path]`
+
+Generates a compact JSON repository AST map (`.aios/repo-map.json`) detailing symbols (classes, functions, interfaces, types) across TypeScript, Python, Go, Kotlin (`.kt`, `.kts`), and other supported languages. Also extracts local code graph insights into Graphify when Graphify is enabled. Features a real-time non-blocking sidecar braille spinner (`⠋ ⠙ ⠹`).
+
+```bash
+aios map
+aios map my-saas
+```
+
+Output:
+
+```text
+Successfully generated repository map at my-saas/.aios/repo-map.json (452 files indexed).
+```
+
+### `aios verify [project-path] [--task <file>] [--test-command <cmd>]`
+
+Runs automated test suites with test runner auto-detection (`npm test`, `pytest`, `cargo test`, `go test`, `dart test`, `./gradlew test`) and records verification attempts against active tasks. Features real-time animated sidecar spinner progress feedback.
+
+```bash
+aios verify
+aios verify --task docs/tasks/TASK-001.md
+aios verify --test-command "npm run test:e2e"
+```
+
+### `aios export [project-path] [--target <cursor,claude|all>]`
+
+Exports agent-specific rules (`.cursorrules`, `.clauderules`, etc.) to target paths with optional integration rule syncing. When executed interactively without `--target`, launches an interactive multiselect checkbox prompt allowing selection of any combination of AI agents (Cursor, Claude, Cline, Windsurf, Copilot).
+
+```bash
+aios export
+aios export --target cursor,claude
+aios export --target all
+```
+
+### `aios worktree <start|finish|list|remove> <task-id>`
+
+Manages isolated Git worktrees for task implementation, ensuring clean context boundaries and verified task merges.
+
+```bash
+aios worktree start TASK-001
+aios worktree list
+aios worktree finish TASK-001
+aios worktree remove TASK-001
+```
+
+### `aios rollback [project-path] [--task <file>] [--hard]`
+
+Safely stashes or resets uncommitted task changes when a task attempt fails verification.
+
+```bash
+aios rollback
+aios rollback --hard
+```
+
+### `aios tasks [project-path]`
+
+Displays a formatted dependency graph of all task files in `docs/tasks/`.
+
+```bash
+aios tasks
+```
+
+### `aios stats [project-path]`
+
+Prints local AIOS workspace telemetry, adoption status, and task completion metrics.
+
+```bash
+aios stats
+```
+
 ## 📂 Generated Project Structure
 
 A project created with `aios init` looks like this:
@@ -697,7 +768,7 @@ If docs/product/vision.md is still thin, read AGENTS.md and .aios/prompts/00-dis
 For task implementation:
 
 ```text
-Read AGENTS.md, docs/context/context-map.md, .aios/skill-router.md, and the active task in docs/tasks/. Use native agent skills when installed, otherwise use .aios/skills. Create a short implementation plan before editing files. Do not modify unrelated files.
+Read AGENTS.md, .aios/repo-map.json, .aios/skill-router.md, and the active task in docs/tasks/. Use native agent skills when installed, otherwise use .aios/skills. Create a short implementation plan before editing files. Do not modify unrelated files.
 ```
 
 For review:
