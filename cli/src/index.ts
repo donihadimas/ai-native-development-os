@@ -906,7 +906,11 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
   }
 
   if (!dryRun && options.clean && (config.skillDelivery === "native" || config.skillDelivery === "both")) {
+    const bundledSkills = new Set<string>(availableSkills(ctx.runtimePaths.aiosKitSource));
     const preservedSkills = new Set<string>(updatedSkills);
+    for (const integration of INTEGRATIONS) {
+      preservedSkills.add(integration);
+    }
     if (config && config.integrations) {
       for (const [name, conf] of Object.entries(config.integrations)) {
         if (conf && (conf as any).enabled) {
@@ -919,7 +923,8 @@ function commandUpdate(ctx: CommandContext, projectPathArg: string | undefined, 
       if (fs.existsSync(targetRoot)) {
         for (const dirName of fs.readdirSync(targetRoot)) {
           const targetDir = path.join(targetRoot, dirName);
-          if (fs.statSync(targetDir).isDirectory() && !preservedSkills.has(dirName)) {
+          const isBundledSkill = bundledSkills.has(dirName);
+          if (fs.statSync(targetDir).isDirectory() && isBundledSkill && !preservedSkills.has(dirName)) {
             fs.rmSync(targetDir, { recursive: true, force: true });
             output.push(`Clean: removed deprecated native skill folder: ${path.relative(projectPath, targetDir)}`);
           }

@@ -497,6 +497,8 @@ export function installAiosKit(
     removed: []
   };
 
+  const resolvedConfig = options.config ?? readProjectConfig(projectPath);
+
   if (options.clean && fs.existsSync(targetRoot)) {
     const allowedEntries = new Set<string>(AIOS_KIT_ENTRIES);
     if (options.includeSkills === false) {
@@ -507,10 +509,23 @@ export function installAiosKit(
       "repo-map.json",
       "worktrees",
       "telemetry.json",
+      "metrics",
       "review-needed",
+      "project-docs",
       ".gitkeep",
       ".gitignore"
     ]);
+
+    if (resolvedConfig && resolvedConfig.docsRoot) {
+      const resolvedDocsPath = path.resolve(projectPath, resolvedConfig.docsRoot);
+      const relDocs = path.relative(targetRoot, resolvedDocsPath);
+      if (!relDocs.startsWith("..") && !path.isAbsolute(relDocs)) {
+        const topDir = relDocs.split(path.sep)[0];
+        if (topDir) {
+          preservedRootEntries.add(topDir);
+        }
+      }
+    }
 
     for (const dirEntry of fs.readdirSync(targetRoot)) {
       if (!allowedEntries.has(dirEntry) && !preservedRootEntries.has(dirEntry)) {
@@ -521,12 +536,21 @@ export function installAiosKit(
     }
   }
 
-  const resolvedConfig = options.config ?? readProjectConfig(projectPath);
+  const bundledSkills = new Set<string>(availableSkills(sourceRoot));
   const preservedSkills = new Set<string>();
   if (resolvedConfig && resolvedConfig.integrations) {
     for (const [name, conf] of Object.entries(resolvedConfig.integrations)) {
       if (conf && (conf as any).enabled) {
         preservedSkills.add(name);
+      }
+    }
+  }
+
+  const targetSkillsRoot = path.join(targetRoot, "skills");
+  if (fs.existsSync(targetSkillsRoot)) {
+    for (const dirEntry of fs.readdirSync(targetSkillsRoot)) {
+      if (!bundledSkills.has(dirEntry)) {
+        preservedSkills.add(dirEntry);
       }
     }
   }
